@@ -12,6 +12,29 @@
  */
 
 import React from 'react';
+import styled from 'styled-components';
+
+import Header from 'containers/Header';
+import SideNav from 'components/SideNav';
+
+const AppWrapper = styled.div`
+  max-width: calc(768px + 16px * 2);
+  margin: 0 auto;
+  display: flex;
+  min-height: 100%;
+  padding: 0 16px;
+  flex-direction: column;
+`;
+
+const MainBody = styled.div`
+  display: flex;
+  flex-direction: row;
+  min-height: 100%;
+`;
+
+const Content = styled.div`
+  flex: 1 1 auto;
+`;
 
 export default class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -21,9 +44,15 @@ export default class App extends React.PureComponent { // eslint-disable-line re
 
   render() {
     return (
-      <div>
-        {React.Children.toArray(this.props.children)}
-      </div>
+      <AppWrapper>
+        <Header />
+        <MainBody>
+          <SideNav />
+          <Content>
+            {React.Children.toArray(this.props.children)}
+          </Content>
+        </MainBody>
+      </AppWrapper>
     );
   }
 }

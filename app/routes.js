@@ -17,17 +17,54 @@ export default function createRoutes(store) {
   const { injectReducer, injectSagas } = getAsyncInjectors(store); // eslint-disable-line no-unused-vars
 
   return [
+    // {
+    //   path: '/',
+    //   name: 'home',
+    //   getComponent(nextState, cb) {
+    //     const importModules = Promise.all([
+    //       import('containers/HomePage'),
+    //     ]);
+
+    //     const renderRoute = loadModule(cb);
+
+    //     importModules.then(([component]) => {
+    //       renderRoute(component);
+    //     });
+
+    //     importModules.catch(errorLoading);
+    //   },
+    // },
     {
       path: '/',
-      name: 'home',
+      name: 'schedulePage',
       getComponent(nextState, cb) {
         const importModules = Promise.all([
-          import('containers/HomePage'),
+          import('containers/SchedulePage/reducer'),
+          import('containers/SchedulePage'),
         ]);
 
         const renderRoute = loadModule(cb);
 
-        importModules.then(([component]) => {
+        importModules.then(([reducer, component]) => {
+          injectReducer('schedulePage', reducer.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/coworker',
+      name: 'coworkerPage',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/CoworkerPage/reducer'),
+          import('containers/CoworkerPage'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, component]) => {
+          injectReducer('coworkerPage', reducer.default);
           renderRoute(component);
         });
 
