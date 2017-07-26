@@ -11,7 +11,7 @@ const TaskSchema = new mongoose.Schema({
   time: {
     start: Date,
     end: Date,
-    isallday: Boolean,
+    allday: Boolean,
     type: Number,
   },
   asfree: Boolean,

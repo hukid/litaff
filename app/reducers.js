@@ -6,6 +6,7 @@
 import { combineReducers } from 'redux-immutable';
 import { fromJS } from 'immutable';
 import { LOCATION_CHANGE } from 'react-router-redux';
+import { APP_LOADED } from 'containers/App/constants';
 
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
 
@@ -37,11 +38,25 @@ function routeReducer(state = routeInitialState, action) {
   }
 }
 
+const appInitialState = fromJS({
+  loaded: false,
+});
+
+function appReducer(state = appInitialState, action) {
+  switch (action.type) {
+    case APP_LOADED:
+      return state.set('loaded', true);
+    default:
+      return state;
+  }
+}
+
 /**
  * Creates the main reducer with the asynchronously loaded ones
  */
 export default function createReducer(asyncReducers) {
   return combineReducers({
+    app: appReducer,
     route: routeReducer,
     language: languageProviderReducer,
     ...asyncReducers,

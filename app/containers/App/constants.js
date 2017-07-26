@@ -10,3 +10,5 @@
  */
 
 export const DEFAULT_LOCALE = 'en';
+export const LOAD_APP = 'app/LOAD_APP';
+export const APP_LOADED = 'app/APP_LOADED';

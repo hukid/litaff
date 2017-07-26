@@ -12,10 +12,15 @@
  */
 
 import React from 'react';
+import { connect } from 'react-redux';
 import styled from 'styled-components';
+import { createStructuredSelector } from 'reselect';
 
 import Header from 'containers/Header';
 import SideNav from 'components/SideNav';
+
+import { makeSelectAppLoaded } from './selectors';
+import { loadApp } from './actions';
 
 const AppWrapper = styled.div`
   max-width: calc(768px + 16px * 2);
@@ -36,23 +41,50 @@ const Content = styled.div`
   flex: 1 1 auto;
 `;
 
-export default class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
     children: React.PropTypes.node,
+    appLoaded: React.PropTypes.bool,
+    loadAppData: React.PropTypes.func,
   };
 
+  componentDidMount() {
+    this.props.loadAppData();
+  }
+
   render() {
+    const appLoaded = this.props.appLoaded;
     return (
       <AppWrapper>
         <Header />
-        <MainBody>
-          <SideNav />
-          <Content>
-            {React.Children.toArray(this.props.children)}
-          </Content>
-        </MainBody>
+        { !appLoaded ? (
+          <MainBody>
+            loading
+          </MainBody>
+          ) : (
+            <MainBody>
+              <SideNav />
+              <Content>
+                {React.Children.toArray(this.props.children)}
+              </Content>
+            </MainBody>
+          )
+        }
       </AppWrapper>
     );
   }
 }
+
+const mapStateToProps = createStructuredSelector({
+  appLoaded: makeSelectAppLoaded(),
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    loadAppData: () => dispatch(loadApp()),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
+
