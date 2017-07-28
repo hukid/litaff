@@ -14,6 +14,7 @@ import {
   makeSelectEndTime,
   makeSelectCoworkers,
   makeSelectContent,
+  makeSelectNewCoworker,
 } from './selectors';
 import {
   changeSubject,
@@ -21,7 +22,9 @@ import {
   changeEndTime,
   changeCoworkers,
   changeContent,
+  changeNewCoworker,
   createTask,
+  addCoworker,
 } from './actions';
 
 import messages from './messages';
@@ -33,7 +36,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
         <div>
           <label htmlFor="subject" >
             Subject:
-          <input
+            <input
               id="subject"
               type="text"
               value={this.props.subject}
@@ -66,17 +69,28 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           </label>
         </div>
 
+        <div>
+          <label htmlFor="newcoworker" >
+            New Coworker:
+            <input
+              id="newcoworker"
+              type="text"
+              value={this.props.newCoworker}
+              onChange={this.props.onChangeNewCoworker}
+            />
+            <span onClick={this.props.onAddCoworker}>Add</span>
+          </label>
+        </div>
 
         <div>
           <label htmlFor="coworkers" >
             Coworkers:
-          <input
-            id="coworkers"
-            type="text"
-            value={this.props.coworkers.toString()}
-            onChange={this.props.onChangeCoworkers}
-          />
           </label>
+          <ul>
+            {
+              this.props.coworkers.map((coworker, index) => <li key={index}>{coworker.toString()}</li>)
+            }
+          </ul>
         </div>
         <div>
           <label htmlFor="content" >
@@ -104,14 +118,17 @@ TaskForm.propTypes = {
   subject: PropTypes.string,
   startTime: PropTypes.string,
   endTime: PropTypes.string,
-  coworkers: PropTypes.array,
+  coworkers: PropTypes.object,
   content: PropTypes.string,
+  newCoworker: PropTypes.string,
   onChangeSubject: PropTypes.func.isRequired,
   onChangeStartTime: PropTypes.func.isRequired,
   onChangeEndTime: PropTypes.func.isRequired,
   onChangeCoworkers: PropTypes.func.isRequired,
   onChangeContent: PropTypes.func.isRequired,
+  onChangeNewCoworker: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  onAddCoworker: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -120,6 +137,7 @@ const mapStateToProps = createStructuredSelector({
   endTime: makeSelectEndTime(),
   coworkers: makeSelectCoworkers(),
   content: makeSelectContent(),
+  newCoworker: makeSelectNewCoworker(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -128,15 +146,16 @@ function mapDispatchToProps(dispatch) {
     onChangeStartTime: (evt) => dispatch(changeStartTime(evt.target.value)),
     onChangeEndTime: (evt) => dispatch(changeEndTime(evt.target.value)),
     onChangeCoworkers: (evt) => {
-      const coworkersArray = evt.target.value ? evt.target.value.split(',') : [];
-      
+      const coworkers = evt.target.value ? evt.target.value.split(',') : [];
       dispatch(changeCoworkers(coworkers));
     },
     onChangeContent: (evt) => dispatch(changeContent(evt.target.value)),
+    onChangeNewCoworker: (evt) => dispatch(changeNewCoworker(evt.target.value)),
     onSubmit: (evt) => {
       evt.preventDefault();
       dispatch(createTask());
     },
+    onAddCoworker: () => dispatch(addCoworker()),
   };
 }
 

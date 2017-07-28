@@ -10,7 +10,10 @@ import {
   CHANGE_ENDTIME,
   CHANGE_COWORKERS,
   CHANGE_CONTENT,
+  CHANGE_NEWCOWORKER,
   CREATE_TASK,
+  ADD_COWORKER,
+  COWORKER_ADDED,
 } from './constants';
 
 export function changeSubject(subject) {
@@ -48,8 +51,30 @@ export function changeContent(content) {
   };
 }
 
+export function changeNewCoworker(newCoworker) {
+  return {
+    type: CHANGE_NEWCOWORKER,
+    newCoworker,
+  };
+}
+
+
 export function createTask() {
   return {
     type: CREATE_TASK,
+  };
+}
+
+
+export function addCoworker() {
+  return {
+    type: ADD_COWORKER,
+  };
+}
+
+export function coworkerAdded(coworker) {
+  return {
+    type: COWORKER_ADDED,
+    coworker,
   };
 }

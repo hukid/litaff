@@ -25,12 +25,17 @@ const makeSelectEndTime = () => createSelector(
 
 const makeSelectCoworkers = () => createSelector(
   selectTaskFormDomain(),
-  (substate) => substate.get('coworkers').toJS()
+  (substate) => substate.get('coworkers')
 );
 
 const makeSelectContent = () => createSelector(
   selectTaskFormDomain(),
   (substate) => substate.get('content')
+);
+
+const makeSelectNewCoworker = () => createSelector(
+  selectTaskFormDomain(),
+  (substate) => substate.get('newCoworker')
 );
 
 /**
@@ -50,4 +55,5 @@ export {
   makeSelectEndTime,
   makeSelectCoworkers,
   makeSelectContent,
+  makeSelectNewCoworker,
 };

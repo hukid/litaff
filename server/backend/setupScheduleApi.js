@@ -10,6 +10,7 @@ const logger = require('../logger');
 const Tenant = require('./models/tenant');
 const Project = require('./models/project');
 const Task = require('./models/task');
+const Resource = require('./models/resource');
 
 module.exports = (router) => {
   const dbConnectionString = 'mongodb://localhost:27017/litaff';
@@ -165,15 +166,42 @@ module.exports = (router) => {
     res.send('get available resources is called');
   });
 
-  router.post('/resources', (req, res) => {
-    res.send('create resources is called');
+  router.post('/resources/:projectId', (req, res) => {
+    const projectId = req.params.projectId;
+    const resourceInfo = req.body;
+
+    Resource.findOne({ name: resourceInfo.name }, (err, resource) => {
+      if (err) {
+        handleError(res, err);
+        return;
+      }
+
+      if (resource == null) {
+        // will create a new resource
+        const newResource = new Resource();
+        newResource.projectid = projectId;
+        newResource.name = resourceInfo.name;
+        newResource.contacts = [];
+
+        newResource.save((saveErr) => {
+          if (saveErr) {
+            handleError(saveErr);
+          }
+
+          res.json(newResource);
+        });
+      } else {
+        // will use the existing resource
+        res.json(resource);
+      }
+    });
   });
 
-  router.put('/resources/:resourceId', (req, res) => {
+  router.put('/resources/:projectId/:resourceId', (req, res) => {
     res.send('update resource is called');
   });
 
-  router.delete('/resources/:resourceId', (req, res) => {
+  router.delete('/resources/:projectId/:resourceId', (req, res) => {
     res.send('delete resource is called');
   });
 };

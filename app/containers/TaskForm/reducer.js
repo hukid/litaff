@@ -10,7 +10,9 @@ import {
   CHANGE_STARTTIME,
   CHANGE_ENDTIME,
   CHANGE_COWORKERS,
+  CHANGE_NEWCOWORKER,
   CHANGE_CONTENT,
+  COWORKER_ADDED,
 } from './constants';
 
 const initialState = fromJS({
@@ -18,7 +20,10 @@ const initialState = fromJS({
   content: '',
   startTime: '',
   endTime: '',
-  coworkers: {},
+  coworkers: [
+    { name: 'mockworker' },
+  ],
+  newCoworker: '',
 });
 
 function taskFormReducer(state = initialState, action) {
@@ -33,6 +38,10 @@ function taskFormReducer(state = initialState, action) {
       return state.set('coworkers', fromJS(action.coworkers));
     case CHANGE_CONTENT:
       return state.set('content', action.content);
+    case CHANGE_NEWCOWORKER:
+      return state.set('newCoworker', action.newCoworker);
+    case COWORKER_ADDED:
+      return state.update('coworkers', (coworkers) => coworkers.push(fromJS(action.coworker)));
     default:
       return state;
   }
