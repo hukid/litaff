@@ -45,7 +45,7 @@ const appInitialState = fromJS({
 function appReducer(state = appInitialState, action) {
   switch (action.type) {
     case APP_LOADED:
-      return state.set('loaded', true);
+      return state.set('loaded', true).set('tenantId', action.tenantId).set('projectId', action.projectId);
     default:
       return state;
   }

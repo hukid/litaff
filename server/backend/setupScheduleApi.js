@@ -70,6 +70,17 @@ module.exports = (router) => {
     });
   });
 
+  router.get('/getDefaultProject', (req, res) => {
+    Project.findOne({ name: defaultProjectName }, (err, defaultProject) => {
+      if (err) {
+        handleError(res, err);
+        return;
+      }
+
+      res.json(defaultProject);
+    });
+  });
+
   // define tasks rest APIs
   router.get('/tasks/:projectId/:startTime/:endTime', (req, res) => {
     const projectId = req.params.projectId;
@@ -91,15 +102,57 @@ module.exports = (router) => {
     });
   });
 
-  router.post('/tasks', (req, res) => {
-    res.send('create tasks is called');
+  router.post('/tasks/:projectId', (req, res) => {
+    const projectId = req.params.projectId;
+    const task = req.body;
+
+    if (task.subject
+      && task.startTime
+      && task.endTime
+      && task.coworkers) {
+      const startTime = new Date(task.startTime);
+      const endTime = new Date(task.endTime);
+
+      if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()) {
+        const newTask = new Task();
+        newTask.subject = task.subject;
+        newTask.projectid = projectId;
+        newTask.taskType = 1;
+        newTask.time = {
+          start: startTime,
+          end: endTime,
+          allday: false,
+          timeType: 0,
+        };
+        newTask.content = task.connect;
+        newTask.category = task.category;
+        newTask.asfree = false;
+        newTask.resources = [];
+
+        task.coworkers.forEach((coworker) => {
+          newTask.resources.push({ resourceType: 1, name: coworker });
+        });
+
+        newTask.save((saveErr) => {
+          if (saveErr) {
+            res.send(saveErr);
+          }
+
+          res.json({ message: 'OK' });
+        });
+
+        return;
+      }
+    }
+
+    res.json({ message: 'task failed to create' });
   });
 
-  router.put('/tasks/:taskId', (req, res) => {
+  router.put('/tasks/:projectId/:taskId', (req, res) => {
     res.send('update tasks is called');
   });
 
-  router.delete('/tasks/:taskId', (req, res) => {
+  router.delete('/tasks/:projectId/:taskId', (req, res) => {
     res.send('delete tasks is called');
   });
 

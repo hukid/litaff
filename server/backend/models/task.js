@@ -6,17 +6,17 @@ const TaskSchema = new mongoose.Schema({
   projectid: Schema.Types.ObjectId,
   subject: { type: String, required: true },
   content: String,
-  type: Number,
+  taskType: Number,
   category: String,
   time: {
     start: Date,
     end: Date,
     allday: Boolean,
-    type: Number,
+    timeType: Number,
   },
   asfree: Boolean,
-  resouces: [
-    { id: Schema.Types.ObjectId, type: Number, name: String },
+  resources: [
+    { id: Schema.Types.ObjectId, resourceType: Number, name: String },
   ],
 });
 

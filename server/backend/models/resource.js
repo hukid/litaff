@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 const ResourceSchema = new mongoose.Schema({
   projectid: Schema.Types.ObjectId,
   name: String,
-  type: { type: Number, default: 0 },
+  resourceType: { type: String, default: 'person' },
   contacts: [
-    { type: Number, value: String },
+    { contactType: String, value: String },
   ],
 });
 

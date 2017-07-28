@@ -21,10 +21,22 @@ const selectApp = (state) => state.get('app');
 
 const makeSelectAppLoaded = () => createSelector(
   selectApp,
-  (homeState) => homeState.get('loaded')
+  (appState) => appState.get('loaded')
+);
+
+const makeSelectTenantId = () => createSelector(
+  selectApp,
+  (appState) => appState.get('tenantId')
+);
+
+const makeSelectProjectId = () => createSelector(
+  selectApp,
+  (appState) => appState.get('projectId')
 );
 
 export {
   makeSelectLocationState,
   makeSelectAppLoaded,
+  makeSelectTenantId,
+  makeSelectProjectId,
 };

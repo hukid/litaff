@@ -8,6 +8,10 @@ injectGlobal`
     width: 100%;
   }
 
+  input, textarea {
+    border: 1px solid;
+  }
+
   body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }

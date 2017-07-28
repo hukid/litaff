@@ -9,8 +9,10 @@ export function loadApp() {
   };
 }
 
-export function appLoaded() {
+export function appLoaded(tenantId, projectId) {
   return {
     type: APP_LOADED,
+    tenantId,
+    projectId,
   };
 }
