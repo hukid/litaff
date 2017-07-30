@@ -123,34 +123,86 @@ module.exports = (router) => {
           start: startTime,
           end: endTime,
           allday: false,
-          timeType: 0,
+          timeType: 1,
         };
-        newTask.content = task.connect;
+        newTask.content = task.content;
         newTask.category = task.category;
         newTask.asfree = false;
         newTask.resources = [];
 
         task.coworkers.forEach((coworker) => {
-          newTask.resources.push({ resourceType: 1, name: coworker });
+          newTask.resources.push({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name });
         });
 
         newTask.save((saveErr) => {
           if (saveErr) {
-            res.send(saveErr);
+            handleError(res, saveErr);
+            return;
           }
 
           res.json({ message: 'OK' });
         });
-
-        return;
       }
+    } else {
+      handleError(res, 'Not a valid task');
     }
-
-    res.json({ message: 'task failed to create' });
   });
 
   router.put('/tasks/:projectId/:taskId', (req, res) => {
-    res.send('update tasks is called');
+    const projectId = req.params.projectId;
+    const taskId = req.params.taskId;
+    const updatedTask = req.body;
+
+    if (updatedTask.subject
+      && updatedTask.startTime
+      && updatedTask.endTime
+      && updatedTask.coworkers) {
+      const startTime = new Date(updatedTask.startTime);
+      const endTime = new Date(updatedTask.endTime);
+
+      if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()) {
+        Task.findOne({ _id: taskId }, (err, result) => {
+          if (err) {
+            handleError(res, err);
+            return;
+          } else if (result == null) {
+            handleError(res, 'failed to find the task');
+            return;
+          }
+
+          const originalTask = result;
+          originalTask.subject = updatedTask.subject;
+          originalTask.projectid = projectId;
+          originalTask.taskType = 1;
+          originalTask.time = {
+            start: startTime,
+            end: endTime,
+            allday: false,
+            timeType: 1,
+          };
+          originalTask.content = updatedTask.content;
+          originalTask.category = updatedTask.category;
+          originalTask.asfree = false;
+          originalTask.resources = [];
+
+          updatedTask.coworkers.forEach((coworker) => {
+            originalTask.resources.push({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name });
+          });
+
+          originalTask.save((saveErr) => {
+            console.log('saving' + originalTask.toString());
+            if (saveErr) {
+              handleError(res, saveErr);
+              return;
+            }
+
+            res.json({ message: 'OK' });
+          });
+        });
+      }
+    } else {
+      handleError(res, 'Not a valid task');
+    }
   });
 
   router.delete('/tasks/:projectId/:taskId', (req, res) => {
@@ -159,7 +211,16 @@ module.exports = (router) => {
 
   // define resources rest API
   router.get('/resources/:projectId/:type?', (req, res) => {
-    res.send('get resources is called');
+    const projectId = req.params.projectId;
+
+    Resource.find({ projectid: projectId }, (err, resources) => {
+      if (err) {
+        handleError(res, err);
+        return;
+      }
+
+      res.json(resources);
+    });
   });
 
   router.get('/resources/:projectId/:startTime/:endTime', (req, res) => {
@@ -181,18 +242,38 @@ module.exports = (router) => {
         const newResource = new Resource();
         newResource.projectid = projectId;
         newResource.name = resourceInfo.name;
-        newResource.contacts = [];
+        newResource.resourceType = 1;
+        newResource.contacts = resourceInfo.contacts ? resourceInfo.contacts : [];
 
         newResource.save((saveErr) => {
           if (saveErr) {
-            handleError(saveErr);
+            handleError(res, saveErr);
+            return;
           }
 
-          res.json(newResource);
+          const { id, name, resourceType, contacts } = newResource;
+
+          const response = {
+            id,
+            name,
+            resourceType,
+            contacts,
+          };
+
+          res.json(response);
         });
       } else {
         // will use the existing resource
-        res.json(resource);
+        const { id, name, resourceType, contacts } = resource;
+
+        const response = {
+          id,
+          name,
+          resourceType,
+          contacts,
+        };
+
+        res.json(response);
       }
     });
   });

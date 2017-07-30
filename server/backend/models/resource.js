@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 const ResourceSchema = new mongoose.Schema({
   projectid: Schema.Types.ObjectId,
   name: String,
-  resourceType: { type: String, default: 'person' },
+  resourceType: { type: Number, required: true }, // 1 - person, no definition for other contacts
   contacts: [
-    { contactType: String, value: String },
+    { contactType: Number, value: String }, // 1 - email, no definition for other contacts
   ],
 });
 

@@ -16,8 +16,8 @@ import { appLoaded } from './actions';
 function* loadAppInitalData() {
   // // Select username from store
   // const username = yield select(makeSelectUsername());
-  const getTenantRequestUrl = 'api/getDefaultTenant';
-  const getProjectRequestUrl = 'api/getDefaultProject';
+  const getTenantRequestUrl = '/api/getDefaultTenant';
+  const getProjectRequestUrl = '/api/getDefaultProject';
 
   try {
     // Call our request helper (see 'utils/request')

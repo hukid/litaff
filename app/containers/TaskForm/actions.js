@@ -12,8 +12,11 @@ import {
   CHANGE_CONTENT,
   CHANGE_NEWCOWORKER,
   CREATE_TASK,
+  UPDATE_TASK,
   ADD_COWORKER,
   COWORKER_ADDED,
+  FILL_TASKINFO,
+  INIT_CREATFORM,
 } from './constants';
 
 export function changeSubject(subject) {
@@ -65,6 +68,12 @@ export function createTask() {
   };
 }
 
+export function updateTask() {
+  return {
+    type: UPDATE_TASK,
+  };
+}
+
 
 export function addCoworker() {
   return {
@@ -77,4 +86,17 @@ export function coworkerAdded(coworker) {
     type: COWORKER_ADDED,
     coworker,
   };
+}
+
+export function fillTaskInfo(task) {
+  return {
+    type: FILL_TASKINFO,
+    task,
+  };
+}
+
+export function initCreateForm() {
+  return {
+    type: INIT_CREATFORM,
+  }
 }

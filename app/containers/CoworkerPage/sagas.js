@@ -7,23 +7,20 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import { makeSelectProjectId } from 'containers/App/selectors';
 import request from 'utils/request';
 
-import { LOAD_TASKS } from './constants';
-import { tasksLoaded } from './actions';
-import { makeSelectStartTime, makeSelectEndTime } from './selectors';
+import { LOAD_COWORKERS } from './constants';
+import { coworkersLoaded } from './actions';
 
 /*
  * Github repos request/response handler
  */
-export function* loadTasks() {
+export function* loadCoworkers() {
   const projectId = yield select(makeSelectProjectId());
-  const startTime = yield select(makeSelectStartTime());
-  const endTime = yield select(makeSelectEndTime());
-  const loadTasksURL = `api/tasks/${projectId}/${startTime.toISOString()}/${endTime.toISOString()}`;
+  const loadCoworkersURL = `api/resources/${projectId}`;
 
   try {
     // Call our request helper (see 'utils/request')
-    const tasks = yield call(request, loadTasksURL);
-    yield put(tasksLoaded(tasks));
+    const coworkers = yield call(request, loadCoworkersURL);
+    yield put(coworkersLoaded(coworkers));
   } catch (err) {
     // yield put(repoLoadingError(err));
     console.error(err);
@@ -33,14 +30,14 @@ export function* loadTasks() {
 /**
  * Root saga manages watcher lifecycle
  */
-export function* taskData() {
+export function* coworkerData() {
   // Watches for LOAD_REPOS actions and calls getRepos when one comes in.
   // By using `takeLatest` only the result of the latest API call is applied.
   // It returns task descriptor (just like fork) so we can continue execution
-  console.log('schedulepage sage run');
+  console.log('coworkerData sage run');
 
   const watchers = yield [
-    takeLatest(LOAD_TASKS, loadTasks),
+    takeLatest(LOAD_COWORKERS, loadCoworkers),
   ];
 
   // Suspend execution until location changes
@@ -50,5 +47,5 @@ export function* taskData() {
 
 // Bootstrap sagas
 export default [
-  taskData,
+  coworkerData,
 ];

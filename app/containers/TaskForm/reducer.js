@@ -13,16 +13,19 @@ import {
   CHANGE_NEWCOWORKER,
   CHANGE_CONTENT,
   COWORKER_ADDED,
+  FILL_TASKINFO,
+  INIT_CREATFORM,
 } from './constants';
 
+// TODO: remove this hack date time
 const initialState = fromJS({
+  update: false,
+  _id: '',
   subject: '',
   content: '',
-  startTime: '',
-  endTime: '',
-  coworkers: [
-    { name: 'mockworker' },
-  ],
+  startTime: new Date().toISOString(),
+  endTime: new Date(Date.now() + 3600000).toISOString(),
+  coworkers: [],
   newCoworker: '',
 });
 
@@ -41,7 +44,23 @@ function taskFormReducer(state = initialState, action) {
     case CHANGE_NEWCOWORKER:
       return state.set('newCoworker', action.newCoworker);
     case COWORKER_ADDED:
-      return state.update('coworkers', (coworkers) => coworkers.push(fromJS(action.coworker)));
+      return state.update('coworkers', (coworkers) => coworkers.push(fromJS(action.coworker))).set('newCoworker', '');
+    case FILL_TASKINFO:
+      return state.set('update', true)
+                .set('_id', action.task._id)
+                .set('subject', action.task.subject)
+                .set('startTime', action.task.time.start)
+                .set('endTime', action.task.time.end)
+                .set('content', action.task.content)
+                .set('coworkers', fromJS(action.task.resources));
+    case INIT_CREATFORM:
+      return state.set('update', false)
+        .set('_id', '')
+        .set('subject', '')
+        .set('startTime', new Date().toISOString())
+        .set('endTime', new Date(Date.now() + 3600000).toISOString())
+        .set('content', '')
+        .set('coworkers', fromJS([]));
     default:
       return state;
   }

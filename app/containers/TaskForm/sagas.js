@@ -1,10 +1,11 @@
 // import { take, call, put, select } from 'redux-saga/effects';
-import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
-
-import { makeSelectTenantId, makeSelectProjectId } from 'containers/App/selectors';
+import { take, call, put, select, cancel, takeLatest, takeEvery } from 'redux-saga/effects';
+import { push } from 'react-router-redux';
+import { LOCATION_CHANGE } from 'react-router-redux';
+import { makeSelectProjectId } from 'containers/App/selectors';
 import request from 'utils/request';
 
-import { CREATE_TASK, ADD_COWORKER } from './constants';
+import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER } from './constants';
 import {
   makeSelectTaskForm,
 } from './selectors';
@@ -19,13 +20,12 @@ function* createTask() {
   // const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
 
   const task = yield select(makeSelectTaskForm());
-  const tenantId = yield select(makeSelectTenantId());
   const projectId = yield select(makeSelectProjectId());
 
-  task.tenantId = tenantId;
-  task.projectId = projectId;
-
   const TaskUrl = `/api/tasks/${projectId}`;
+
+  // remove unneccessary property
+  delete task.newCoworker;
 
   try {
     const reuqestOptions = {
@@ -38,6 +38,33 @@ function* createTask() {
     };
 
     yield call(request, TaskUrl, reuqestOptions);
+    yield put(push('/'));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function* updateTask() {
+  const task = yield select(makeSelectTaskForm());
+  const projectId = yield select(makeSelectProjectId());
+
+  const TaskUrl = `/api/tasks/${projectId}/${task._id}`;
+
+  // remove unneccessary property
+  delete task.newCoworker;
+
+  try {
+    const reuqestOptions = {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(task),
+    };
+
+    yield call(request, TaskUrl, reuqestOptions);
+    yield put(push('/'));
     // yield put(reposLoaded(repos, username));
   } catch (err) {
     console.error(err);
@@ -45,16 +72,8 @@ function* createTask() {
 }
 
 function* addCoworker() {
-  // // Select username from store
-  // const username = yield select(makeSelectUsername());
-  // const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
-
   const task = yield select(makeSelectTaskForm());
-  const tenantId = yield select(makeSelectTenantId());
   const projectId = yield select(makeSelectProjectId());
-
-  task.tenantId = tenantId;
-  task.projectId = projectId;
 
   const CoworkerUrl = `/api/resources/${projectId}`;
   const resource = {
@@ -81,10 +100,17 @@ function* addCoworker() {
 // Individual exports for testing
 export function* taskCRUD() {
   // See example in containers/HomePage/sagas.js
-  yield [
+  const watchers = yield [
     takeLatest(CREATE_TASK, createTask),
-    takeLatest(ADD_COWORKER, addCoworker),
+    takeLatest(UPDATE_TASK, updateTask),
+    takeEvery(ADD_COWORKER, addCoworker),
   ];
+
+  // Suspend execution until location changes
+  yield take(LOCATION_CHANGE);
+  yield cancel(watchers[0]);
+  yield cancel(watchers[1]);
+  yield cancel(watchers[2]);
 }
 
 // All sagas to be loaded

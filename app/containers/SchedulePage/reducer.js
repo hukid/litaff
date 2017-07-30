@@ -6,15 +6,19 @@
 
 import { fromJS } from 'immutable';
 import {
-  DEFAULT_ACTION,
+  TASKS_LOADED,
 } from './constants';
 
-const initialState = fromJS({});
+const initialState = fromJS({
+  tasks: [],
+  startTime: new Date('2017-01-01T00:00:00z'),
+  endTime: new Date('2019-01-01T00:00:00z'),
+});
 
 function schedulePageReducer(state = initialState, action) {
   switch (action.type) {
-    case DEFAULT_ACTION:
-      return state;
+    case TASKS_LOADED:
+      return state.set('tasks', fromJS(action.tasks ? action.tasks : []));
     default:
       return state;
   }

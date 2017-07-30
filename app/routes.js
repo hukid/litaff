@@ -61,13 +61,15 @@ export default function createRoutes(store) {
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/CoworkerPage/reducer'),
+          import('containers/CoworkerPage/sagas'),
           import('containers/CoworkerPage'),
         ]);
 
         const renderRoute = loadModule(cb);
 
-        importModules.then(([reducer, component]) => {
+        importModules.then(([reducer, sagas, component]) => {
           injectReducer('coworkerPage', reducer.default);
+          injectSagas(sagas.default);
           renderRoute(component);
         });
 
@@ -75,6 +77,26 @@ export default function createRoutes(store) {
       },
     }, {
       path: '/createtask',
+      name: 'taskForm',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/TaskForm/reducer'),
+          import('containers/TaskForm/sagas'),
+          import('containers/TaskForm'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('taskForm', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/updatetask/:taskId',
       name: 'taskForm',
       getComponent(nextState, cb) {
         const importModules = Promise.all([

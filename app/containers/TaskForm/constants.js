@@ -11,5 +11,9 @@ export const CHANGE_NEWCOWORKER = 'app/TaskForm/CHANGE_NEWCOWORKER';
 export const CHANGE_COWORKERS = 'app/TaskForm/CHANGE_COWORKERS';
 export const CHANGE_CONTENT = 'app/TaskForm/CHANGE_CONTENT';
 export const CREATE_TASK = 'app/TaskForm/CREATE_TASK';
+export const UPDATE_TASK = 'app/TaskForm/UPDATE_TASK';
 export const ADD_COWORKER = 'app/TaskForm/ADD_COWORKER';
 export const COWORKER_ADDED = 'app/TaskForm/COWORKER_ADDED';
+export const FILL_TASKINFO = 'app/TaskForm/FILL_TASKINFO';
+export const INIT_CREATFORM = 'app/TaskForm/INIT_CREATFORM';
+

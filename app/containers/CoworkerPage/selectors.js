@@ -9,6 +9,10 @@ const selectCoworkerPageDomain = () => (state) => state.get('coworkerPage');
  * Other specific selectors
  */
 
+const makeSelectCoworkers = () => createSelector(
+  selectCoworkerPageDomain(),
+  (substate) => substate.get('coworkers').toJS(),
+);
 
 /**
  * Default selector used by CoworkerPage
@@ -22,4 +26,5 @@ const makeSelectCoworkerPage = () => createSelector(
 export default makeSelectCoworkerPage;
 export {
   selectCoworkerPageDomain,
+  makeSelectCoworkers,
 };

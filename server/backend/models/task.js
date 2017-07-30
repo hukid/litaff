@@ -2,11 +2,19 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const TaskSchema = new mongoose.Schema({
+const TaskResourceSchema = new Schema({
+  id: Schema.Types.ObjectId,
+  resourceType: Number,
+  name: String,
+}, {
+  _id: false,
+});
+
+const TaskSchema = new Schema({
   projectid: Schema.Types.ObjectId,
   subject: { type: String, required: true },
   content: String,
-  taskType: Number,
+  taskType: { type: Number, reuired: true },
   category: String,
   time: {
     start: Date,
@@ -15,9 +23,7 @@ const TaskSchema = new mongoose.Schema({
     timeType: Number,
   },
   asfree: Boolean,
-  resources: [
-    { id: Schema.Types.ObjectId, resourceType: Number, name: String },
-  ],
+  resources: [TaskResourceSchema],
 });
 
 module.exports = mongoose.model('task', TaskSchema);

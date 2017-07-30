@@ -8,6 +8,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
+
 import {
   makeSelectSubject,
   makeSelectStartTime,
@@ -15,24 +16,38 @@ import {
   makeSelectCoworkers,
   makeSelectContent,
   makeSelectNewCoworker,
+  makeSelectTask,
+  makeSelectUpdateMode,
 } from './selectors';
 import {
   changeSubject,
   changeStartTime,
   changeEndTime,
-  changeCoworkers,
   changeContent,
   changeNewCoworker,
   createTask,
+  updateTask,
   addCoworker,
+  fillTaskInfo,
+  initCreateForm,
 } from './actions';
 
 import messages from './messages';
 
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+
+  componentWillMount() {
+    if (this.props.route.path.startsWith('/updatetask') && this.props.params.taskId) {
+      // TODO: when selected Task is null
+      this.props.onFillTaskInfo(this.props.selectedTask);
+    } else {
+      this.props.onInitCreateForm();
+    }
+  }
+
   render() {
     return (
-      <form onSubmit={this.props.onSubmit}>
+      <form onSubmit={this.props.isUpdate ? this.props.onUpdate : this.props.onCreate}>
         <div>
           <label htmlFor="subject" >
             Subject:
@@ -106,29 +121,33 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
             />
           </div>
         </div>
-
-
-        <button type="submit">Add</button>
+        <button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</button>
       </form>
     );
   }
 }
 
 TaskForm.propTypes = {
+  params: PropTypes.object,
+  route: PropTypes.object,
   subject: PropTypes.string,
   startTime: PropTypes.string,
   endTime: PropTypes.string,
   coworkers: PropTypes.object,
   content: PropTypes.string,
   newCoworker: PropTypes.string,
+  selectedTask: PropTypes.object,
+  isUpdate: PropTypes.bool.isRequired,
   onChangeSubject: PropTypes.func.isRequired,
   onChangeStartTime: PropTypes.func.isRequired,
   onChangeEndTime: PropTypes.func.isRequired,
-  onChangeCoworkers: PropTypes.func.isRequired,
   onChangeContent: PropTypes.func.isRequired,
   onChangeNewCoworker: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
+  onCreate: PropTypes.func.isRequired,
+  onUpdate: PropTypes.func.isRequired,
   onAddCoworker: PropTypes.func.isRequired,
+  onFillTaskInfo: PropTypes.func.isRequired,
+  onInitCreateForm: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -138,6 +157,8 @@ const mapStateToProps = createStructuredSelector({
   coworkers: makeSelectCoworkers(),
   content: makeSelectContent(),
   newCoworker: makeSelectNewCoworker(),
+  selectedTask: makeSelectTask(),
+  isUpdate: makeSelectUpdateMode(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -145,17 +166,19 @@ function mapDispatchToProps(dispatch) {
     onChangeSubject: (evt) => dispatch(changeSubject(evt.target.value)),
     onChangeStartTime: (evt) => dispatch(changeStartTime(evt.target.value)),
     onChangeEndTime: (evt) => dispatch(changeEndTime(evt.target.value)),
-    onChangeCoworkers: (evt) => {
-      const coworkers = evt.target.value ? evt.target.value.split(',') : [];
-      dispatch(changeCoworkers(coworkers));
-    },
     onChangeContent: (evt) => dispatch(changeContent(evt.target.value)),
     onChangeNewCoworker: (evt) => dispatch(changeNewCoworker(evt.target.value)),
-    onSubmit: (evt) => {
+    onCreate: (evt) => {
       evt.preventDefault();
       dispatch(createTask());
     },
+    onUpdate: (evt) => {
+      evt.preventDefault();
+      dispatch(updateTask());
+    },
     onAddCoworker: () => dispatch(addCoworker()),
+    onFillTaskInfo: (selectedTask) => dispatch(fillTaskInfo(selectedTask)),
+    onInitCreateForm: () => dispatch(initCreateForm()),
   };
 }
 
