@@ -116,6 +116,46 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
+      path: '/updatecoworker/:resourceId',
+      name: 'coworkerForm',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/CoworkerForm/reducer'),
+          import('containers/CoworkerForm/sagas'),
+          import('containers/CoworkerForm'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('coworkerForm', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/createcoworker',
+      name: 'coworkerForm',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/CoworkerForm/reducer'),
+          import('containers/CoworkerForm/sagas'),
+          import('containers/CoworkerForm'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('coworkerForm', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
       path: '*',
       name: 'notfound',
       getComponent(nextState, cb) {

@@ -6,6 +6,7 @@
 import { combineReducers } from 'redux-immutable';
 import { fromJS } from 'immutable';
 import { LOCATION_CHANGE } from 'react-router-redux';
+import { reducer as formReducer } from 'redux-form/immutable';
 import { APP_LOADED } from 'containers/App/constants';
 
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
@@ -59,6 +60,7 @@ export default function createReducer(asyncReducers) {
     app: appReducer,
     route: routeReducer,
     language: languageProviderReducer,
+    form: formReducer,
     ...asyncReducers,
   });
 }
