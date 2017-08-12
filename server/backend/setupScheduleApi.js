@@ -245,9 +245,11 @@ module.exports = (router) => {
         newResource.resourceType = 1;
         newResource.contacts = [];
 
-        resourceInfo.contacts.forEach((contact) => {
-          newResource.contacts.push({ contactType: 1, value: contact.value });
-        });
+        if (resourceInfo.contacts) {
+          resourceInfo.contacts.forEach((contact) => {
+            newResource.contacts.push({ contactType: 1, value: contact.value });
+          });
+        }
 
         newResource.save((saveErr) => {
           if (saveErr) {

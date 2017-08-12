@@ -4,7 +4,9 @@ import { makeSelectTasks } from 'containers/SchedulePage/selectors';
 /**
  * Direct selector to the taskForm state domain
  */
-const selectTaskFormDomain = () => (state) => state.get('taskForm');
+const selectTaskFormDomain = () => (state) => {
+  return state.get('taskForm');
+};
 
 const selectTaskId = () => (state, props) => props.params.taskId;
 
@@ -58,6 +60,23 @@ const makeSelectTask = () => createSelector(
   }
 );
 
+const makeSelectTaskFormData = () => createSelector(
+  makeSelectTask(),
+  (task) => {
+    if (!task) {
+      return {};
+    }
+    return {
+      _id: task._id,
+      subject: task.subject,
+      startTime: task.time.start,
+      endTime: task.time.end,
+      content: task.content,
+      coworkers: task.resources,
+    };
+  }
+);
+
 /**
  * Default selector used by TaskForm
  */
@@ -79,4 +98,5 @@ export {
   makeSelectNewCoworker,
   makeSelectTask,
   makeSelectUpdateMode,
+  makeSelectTaskFormData,
 };

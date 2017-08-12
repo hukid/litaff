@@ -13,13 +13,13 @@ import { makeSelectCoworker, selectUpdateStatus } from './selectors';
 import messages from './messages';
 import { fillCoworker, initialCreateCoworkerForm, createCoworker, updateCoworker } from './actions';
 
-const CoworkerFormField = ({ input, label, type, meta: { touched, error } }) =>
+const CoworkerFormField = ({ input, label, type, meta: { touched, error }, id }) =>
   <div>
-    <label>
+    <label htmlFor={id}>
       {label}
     </label>
     <div>
-      <input {...input} type={type} placeholder={label} />
+      <input id={id} {...input} type={type} placeholder={label} />
       {touched &&
         error &&
         <span>
@@ -34,6 +34,7 @@ CoworkerFormField.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
   meta: PropTypes.object,
+  id: PropTypes.string,
 };
 
 const CoworkerContactFields = ({ fields, meta: { error, submitFailed } }) =>
@@ -56,6 +57,7 @@ const CoworkerContactFields = ({ fields, meta: { error, submitFailed } }) =>
         <Field
           name={`${contact}.value`}
           type="text"
+          id={`contact-${index}`}
           component={CoworkerFormField}
           label="Email Address"
         />
@@ -84,6 +86,7 @@ class CoworkerForm extends React.PureComponent { // eslint-disable-line react/pr
         <Field
           name="name"
           type="text"
+          id="name"
           component={CoworkerFormField}
           label="Name"
         />

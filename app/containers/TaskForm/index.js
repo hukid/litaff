@@ -8,6 +8,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
+import { Field, FieldArray, reduxForm, change } from 'redux-form/immutable';
 
 import {
   makeSelectSubject,
@@ -18,6 +19,7 @@ import {
   makeSelectNewCoworker,
   makeSelectTask,
   makeSelectUpdateMode,
+  makeSelectTaskFormData,
 } from './selectors';
 import {
   changeSubject,
@@ -34,93 +36,93 @@ import {
 
 import messages from './messages';
 
+const TaskFormFiled = ({ input, label, type, meta: { touched, error }, id}) =>
+  <div>
+    <label htmlFor={id}>
+      {label}
+    </label>
+    <div>
+      <input id={id} {...input} type={type} placeholder={label} />
+      {touched &&
+        error &&
+        <span>
+          {error}
+        </span>}
+    </div>
+  </div>
+  ;
+
+TaskFormFiled.propTypes = {
+  input: PropTypes.object,
+  label: PropTypes.string,
+  type: PropTypes.string,
+  meta: PropTypes.object,
+  id: PropTypes.string,
+};
+
+const ResourceFields = ({ fields, meta: { error, submitFailed } }) =>
+  <ul>
+    <label>
+      Coworkers:
+    </label>
+    {
+      fields.map((coworker, index) => <li key={`coworker-${index}`}>{coworker.toString()}</li>)
+    }
+  </ul>
+;
+
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
-  componentWillMount() {
-    if (this.props.route.path.startsWith('/updatetask') && this.props.params.taskId) {
-      // TODO: when selected Task is null
-      this.props.onFillTaskInfo(this.props.selectedTask);
-    } else {
-      this.props.onInitCreateForm();
-    }
-  }
+  // componentWillMount() {
+  //   if (this.props.route.path.startsWith('/updatetask') && this.props.params.taskId) {
+  //     // TODO: when selected Task is null
+  //     this.props.onFillTaskInfo(this.props.selectedTask);
+  //   } else {
+  //     this.props.onInitCreateForm();
+  //   }
+  // }
 
   render() {
     return (
-      <form onSubmit={this.props.isUpdate ? this.props.onUpdate : this.props.onCreate}>
-        <div>
-          <label htmlFor="subject" >
-            Subject:
-            <input
-              id="subject"
-              type="text"
-              value={this.props.subject}
-              onChange={this.props.onChangeSubject}
-            />
-          </label>
-        </div>
-
-        <div>
-          <label htmlFor="startTime" >
-            Start Time:
-          <input
-            id="startTime"
-            type="text"
-            value={this.props.startTime}
-            onChange={this.props.onChangeStartTime}
-          />
-          </label>
-        </div>
-
-        <div>
-          <label htmlFor="endTime" >
-            End Time:
-          <input
-            id="endTime"
-            type="text"
-            value={this.props.endTime}
-            onChange={this.props.onChangeEndTime}
-          />
-          </label>
-        </div>
-
-        <div>
-          <label htmlFor="newcoworker" >
-            New Coworker:
-            <input
-              id="newcoworker"
-              type="text"
-              value={this.props.newCoworker}
-              onChange={this.props.onChangeNewCoworker}
-            />
-            <span onClick={this.props.onAddCoworker}>Add</span>
-          </label>
-        </div>
-
-        <div>
-          <label htmlFor="coworkers" >
-            Coworkers:
-          </label>
-          <ul>
-            {
-              this.props.coworkers.map((coworker, index) => <li key={index}>{coworker.toString()}</li>)
-            }
-          </ul>
-        </div>
-        <div>
-          <label htmlFor="content" >
-            Content:
-          </label>
-          <div>
-            <textarea
-              id="content"
-              rows="4"
-              cols="50"
-              value={this.props.content}
-              onChange={this.props.onChangeContent}
-            />
-          </div>
-        </div>
+      <form onSubmit={this.props.handleSubmit}>
+        <Field
+          name="subject"
+          type="text"
+          id="subject"
+          component={TaskFormFiled}
+          label="Subject"
+        />
+        <Field
+          name="startTime"
+          type="text"
+          id="startTime"
+          component={TaskFormFiled}
+          label="Start Time"
+        />
+        <Field
+          name="endTime"
+          type="text"
+          id="endTime"
+          component={TaskFormFiled}
+          label="End Time"
+        />
+        <Field
+          name="content"
+          type="text"
+          id="content"
+          component={TaskFormFiled}
+          label="Content"
+        />
+        <Field
+          name="newcoworker"
+          onChange={this.props.onChangeNewCoworker}
+          type="text"
+          id="newcoworker"
+          component={TaskFormFiled}
+          label="New Coworker:"
+        />
+        <button type="button" onClick={this.props.onAddCoworker}>Add</button>
+        <FieldArray name="coworkers" component={ResourceFields} />
         <button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</button>
       </form>
     );
@@ -148,6 +150,8 @@ TaskForm.propTypes = {
   onAddCoworker: PropTypes.func.isRequired,
   onFillTaskInfo: PropTypes.func.isRequired,
   onInitCreateForm: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func,
+  initialValues: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -158,16 +162,17 @@ const mapStateToProps = createStructuredSelector({
   content: makeSelectContent(),
   newCoworker: makeSelectNewCoworker(),
   selectedTask: makeSelectTask(),
-  isUpdate: makeSelectUpdateMode(),
+  isUpdate: (state, ownProps) => ownProps.route.path.startsWith('/updatetask'),
+  initialValues: makeSelectTaskFormData(),
 });
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, ownProps) {
   return {
     onChangeSubject: (evt) => dispatch(changeSubject(evt.target.value)),
     onChangeStartTime: (evt) => dispatch(changeStartTime(evt.target.value)),
     onChangeEndTime: (evt) => dispatch(changeEndTime(evt.target.value)),
     onChangeContent: (evt) => dispatch(changeContent(evt.target.value)),
-    onChangeNewCoworker: (evt) => dispatch(changeNewCoworker(evt.target.value)),
+    onChangeNewCoworker: (evt, newValue) => dispatch(changeNewCoworker(newValue)),
     onCreate: (evt) => {
       evt.preventDefault();
       dispatch(createTask());
@@ -176,10 +181,22 @@ function mapDispatchToProps(dispatch) {
       evt.preventDefault();
       dispatch(updateTask());
     },
+    onSubmit: (task) => {
+      if (ownProps.route.path.startsWith('/updatetask')) {
+        dispatch(updateTask(task));
+      } else {
+        dispatch(createTask(task));
+      }
+    },
     onAddCoworker: () => dispatch(addCoworker()),
+    // onAddCoworker: () => dispatch(change('taskForm', 'newcoworker', '')),
     onFillTaskInfo: (selectedTask) => dispatch(fillTaskInfo(selectedTask)),
     onInitCreateForm: () => dispatch(initCreateForm()),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TaskForm);
+const TaskReduxForm = reduxForm({
+  form: 'taskForm',
+})(TaskForm);
+
+export default connect(mapStateToProps, mapDispatchToProps)(TaskReduxForm);

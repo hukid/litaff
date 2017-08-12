@@ -1,9 +1,9 @@
 // import { take, call, put, select } from 'redux-saga/effects';
 import { take, call, put, select, cancel, takeLatest, takeEvery } from 'redux-saga/effects';
-import { push } from 'react-router-redux';
-import { LOCATION_CHANGE } from 'react-router-redux';
+import { push, LOCATION_CHANGE } from 'react-router-redux';
 import { makeSelectProjectId } from 'containers/App/selectors';
 import request from 'utils/request';
+import { arrayPush, change } from 'redux-form/immutable';
 
 import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER } from './constants';
 import {
@@ -14,12 +14,12 @@ import {
   coworkerAdded,
 } from './actions';
 
-function* createTask() {
+function* createTask(action) {
   // // Select username from store
   // const username = yield select(makeSelectUsername());
   // const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
 
-  const task = yield select(makeSelectTaskForm());
+  const task = action.task.toJS();
   const projectId = yield select(makeSelectProjectId());
 
   const TaskUrl = `/api/tasks/${projectId}`;
@@ -44,8 +44,8 @@ function* createTask() {
   }
 }
 
-function* updateTask() {
-  const task = yield select(makeSelectTaskForm());
+function* updateTask(action) {
+  const task = action.task.toJS();
   const projectId = yield select(makeSelectProjectId());
 
   const TaskUrl = `/api/tasks/${projectId}/${task._id}`;
@@ -91,7 +91,9 @@ function* addCoworker() {
     };
 
     const coworker = yield call(request, CoworkerUrl, reuqestOptions);
-    yield put(coworkerAdded(coworker));
+    yield put(change('taskForm', 'newcoworker', ''));
+    yield put(arrayPush('taskForm', 'coworkers', coworker));
+    // yield put(coworkerAdded(coworker));
   } catch (err) {
     console.error(err);
   }

@@ -25,7 +25,7 @@ function* loadAppInitalData() {
       call(request, getTenantRequestUrl),
       call(request, getProjectRequestUrl),
     ];
-    yield delay(2000);
+    yield delay(200);
     yield put(appLoaded(loadData[0]._id, loadData[1]._id));
   } catch (err) {
     // yield put(repoLoadingError(err));

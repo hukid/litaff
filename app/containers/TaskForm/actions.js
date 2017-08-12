@@ -62,15 +62,17 @@ export function changeNewCoworker(newCoworker) {
 }
 
 
-export function createTask() {
+export function createTask(task) {
   return {
     type: CREATE_TASK,
+    task,
   };
 }
 
-export function updateTask() {
+export function updateTask(task) {
   return {
     type: UPDATE_TASK,
+    task,
   };
 }
 
