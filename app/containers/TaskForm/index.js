@@ -66,7 +66,8 @@ const ResourceFields = ({ fields, meta: { error, submitFailed } }) =>
       Coworkers:
     </label>
     {
-      fields.map((coworker, index) => <li key={`coworker-${index}`}>{coworker.toString()}</li>)
+      fields.getAll() && fields.getAll().map((coworker, index) => <li key={`coworker-${index}`}>{`${coworker.get('id')}-${coworker.get('name')}`}</li>
+      )
     }
   </ul>
 ;
@@ -115,7 +116,6 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
         />
         <Field
           name="newcoworker"
-          onChange={this.props.onChangeNewCoworker}
           type="text"
           id="newcoworker"
           component={TaskFormFiled}

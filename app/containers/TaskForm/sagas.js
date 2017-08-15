@@ -1,6 +1,7 @@
 // import { take, call, put, select } from 'redux-saga/effects';
 import { take, call, put, select, cancel, takeLatest, takeEvery } from 'redux-saga/effects';
 import { push, LOCATION_CHANGE } from 'react-router-redux';
+import { fromJS } from 'immutable';
 import { makeSelectProjectId } from 'containers/App/selectors';
 import request from 'utils/request';
 import { arrayPush, change } from 'redux-form/immutable';
@@ -8,6 +9,7 @@ import { arrayPush, change } from 'redux-form/immutable';
 import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER } from './constants';
 import {
   makeSelectTaskForm,
+  makeSelectFormNewCoworker,
 } from './selectors';
 
 import {
@@ -72,12 +74,12 @@ function* updateTask(action) {
 }
 
 function* addCoworker() {
-  const task = yield select(makeSelectTaskForm());
+  const newCoworker = yield select(makeSelectFormNewCoworker());
   const projectId = yield select(makeSelectProjectId());
 
   const CoworkerUrl = `/api/resources/${projectId}`;
   const resource = {
-    name: task.newCoworker,
+    name: newCoworker,
   };
 
   try {
@@ -92,7 +94,7 @@ function* addCoworker() {
 
     const coworker = yield call(request, CoworkerUrl, reuqestOptions);
     yield put(change('taskForm', 'newcoworker', ''));
-    yield put(arrayPush('taskForm', 'coworkers', coworker));
+    yield put(arrayPush('taskForm', 'coworkers', fromJS(coworker)));
     // yield put(coworkerAdded(coworker));
   } catch (err) {
     console.error(err);

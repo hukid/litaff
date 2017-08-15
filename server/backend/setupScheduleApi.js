@@ -231,7 +231,7 @@ module.exports = (router) => {
     const projectId = req.params.projectId;
     const resourceInfo = req.body;
 
-    Resource.findOne({ name: { $regex: new RegExp(`^${resourceInfo.name.toLowerCase()}`, 'i') } }, (err, resource) => {
+    Resource.findOne({ name: { $regex: new RegExp(`^${resourceInfo.name.toLowerCase()}$`, 'i') } }, (err, resource) => {
       if (err) {
         handleError(res, err);
         return;

@@ -1,4 +1,6 @@
 import { createSelector } from 'reselect';
+import { formValueSelector } from 'redux-form/immutable';
+import { fromJS } from 'immutable';
 import { makeSelectTasks } from 'containers/SchedulePage/selectors';
 
 /**
@@ -9,6 +11,8 @@ const selectTaskFormDomain = () => (state) => {
 };
 
 const selectTaskId = () => (state, props) => props.params.taskId;
+
+const formSelector = formValueSelector('taskForm');
 
 /**
  * Other specific selectors
@@ -64,8 +68,17 @@ const makeSelectTaskFormData = () => createSelector(
   makeSelectTask(),
   (task) => {
     if (!task) {
-      return {};
+      return fromJS({
+        _id: '',
+        subject: '',
+        content: '',
+        startTime: new Date().toISOString(),
+        endTime: new Date(Date.now() + 3600000).toISOString(),
+        coworkers: [],
+        newCoworker: '',
+      });
     }
+
     return {
       _id: task._id,
       subject: task.subject,
@@ -75,6 +88,11 @@ const makeSelectTaskFormData = () => createSelector(
       coworkers: task.resources,
     };
   }
+);
+
+const makeSelectFormNewCoworker = () => createSelector(
+  (state) => state,
+  (state) => formSelector(state, 'newcoworker')
 );
 
 /**
@@ -99,4 +117,5 @@ export {
   makeSelectTask,
   makeSelectUpdateMode,
   makeSelectTaskFormData,
+  makeSelectFormNewCoworker,
 };
