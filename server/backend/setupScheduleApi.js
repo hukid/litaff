@@ -129,6 +129,7 @@ module.exports = (router) => {
         newTask.category = task.category;
         newTask.asfree = false;
         newTask.resources = [];
+        newTask.reminderSent = false;
 
         task.coworkers.forEach((coworker) => {
           newTask.resources.push({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name });
@@ -199,6 +200,8 @@ module.exports = (router) => {
             res.json({ message: 'OK' });
           });
         });
+      } else {
+        handleError(res, 'Not a valid task time');
       }
     } else {
       handleError(res, 'Not a valid task');

@@ -10,6 +10,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const ngrok = (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel ? require('ngrok') : false;
 const resolve = require('path').resolve;
 const app = express();
+const scheduleReminder = require('./backend/scheduleReminder');
 
 // If you need a backend, e.g. an API, add your custom backend-specific middleware here
 app.use('/api', setupApi);
@@ -45,4 +46,6 @@ app.listen(port, host, (err) => {
   } else {
     logger.appStarted(port, prettyHost);
   }
+
+  scheduleReminder();
 });

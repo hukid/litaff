@@ -22,6 +22,7 @@ const TaskSchema = new Schema({
     allday: Boolean,
     timeType: Number,
   },
+  reminderSent: Boolean,
   asfree: Boolean,
   resources: [TaskResourceSchema],
 });
