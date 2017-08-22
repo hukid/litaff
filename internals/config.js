@@ -30,6 +30,9 @@ const ReactBoilerplate = {
         'sanitize.css',
         'nodemailer',
         'mongoose',
+        'jsonwebtoken',
+        'passport',
+        'passport-jwt',
       ],
 
       /**
