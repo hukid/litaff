@@ -6,10 +6,9 @@ const TaskResourceSchema = new Schema({
   id: { type: Schema.Types.ObjectId, required: true },
   resourceType: { type: Number, required: true },
   name: { type: String, required: true },
-  createdAt: { type: Date, required: true },
-  udpatedAt: { type: Date, required: true },
 }, {
   _id: false,
+  timestamps: true,
 });
 
 const TaskTimeSchema = new Schema({
@@ -29,7 +28,7 @@ const ReminderSchema = new Schema({
 });
 
 const TaskSchema = new Schema({
-  projectiId: { type: Schema.Types.ObjectId, required: true },
+  projectId: { type: Schema.Types.ObjectId, required: true },
   subject: { type: String, required: true },
   content: String,
   taskType: { type: Number, reuired: true },

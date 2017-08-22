@@ -52,7 +52,7 @@ module.exports = (router) => {
         };
         newTask.content = task.content;
         newTask.category = task.category;
-        newTask.asfree = false;
+        newTask.asFree = false;
         newTask.resources = [];
         newTask.reminderSent = false;
 
@@ -108,7 +108,7 @@ module.exports = (router) => {
           };
           originalTask.content = updatedTask.content;
           originalTask.category = updatedTask.category;
-          originalTask.asfree = false;
+          originalTask.asFree = false;
           originalTask.resources = [];
 
           updatedTask.coworkers.forEach((coworker) => {
