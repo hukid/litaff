@@ -11,8 +11,8 @@ const ResourceSchema = new mongoose.Schema({
     value: { type: String, required: true },
   }, // 1 - email, no definition for other contacts
   ],
-  createdAt: { type: Date, required: true },
-  udpatedAt: { type: Date, required: true },
+}, {
+  timestamps: true,
 });
 
 module.exports = mongoose.model('resource', ResourceSchema);

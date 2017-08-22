@@ -5,7 +5,7 @@ const handleError = require('../utils/handleError');
 module.exports = (router) => {
   const defaultTenantName = 'devTenant';
   const defaultProjectName = 'devProject';
-  
+
   router.get('/createDefaultProject', (req, res) => {
     Tenant.findOne({ name: defaultProjectName }, (err, defaultProject) => {
       if (defaultProject == null) {

@@ -6,8 +6,8 @@ const ProjectSchema = new mongoose.Schema({
   name: { type: String, required: true },
   tenantId: { type: Schema.Types.ObjectId, required: true },
   projectType: { type: Number, required: true },
-  createdAt: { type: Date, required: true },
-  udpatedAt: { type: Date, required: true },
+}, {
+  timestamps: true,
 });
 
 module.exports = mongoose.model('project', ProjectSchema);

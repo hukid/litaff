@@ -38,8 +38,8 @@ const TaskSchema = new Schema({
   time: { type: TaskTimeSchema },
   reminder: { type: ReminderSchema },
   resources: [TaskResourceSchema],
-  createdAt: { type: Date, required: true },
-  udpatedAt: { type: Date, required: true },
+}, {
+  timestamps: true,
 });
 
 module.exports = mongoose.model('task', TaskSchema);

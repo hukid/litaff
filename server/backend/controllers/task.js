@@ -18,7 +18,7 @@ module.exports = (router) => {
       return;
     }
 
-    Task.find({ projectid: projectId, 'time.start': { $gt: startTime, $lt: endTime } }, (err, tasks) => {
+    Task.find({ projectId, 'time.start': { $gt: startTime, $lt: endTime } }, (err, tasks) => {
       if (err) {
         handleError(res, err);
         return;
@@ -42,7 +42,7 @@ module.exports = (router) => {
       if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()) {
         const newTask = new Task();
         newTask.subject = task.subject;
-        newTask.projectid = projectId;
+        newTask.projectId = projectId;
         newTask.taskType = 1;
         newTask.time = {
           start: startTime,
@@ -98,7 +98,7 @@ module.exports = (router) => {
 
           const originalTask = result;
           originalTask.subject = updatedTask.subject;
-          originalTask.projectid = projectId;
+          originalTask.projectId = projectId;
           originalTask.taskType = 1;
           originalTask.time = {
             start: startTime,
