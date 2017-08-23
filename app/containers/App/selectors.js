@@ -31,7 +31,12 @@ const makeSelectTenantId = () => createSelector(
 
 const makeSelectProjectId = () => createSelector(
   selectApp,
-  (appState) => appState.get('projectId')
+  (appState) => appState.get('user').get('userInfo').ownProjects[0].id,
+);
+
+const makeSelectToken = () => createSelector(
+  selectApp,
+  (appState) => appState.get('user').get('token')
 );
 
 const makeSelectLoggedIn = () => createSelector(
@@ -45,4 +50,5 @@ export {
   makeSelectTenantId,
   makeSelectProjectId,
   makeSelectLoggedIn,
+  makeSelectToken,
 };

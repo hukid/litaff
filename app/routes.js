@@ -183,6 +183,24 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
+      path: '/signin',
+      name: 'signInForm',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/SignInForm/reducer'),
+          import('containers/SignInForm'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, component]) => {
+          injectReducer('signInForm', reducer.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
       path: '*',
       name: 'notfound',
       getComponent(nextState, cb) {

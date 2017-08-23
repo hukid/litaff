@@ -51,7 +51,7 @@ export class Header extends React.PureComponent { // eslint-disable-line react/p
       </div>
     ) : (
       <div>
-        <Button to="#">Sign in</Button>
+        <Button to="/signin">Sign in</Button>
         <Button to="/signup">Sign up</Button>
       </div>
     );

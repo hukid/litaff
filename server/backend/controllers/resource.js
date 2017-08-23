@@ -1,10 +1,18 @@
+const passport = require('passport');
 const Resource = require('../models/resource');
 const handleError = require('../utils/handleError');
+const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
+
 
 module.exports = (router) => {
   // define resources rest API
-  router.get('/resources/:projectId/:type?', (req, res) => {
+  router.get('/resources/:projectId/:type?', passport.authenticate('jwt', { session: false }), (req, res) => {
     const projectId = req.params.projectId;
+
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleError(res, 'you do not have permission');
+      return;
+    }
 
     Resource.find({ projectId }, (err, resources) => {
       if (err) {
@@ -16,13 +24,17 @@ module.exports = (router) => {
     });
   });
 
-  router.get('/resources/:projectId/:startTime/:endTime', (req, res) => {
+  router.get('/resources/:projectId/:startTime/:endTime', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.send('get available resources is called');
   });
 
-  router.post('/resources/:projectId', (req, res) => {
+  router.post('/resources/:projectId', passport.authenticate('jwt', { session: false }), (req, res) => {
     const projectId = req.params.projectId;
     const resourceInfo = req.body;
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleError(res, 'you do not have permission');
+      return;
+    }
 
     Resource.findOne({ name: { $regex: new RegExp(`^${resourceInfo.name.toLowerCase()}$`, 'i') } }, (err, resource) => {
       if (err) {
@@ -79,13 +91,17 @@ module.exports = (router) => {
     });
   });
 
-  router.put('/resources/:projectId/:resourceId', (req, res) => {
+  router.put('/resources/:projectId/:resourceId', passport.authenticate('jwt', { session: false }), (req, res) => {
     const projectId = req.params.projectId;
     const resourceId = req.params.resourceId;
     const updatedResource = req.body;
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleError(res, 'you do not have permission');
+      return;
+    }
 
     if (updatedResource.name) {
-      Resource.findOne({ _id: resourceId }, (err, result) => {
+      Resource.findOne({ _id: resourceId, projectId }, (err, result) => {
         if (err) {
           handleError(res, err);
           return;
@@ -112,7 +128,7 @@ module.exports = (router) => {
     }
   });
 
-  router.delete('/resources/:projectId/:resourceId', (req, res) => {
+  router.delete('/resources/:projectId/:resourceId', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.send('delete resource is called');
   });
 };

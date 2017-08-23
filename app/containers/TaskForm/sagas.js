@@ -2,7 +2,7 @@
 import { take, call, put, select, cancel, takeLatest, takeEvery } from 'redux-saga/effects';
 import { push, LOCATION_CHANGE } from 'react-router-redux';
 import { fromJS } from 'immutable';
-import { makeSelectProjectId } from 'containers/App/selectors';
+import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 import { arrayPush, change } from 'redux-form/immutable';
 
@@ -26,15 +26,14 @@ function* createTask(action) {
 
   const TaskUrl = `/api/tasks/${projectId}`;
 
-  // remove unneccessary property
-  delete task.newCoworker;
-
+  const token = yield select(makeSelectToken());
   try {
     const requestOptions = {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(task),
     };
@@ -52,15 +51,14 @@ function* updateTask(action) {
 
   const TaskUrl = `/api/tasks/${projectId}/${task._id}`;
 
-  // remove unneccessary property
-  delete task.newCoworker;
-
+  const token = yield select(makeSelectToken());
   try {
     const reuqestOptions = {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(task),
     };
@@ -82,17 +80,19 @@ function* addCoworker() {
     name: newCoworker,
   };
 
+  const token = yield select(makeSelectToken());
   try {
-    const reuqestOptions = {
+    const requestOptions = {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(resource),
     };
 
-    const coworker = yield call(request, CoworkerUrl, reuqestOptions);
+    const coworker = yield call(request, CoworkerUrl, requestOptions);
     yield put(change('taskForm', 'newcoworker', ''));
     yield put(arrayPush('taskForm', 'coworkers', fromJS(coworker)));
     // yield put(coworkerAdded(coworker));

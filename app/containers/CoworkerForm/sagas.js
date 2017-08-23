@@ -1,7 +1,6 @@
-import { take, call, put, select, cancel, takeLatest, takeEvery } from 'redux-saga/effects';
-import { push } from 'react-router-redux';
-import { LOCATION_CHANGE } from 'react-router-redux';
-import { makeSelectProjectId } from 'containers/App/selectors';
+import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
+import { push, LOCATION_CHANGE } from 'react-router-redux';
+import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 
 import { CREATE_COWORKER, UPDATE_COWORKER } from './constants';
@@ -16,12 +15,14 @@ function* createCoworker(action) {
     contacts: coworker.contacts,
   };
 
+  const token = yield select(makeSelectToken());
   try {
     const reuqestOptions = {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(resource),
     };
@@ -40,12 +41,14 @@ function* updateCoworker(action) {
   const projectId = yield select(makeSelectProjectId());
   const resourceUrl = `/api/resources/${projectId}/${coworker._id}`;
 
+  const token = yield select(makeSelectToken());
   try {
     const requestOptions = {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(coworker),
     };

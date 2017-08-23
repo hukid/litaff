@@ -2,6 +2,7 @@ import {
   LOAD_APP,
   APP_LOADED,
   SUBMIT_SIGNUP_USER,
+  SIGN_IN,
   SIGNED_IN,
   SIGN_OUT,
   SIGNED_OUT,
@@ -24,6 +25,13 @@ export function appLoaded(tenantId, projectId) {
 export function submitSignupUser(user) {
   return {
     type: SUBMIT_SIGNUP_USER,
+    user,
+  };
+}
+
+export function signIn(user) {
+  return {
+    type: SIGN_IN,
     user,
   };
 }

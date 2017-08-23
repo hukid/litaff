@@ -9,6 +9,8 @@ function redirectToHome(store) {
         pathname: '/',
         state: { nextPathname: nextState.location.pathname },
       });
+    } else {
+      replace(null, nextState.location.pathname);
     }
   };
 }
@@ -16,7 +18,12 @@ function redirectToHome(store) {
 function redirectToDashboard(store) {
   return (nextState, replace) => {
     if (signedIn(store)) {
-      replace('/schedule');
+      replace({
+        pathname: '/schedule',
+        state: { nextPathname: nextState.location.pathname },
+      });
+    } else {
+      replace(null, nextState.location.pathname);
     }
   };
 }

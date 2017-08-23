@@ -13,6 +13,7 @@ export const DEFAULT_LOCALE = 'en';
 export const LOAD_APP = 'app/LOAD_APP';
 export const APP_LOADED = 'app/APP_LOADED';
 export const SUBMIT_SIGNUP_USER = 'app/SUBMIT_SIGNUP_USER';
+export const SIGN_IN = 'app/SIGN_IN';
 export const SIGNED_IN = 'app/SIGNED_IN';
 export const SIGN_OUT = 'app/SIGN_OUT';
 export const SIGNED_OUT = 'app/SIGNED_OUT';

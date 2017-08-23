@@ -8,7 +8,7 @@ import { push, LOCATION_CHANGE } from 'react-router-redux';
 
 import request from 'utils/request';
 
-import { LOAD_APP, SUBMIT_SIGNUP_USER, SIGN_OUT } from './constants';
+import { LOAD_APP, SUBMIT_SIGNUP_USER, SIGN_IN, SIGN_OUT } from './constants';
 import { appLoaded, signedIn, signedOut } from './actions';
 
 /**
@@ -40,7 +40,7 @@ function* loadAppInitalData() {
 function* signOut() {
   try {
     yield put(signedOut());
-    yield put(push('/'));
+    // yield put(push('//'));
   } catch (err) {
     // yield put(repoLoadingError(err));
     console.error(err);
@@ -73,6 +73,31 @@ function* signUp(action) {
 }
 
 /**
+ * Github repos request/response handler
+ */
+function* signIn(action) {
+  try {
+    const user = action.user.toJS();
+    const signinUrl = '/api/users/signin';
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    };
+
+    const userWithToken = yield call(request, signinUrl, requestOptions);
+    yield put(signedIn(userWithToken));
+    yield put(push('/'));
+  } catch (err) {
+    // yield put(repoLoadingError(err));
+    console.error(err);
+  }
+}
+
+/**
  * Root saga manages watcher lifecycle
  */
 export default function* appData() {
@@ -82,6 +107,7 @@ export default function* appData() {
   const watchers = yield [
     yield takeLatest(LOAD_APP, loadAppInitalData),
     yield takeLatest(SUBMIT_SIGNUP_USER, signUp),
+    yield takeLatest(SIGN_IN, signIn),
     yield takeLatest(SIGN_OUT, signOut),
   ];
 
