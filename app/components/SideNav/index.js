@@ -22,7 +22,7 @@ function SideNav() {
   return (
     <SideNavWrapper>
       <FormattedMessage {...messages.header} />
-      <NavButton to="/">
+      <NavButton to="/schedule">
         <FormattedMessage {...messages.schedule} />
       </ NavButton>
       <NavButton to="/coworker">

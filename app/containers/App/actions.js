@@ -1,6 +1,12 @@
 import {
   LOAD_APP,
   APP_LOADED,
+  SUBMIT_SIGNUP_USER,
+  SIGN_IN,
+  SIGN_IN_FROM_TOKEN,
+  SIGNED_IN,
+  SIGN_OUT,
+  SIGNED_OUT,
 } from './constants';
 
 export function loadApp() {
@@ -14,5 +20,44 @@ export function appLoaded(tenantId, projectId) {
     type: APP_LOADED,
     tenantId,
     projectId,
+  };
+}
+
+export function submitSignupUser(user) {
+  return {
+    type: SUBMIT_SIGNUP_USER,
+    user,
+  };
+}
+
+export function signInFromToken() {
+  return {
+    type: SIGN_IN_FROM_TOKEN,
+  };
+}
+
+export function signIn(user) {
+  return {
+    type: SIGN_IN,
+    user,
+  };
+}
+
+export function signedIn(userWithToken) {
+  return {
+    type: SIGNED_IN,
+    userWithToken,
+  };
+}
+
+export function signOut() {
+  return {
+    type: SIGN_OUT,
+  };
+}
+
+export function signedOut() {
+  return {
+    type: SIGNED_OUT,
   };
 }

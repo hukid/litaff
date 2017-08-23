@@ -4,7 +4,7 @@
 
 import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
-import { makeSelectProjectId } from 'containers/App/selectors';
+import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 
 import { LOAD_TASKS } from './constants';
@@ -20,9 +20,18 @@ export function* loadTasks() {
   const endTime = yield select(makeSelectEndTime());
   const loadTasksURL = `api/tasks/${projectId}/${startTime.toISOString()}/${endTime.toISOString()}`;
 
+  const token = yield select(makeSelectToken());
   try {
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
     // Call our request helper (see 'utils/request')
-    const tasks = yield call(request, loadTasksURL);
+    const tasks = yield call(request, loadTasksURL, requestOptions);
     yield put(tasksLoaded(tasks));
   } catch (err) {
     // yield put(repoLoadingError(err));

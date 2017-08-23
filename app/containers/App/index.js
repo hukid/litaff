@@ -19,8 +19,8 @@ import { createStructuredSelector } from 'reselect';
 import Header from 'containers/Header';
 import SideNav from 'components/SideNav';
 
-import { makeSelectAppLoaded } from './selectors';
-import { loadApp } from './actions';
+import { makeSelectAppLoaded, makeSelectLoggedIn } from './selectors';
+import { signInFromToken } from './actions';
 
 const AppWrapper = styled.div`
   max-width: calc(768px + 16px * 2);
@@ -47,6 +47,7 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
     children: React.PropTypes.node,
     appLoaded: React.PropTypes.bool,
     loadAppData: React.PropTypes.func,
+    loggedIn: React.PropTypes.bool,
   };
 
   componentDidMount() {
@@ -54,17 +55,18 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   }
 
   render() {
-    const appLoaded = this.props.appLoaded;
+    const { appLoaded, loggedIn } = this.props;
+    const sideNav = loggedIn ? <SideNav /> : null;
     return (
       <AppWrapper>
-        <Header />
+        <Header signedIn={loggedIn} />
         { !appLoaded ? (
           <MainBody>
             loading
           </MainBody>
           ) : (
             <MainBody>
-              <SideNav />
+              {sideNav}
               <Content>
                 {React.Children.toArray(this.props.children)}
               </Content>
@@ -78,11 +80,12 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
 
 const mapStateToProps = createStructuredSelector({
   appLoaded: makeSelectAppLoaded(),
+  loggedIn: makeSelectLoggedIn(),
 });
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadAppData: () => dispatch(loadApp()),
+    loadAppData: () => dispatch(signInFromToken()),
   };
 }
 

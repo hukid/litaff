@@ -1,5 +1,8 @@
+const passport = require('passport');
 const Task = require('../models/task');
 const handleError = require('../utils/handleError');
+const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
+const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
 
 function isValidDate(date) {
   return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());
@@ -8,10 +11,15 @@ function isValidDate(date) {
 module.exports = (router) => {
   // define tasks rest APIs
   // define tasks rest APIs
-  router.get('/tasks/:projectId/:startTime/:endTime', (req, res) => {
+  router.get('/tasks/:projectId/:startTime/:endTime', passport.authenticate('jwt', { session: false }), (req, res) => {
     const projectId = req.params.projectId;
     const startTime = new Date(req.params.startTime);
     const endTime = new Date(req.params.endTime);
+
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleAuthorizationError(res, 'you do not have permission');
+      return;
+    }
 
     if (!isValidDate(startTime) || !isValidDate(endTime)) {
       handleError(res, 'invalid time parameter');
@@ -28,9 +36,14 @@ module.exports = (router) => {
     });
   });
 
-  router.post('/tasks/:projectId', (req, res) => {
+  router.post('/tasks/:projectId', passport.authenticate('jwt', { session: false }), (req, res) => {
     const projectId = req.params.projectId;
     const task = req.body;
+
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleError(res, 'you do not have permission');
+      return;
+    }
 
     if (task.subject
       && task.startTime
@@ -74,10 +87,15 @@ module.exports = (router) => {
     }
   });
 
-  router.put('/tasks/:projectId/:taskId', (req, res) => {
+  router.put('/tasks/:projectId/:taskId', passport.authenticate('jwt', { session: false }), (req, res) => {
     const projectId = req.params.projectId;
     const taskId = req.params.taskId;
     const updatedTask = req.body;
+
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleAuthorizationError(res, 'you do not have permission');
+      return;
+    }
 
     if (updatedTask.subject
       && updatedTask.startTime
@@ -133,7 +151,7 @@ module.exports = (router) => {
     }
   });
 
-  router.delete('/tasks/:projectId/:taskId', (req, res) => {
+  router.delete('/tasks/:projectId/:taskId', passport.authenticate('jwt', { session: false }), (req, res) => {
     res.send('delete tasks is called');
   });
 };

@@ -1,18 +1,29 @@
+function signedIn(store) {
+  return store.getState().get('app').get('user').get('token') != null;
+}
+
 function redirectToHome(store) {
   return (nextState, replace) => {
-    if (!store.getState().app.currentUser) {
+    if (!signedIn(store)) {
       replace({
-        pathname: '/auth',
-        state: { nextPathname: nextState.location.pathname }
+        pathname: '/',
+        state: { nextPathname: nextState.location.pathname },
       });
+    } else {
+      replace(null, nextState.location.pathname);
     }
   };
 }
 
 function redirectToDashboard(store) {
   return (nextState, replace) => {
-    if (store.getState().app.currentUser) {
-      replace('/profile');
+    if (signedIn(store)) {
+      replace({
+        pathname: '/schedule',
+        state: { nextPathname: nextState.location.pathname },
+      });
+    } else {
+      replace(null, nextState.location.pathname);
     }
   };
 }

@@ -7,9 +7,9 @@ import { combineReducers } from 'redux-immutable';
 import { fromJS } from 'immutable';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form/immutable';
-import { APP_LOADED } from 'containers/App/constants';
 
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
+import appReducer from 'containers/App/reducer';
 
 /*
  * routeReducer
@@ -34,19 +34,6 @@ function routeReducer(state = routeInitialState, action) {
       return state.merge({
         locationBeforeTransitions: action.payload,
       });
-    default:
-      return state;
-  }
-}
-
-const appInitialState = fromJS({
-  loaded: false,
-});
-
-function appReducer(state = appInitialState, action) {
-  switch (action.type) {
-    case APP_LOADED:
-      return state.set('loaded', true).set('tenantId', action.tenantId).set('projectId', action.projectId);
     default:
       return state;
   }
