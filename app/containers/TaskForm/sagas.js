@@ -30,7 +30,7 @@ function* createTask(action) {
   delete task.newCoworker;
 
   try {
-    const reuqestOptions = {
+    const requestOptions = {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -39,7 +39,7 @@ function* createTask(action) {
       body: JSON.stringify(task),
     };
 
-    yield call(request, TaskUrl, reuqestOptions);
+    yield call(request, TaskUrl, requestOptions);
     yield put(push('/'));
   } catch (err) {
     console.error(err);

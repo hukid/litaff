@@ -19,7 +19,7 @@ import { createStructuredSelector } from 'reselect';
 import Header from 'containers/Header';
 import SideNav from 'components/SideNav';
 
-import { makeSelectAppLoaded } from './selectors';
+import { makeSelectAppLoaded, makeSelectLoggedIn } from './selectors';
 import { loadApp } from './actions';
 
 const AppWrapper = styled.div`
@@ -47,24 +47,26 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
     children: React.PropTypes.node,
     appLoaded: React.PropTypes.bool,
     loadAppData: React.PropTypes.func,
+    loggedIn: React.PropTypes.bool,
   };
 
   componentDidMount() {
-    this.props.loadAppData();
+    // this.props.loadAppData();
   }
 
   render() {
-    const appLoaded = this.props.appLoaded;
+    const { appLoaded, loggedIn } = this.props;
+    const sideNav = loggedIn ? <SideNav /> : null;
     return (
       <AppWrapper>
-        <Header />
+        <Header signedIn={loggedIn} />
         { !appLoaded ? (
           <MainBody>
             loading
           </MainBody>
           ) : (
             <MainBody>
-              <SideNav />
+              {sideNav}
               <Content>
                 {React.Children.toArray(this.props.children)}
               </Content>
@@ -78,6 +80,7 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
 
 const mapStateToProps = createStructuredSelector({
   appLoaded: makeSelectAppLoaded(),
+  loggedIn: makeSelectLoggedIn(),
 });
 
 function mapDispatchToProps(dispatch) {

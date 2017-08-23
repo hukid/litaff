@@ -34,9 +34,15 @@ const makeSelectProjectId = () => createSelector(
   (appState) => appState.get('projectId')
 );
 
+const makeSelectLoggedIn = () => createSelector(
+  selectApp,
+  (appState) => appState.get('user').get('token') != null
+);
+
 export {
   makeSelectLocationState,
   makeSelectAppLoaded,
   makeSelectTenantId,
   makeSelectProjectId,
+  makeSelectLoggedIn,
 };

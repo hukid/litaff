@@ -19,26 +19,28 @@ export default function createRoutes(store) {
   const { redirectToDashboard, redirectToHome } = getAuthInjectors(store);
 
   return [
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   getComponent(nextState, cb) {
-    //     const importModules = Promise.all([
-    //       import('containers/HomePage'),
-    //     ]);
-
-    //     const renderRoute = loadModule(cb);
-
-    //     importModules.then(([component]) => {
-    //       renderRoute(component);
-    //     });
-
-    //     importModules.catch(errorLoading);
-    //   },
-    // },
     {
       path: '/',
+      name: 'home',
+      onEnter: redirectToDashboard,
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/HomePage'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([component]) => {
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    },
+    {
+      path: '/schedule',
       name: 'schedulePage',
+      onEnter: redirectToHome,
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/SchedulePage/reducer'),
@@ -60,6 +62,7 @@ export default function createRoutes(store) {
     }, {
       path: '/coworker',
       name: 'coworkerPage',
+      onEnter: redirectToHome,
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/CoworkerPage/reducer'),
@@ -80,6 +83,7 @@ export default function createRoutes(store) {
     }, {
       path: '/createtask',
       name: 'taskForm',
+      onEnter: redirectToHome,
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/TaskForm/reducer'),
@@ -100,6 +104,7 @@ export default function createRoutes(store) {
     }, {
       path: '/updatetask/:taskId',
       name: 'taskForm',
+      onEnter: redirectToHome,
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/TaskForm/reducer'),
@@ -120,6 +125,7 @@ export default function createRoutes(store) {
     }, {
       path: '/updatecoworker/:resourceId',
       name: 'coworkerForm',
+      onEnter: redirectToHome,
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/CoworkerForm/reducer'),
@@ -140,6 +146,7 @@ export default function createRoutes(store) {
     }, {
       path: '/createcoworker',
       name: 'coworkerForm',
+      onEnter: redirectToHome,
       getComponent(nextState, cb) {
         const importModules = Promise.all([
           import('containers/CoworkerForm/reducer'),
@@ -152,6 +159,24 @@ export default function createRoutes(store) {
         importModules.then(([reducer, sagas, component]) => {
           injectReducer('coworkerForm', reducer.default);
           injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
+      path: '/signup',
+      name: 'signUpForm',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/SignUpForm/reducer'),
+          import('containers/SignUpForm'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, component]) => {
+          injectReducer('signUpForm', reducer.default);
           renderRoute(component);
         });
 
