@@ -2,6 +2,7 @@ const passport = require('passport');
 const Task = require('../models/task');
 const handleError = require('../utils/handleError');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
+const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
 
 function isValidDate(date) {
   return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());
@@ -16,7 +17,7 @@ module.exports = (router) => {
     const endTime = new Date(req.params.endTime);
 
     if (!authorizeWithProjectId(req.user, projectId)) {
-      handleError(res, 'you do not have permission');
+      handleAuthorizationError(res, 'you do not have permission');
       return;
     }
 
@@ -92,7 +93,7 @@ module.exports = (router) => {
     const updatedTask = req.body;
 
     if (!authorizeWithProjectId(req.user, projectId)) {
-      handleError(res, 'you do not have permission');
+      handleAuthorizationError(res, 'you do not have permission');
       return;
     }
 

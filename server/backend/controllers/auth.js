@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const passport = require('passport');
 const User = require('../models/user');
 const Tenant = require('../models/tenant');
 const Project = require('../models/project');
@@ -11,7 +12,12 @@ module.exports = (router) => {
   const defaultProjectName = 'devProject';
 
   router.post('/users/signin', (req, res) => {
-    User.findOne({ name: req.body.name })
+    let name = req.body.name.trim();
+    if (!name) {
+      return res.status(422).send({ error: 'You must enter a name.' });
+    }
+    name = name.toLowerCase();
+    User.findOne({ name })
     .select({ createdAt: 0, updatedAt: 0 })
     .exec((err, user) => {
       if (err) {
@@ -50,8 +56,38 @@ module.exports = (router) => {
     });
   });
 
+  router.post('/users/verifytoken', passport.authenticate('jwt', { session: false }), (req, res) => {
+    User.findOne({ _id: req.user.id })
+    .select({ createdAt: 0, updatedAt: 0 })
+    .exec((err, user) => {
+      if (err) {
+        handleError(res, err);
+        return;
+      }
+
+      if (!user) {
+        handleWrongLogonCredential(res);
+        return;
+      }
+
+      const userInfo = {
+        id: user._id,
+        name: user.name,
+        ownTenant: user.ownTenant,
+        ownProjects: user.ownProjects,
+      };
+
+      const token = generateToken(userInfo);
+
+      res.json({
+        userInfo,
+        token,
+      });
+    });
+  });
+
   router.post('/users/signup', (req, res) => {
-    const name = req.body.name.trim();
+    let name = req.body.name.trim();
     const password = req.body.password;
 
     // Return error if no email provided
@@ -64,6 +100,7 @@ module.exports = (router) => {
       return res.status(422).send({ error: 'You must enter a password.' });
     }
 
+    name = name.toLowerCase();
     User.findOne({ name }, (findErr, existingUser) => {
       if (findErr) {
         handleError(res, findErr);

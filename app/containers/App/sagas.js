@@ -8,12 +8,9 @@ import { push, LOCATION_CHANGE } from 'react-router-redux';
 
 import request from 'utils/request';
 
-import { LOAD_APP, SUBMIT_SIGNUP_USER, SIGN_IN, SIGN_OUT } from './constants';
+import { LOAD_APP, SUBMIT_SIGNUP_USER, SIGN_IN, SIGN_IN_FROM_TOKEN, SIGN_OUT } from './constants';
 import { appLoaded, signedIn, signedOut } from './actions';
 
-/**
- * Github repos request/response handler
- */
 function* loadAppInitalData() {
   // // Select username from store
   // const username = yield select(makeSelectUsername());
@@ -34,22 +31,17 @@ function* loadAppInitalData() {
   }
 }
 
-/**
- * Github repos request/response handler
- */
 function* signOut() {
   try {
+    sessionStorage.removeItem('jwtToken');
     yield put(signedOut());
-    // yield put(push('//'));
+    yield put(push('/'));
   } catch (err) {
     // yield put(repoLoadingError(err));
     console.error(err);
   }
 }
 
-/**
- * Github repos request/response handler
- */
 function* signUp(action) {
   try {
     const user = action.user.toJS();
@@ -72,9 +64,6 @@ function* signUp(action) {
   }
 }
 
-/**
- * Github repos request/response handler
- */
 function* signIn(action) {
   try {
     const user = action.user.toJS();
@@ -90,7 +79,35 @@ function* signIn(action) {
 
     const userWithToken = yield call(request, signinUrl, requestOptions);
     yield put(signedIn(userWithToken));
+    sessionStorage.setItem('jwtToken', userWithToken.token);
     yield put(push('/'));
+  } catch (err) {
+    // yield put(repoLoadingError(err));
+    console.error(err);
+  }
+}
+
+function* signInFromToken() {
+  try {
+    const token = sessionStorage.getItem('jwtToken');
+    if (!token) {
+      yield put(push('/'));
+    } else {
+      const tokenVerifyUrl = '/api/users/verifytoken';
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const userWithToken = yield call(request, tokenVerifyUrl, requestOptions);
+      yield put(signedIn(userWithToken));
+      sessionStorage.setItem('jwtToken', userWithToken.token);
+      yield put(push('/schedule'));
+    }
   } catch (err) {
     // yield put(repoLoadingError(err));
     console.error(err);
@@ -108,6 +125,7 @@ export default function* appData() {
     yield takeLatest(LOAD_APP, loadAppInitalData),
     yield takeLatest(SUBMIT_SIGNUP_USER, signUp),
     yield takeLatest(SIGN_IN, signIn),
+    yield takeLatest(SIGN_IN_FROM_TOKEN, signInFromToken),
     yield takeLatest(SIGN_OUT, signOut),
   ];
 

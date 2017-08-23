@@ -2,7 +2,7 @@ const passport = require('passport');
 const Resource = require('../models/resource');
 const handleError = require('../utils/handleError');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
-
+const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
 
 module.exports = (router) => {
   // define resources rest API
@@ -10,7 +10,7 @@ module.exports = (router) => {
     const projectId = req.params.projectId;
 
     if (!authorizeWithProjectId(req.user, projectId)) {
-      handleError(res, 'you do not have permission');
+      handleAuthorizationError(res, 'you do not have permission');
       return;
     }
 
@@ -32,7 +32,7 @@ module.exports = (router) => {
     const projectId = req.params.projectId;
     const resourceInfo = req.body;
     if (!authorizeWithProjectId(req.user, projectId)) {
-      handleError(res, 'you do not have permission');
+      handleAuthorizationError(res, 'you do not have permission');
       return;
     }
 
@@ -96,33 +96,44 @@ module.exports = (router) => {
     const resourceId = req.params.resourceId;
     const updatedResource = req.body;
     if (!authorizeWithProjectId(req.user, projectId)) {
-      handleError(res, 'you do not have permission');
+      handleAuthorizationError(res, 'you do not have permission');
       return;
     }
 
     if (updatedResource.name) {
-      Resource.findOne({ _id: resourceId, projectId }, (err, result) => {
+      Resource.findOne({ name: { $regex: new RegExp(`^${updatedResource.name.toLowerCase()}$`, 'i') } }, (err, resource) => {
         if (err) {
           handleError(res, err);
           return;
         }
+        if (resource) {
+          handleError(res, 'new name has been taken');
+          return;
+        }
 
-        const originalResource = result;
-        originalResource.name = updatedResource.name;
-        originalResource.contacts = [];
-
-        updatedResource.contacts.forEach((contact) => {
-          originalResource.contacts.push({ contactType: 1, value: contact.value });
-        });
-
-        originalResource.save((saveErr) => {
-          console.log('saving' + originalResource.toString());
-          if (saveErr) {
-            handleError(res, saveErr);
+        Resource.findOne({ _id: resourceId, projectId }, (err, result) => {
+          if (err) {
+            handleError(res, err);
             return;
           }
 
-          res.json({ message: 'OK' });
+          const originalResource = result;
+          originalResource.name = updatedResource.name;
+          originalResource.contacts = [];
+
+          updatedResource.contacts.forEach((contact) => {
+            originalResource.contacts.push({ contactType: 1, value: contact.value });
+          });
+
+          originalResource.save((saveErr) => {
+            console.log('saving' + originalResource.toString());
+            if (saveErr) {
+              handleError(res, saveErr);
+              return;
+            }
+
+            res.json({ message: 'OK' });
+          });
         });
       });
     }

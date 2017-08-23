@@ -20,7 +20,7 @@ import Header from 'containers/Header';
 import SideNav from 'components/SideNav';
 
 import { makeSelectAppLoaded, makeSelectLoggedIn } from './selectors';
-import { loadApp } from './actions';
+import { signInFromToken } from './actions';
 
 const AppWrapper = styled.div`
   max-width: calc(768px + 16px * 2);
@@ -51,7 +51,7 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   };
 
   componentDidMount() {
-    // this.props.loadAppData();
+    this.props.loadAppData();
   }
 
   render() {
@@ -85,7 +85,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadAppData: () => dispatch(loadApp()),
+    loadAppData: () => dispatch(signInFromToken()),
   };
 }
 

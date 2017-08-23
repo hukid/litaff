@@ -3,6 +3,7 @@ import {
   APP_LOADED,
   SUBMIT_SIGNUP_USER,
   SIGN_IN,
+  SIGN_IN_FROM_TOKEN,
   SIGNED_IN,
   SIGN_OUT,
   SIGNED_OUT,
@@ -26,6 +27,12 @@ export function submitSignupUser(user) {
   return {
     type: SUBMIT_SIGNUP_USER,
     user,
+  };
+}
+
+export function signInFromToken() {
+  return {
+    type: SIGN_IN_FROM_TOKEN,
   };
 }
 
