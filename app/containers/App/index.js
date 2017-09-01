@@ -73,6 +73,16 @@ const styles = (theme) => ({
       marginTop: 64,
     },
   },
+  contentNoDrawer: {
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+    height: 'calc(100% - 56px)',
+    marginTop: 56,
+    [theme.breakpoints.up('sm')]: {
+      height: 'calc(100% - 64px)',
+      marginTop: 64,
+    },
+  },
 });
 
 class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
@@ -135,10 +145,7 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
             </Drawer>
           )
         }
-        <main className={classes.content}>
-          <Typography type="body1" noWrap>
-            {'You think water moves fast? You should see ice.'}
-          </Typography>
+        <main className={loggedIn ? classes.content : classes.contentNoDrawer}>
           {this.props.children}
         </main>
       </div>
