@@ -13,41 +13,77 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import styled from 'styled-components';
+import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
-
-import Header from 'containers/Header';
-import SideNav from 'components/SideNav';
+import { Link } from 'react-router';
+import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import Drawer from 'material-ui/Drawer';
+import List, { ListItem, ListItemText } from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 
 import { makeSelectAppLoaded, makeSelectLoggedIn } from './selectors';
-import { signInFromToken } from './actions';
+import { signInFromToken, signOut } from './actions';
+import messages from './messages';
 
-const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
-  margin: 0 auto;
-  display: flex;
-  min-height: 100%;
-  padding: 0 16px;
-  flex-direction: column;
-`;
+const drawerWidth = 180;
 
-const MainBody = styled.div`
-  display: flex;
-  flex-direction: row;
-  min-height: 100%;
-`;
-
-const Content = styled.div`
-  flex: 1 1 auto;
-`;
+const styles = (theme) => ({
+  appFrame: {
+    position: 'relative',
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+  },
+  appBar: {
+    position: 'fixed',
+    order: 1,
+  },
+  headerTitle: {
+    flex: '1 0 auto',
+  },
+  drawerPaper: {
+    position: 'fixed',
+    height: '100hv',
+    paddingTop: 56,
+    [theme.breakpoints.up('sm')]: {
+      paddingTop: 64,
+    },
+    width: drawerWidth,
+    zIndex: 1,
+  },
+  drawerHeader: {
+    height: 56,
+    [theme.breakpoints.up('sm')]: {
+      height: 64,
+    },
+  },
+  content: {
+    backgroundColor: theme.palette.background.default,
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: drawerWidth,
+    padding: theme.spacing.unit * 3,
+    height: 'calc(100% - 56px)',
+    marginTop: 56,
+    [theme.breakpoints.up('sm')]: {
+      height: 'calc(100% - 64px)',
+      marginTop: 64,
+    },
+  },
+});
 
 class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {
     children: React.PropTypes.node,
+    classes: React.PropTypes.object,
     appLoaded: React.PropTypes.bool,
     loadAppData: React.PropTypes.func,
     loggedIn: React.PropTypes.bool,
+    onSignOut: React.PropTypes.func,
   };
 
   componentDidMount() {
@@ -55,25 +91,57 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   }
 
   render() {
-    const { appLoaded, loggedIn } = this.props;
-    const sideNav = loggedIn ? <SideNav /> : null;
+    const { appLoaded, loggedIn, classes } = this.props;
+    const navButtons = loggedIn ? (
+      <div>
+        <Button color="contrast" onClick={this.props.onSignOut} >Sign Out</Button>
+      </div>
+    ) : (
+      <div>
+        <Button component={Link} to="/signin" color="contrast">Sign in</Button>
+        <Button component={Link} to="/signup" color="contrast">Sign up</Button>
+      </div>
+    );
+
     return (
-      <AppWrapper>
-        <Header signedIn={loggedIn} />
-        { !appLoaded ? (
-          <MainBody>
-            loading
-          </MainBody>
+      <div className={classes.appFrame}>
+        <AppBar position="absolute" className={classes.appBar}>
+          <Toolbar>
+            <Typography type="title" color="inherit" className={classes.headerTitle}>
+              <FormattedMessage {...messages.header} />
+            </Typography>
+            {navButtons}
+          </Toolbar>
+        </AppBar>
+        {!loggedIn ? (
+          null
           ) : (
-            <MainBody>
-              {sideNav}
-              <Content>
-                {React.Children.toArray(this.props.children)}
-              </Content>
-            </MainBody>
+            <Drawer
+              type="permanent"
+              classes={{ paper: classes.drawerPaper }}
+            >
+              <div className={classes.drawerHeader} />
+              <Divider />
+              <List>
+                <ListItem button component={Link} to="/schedule">
+                  <ListItemText primary="Schedule" />
+                </ListItem>
+                <Divider />
+                <ListItem button component={Link} to="/coworker">
+                  <ListItemText primary="Coworker" />
+                </ListItem>
+                <Divider />
+              </List>
+            </Drawer>
           )
         }
-      </AppWrapper>
+        <main className={classes.content}>
+          <Typography type="body1" noWrap>
+            {'You think water moves fast? You should see ice.'}
+          </Typography>
+          {this.props.children}
+        </main>
+      </div>
     );
   }
 }
@@ -86,8 +154,9 @@ const mapStateToProps = createStructuredSelector({
 function mapDispatchToProps(dispatch) {
   return {
     loadAppData: () => dispatch(signInFromToken()),
+    onSignOut: () => dispatch(signOut()),
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(App));
 

@@ -4,7 +4,7 @@ const Task = require('./models/task');
 const logger = require('../logger');
 
 module.exports = () => {
-  schedule.scheduleJob('*/1 * * * *', () => {
+  schedule.scheduleJob('*/10 * * * *', () => {
     const startTime = new Date();
     const endTime = new Date(Date.now() + (24 * 60 * 60 * 1000));
     Task.find({ reminderSent: false, 'time.start': { $gt: startTime, $lt: endTime } }, (err, tasks) => {
