@@ -77,9 +77,10 @@ export function updateTask(task) {
 }
 
 
-export function addCoworker() {
+export function addCoworker(coworker) {
   return {
     type: ADD_COWORKER,
+    coworker,
   };
 }
 
@@ -100,5 +101,5 @@ export function fillTaskInfo(task) {
 export function initCreateForm() {
   return {
     type: INIT_CREATFORM,
-  }
+  };
 }

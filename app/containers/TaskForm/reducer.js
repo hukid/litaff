@@ -5,6 +5,7 @@
  */
 
 import { fromJS } from 'immutable';
+import moment from 'moment';
 import {
   CHANGE_SUBJECT,
   CHANGE_STARTTIME,
@@ -57,8 +58,8 @@ function taskFormReducer(state = initialState, action) {
       return state.set('update', false)
         .set('_id', '')
         .set('subject', '')
-        .set('startTime', new Date().toISOString())
-        .set('endTime', new Date(Date.now() + 3600000).toISOString())
+        .set('startTime', new Date())
+        .set('endTime', moment().format('yyyy-MM-ddThh:mm'))
         .set('content', '')
         .set('coworkers', fromJS([]));
     default:

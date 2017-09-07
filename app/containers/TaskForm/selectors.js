@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import { formValueSelector } from 'redux-form/immutable';
 import { fromJS } from 'immutable';
 import { makeSelectTasks } from 'containers/SchedulePage/selectors';
+import moment from 'moment';
 
 /**
  * Direct selector to the taskForm state domain
@@ -68,12 +69,13 @@ const makeSelectTaskFormData = () => createSelector(
   makeSelectTask(),
   (task) => {
     if (!task) {
+      console.log(moment().format(('YYYY-MM-DDThh:mm')));
       return fromJS({
         _id: '',
         subject: '',
         content: '',
-        startTime: new Date().toISOString(),
-        endTime: new Date(Date.now() + 3600000).toISOString(),
+        startTime: moment().format('YYYY-MM-DDTHH:mm'),
+        endTime: moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
         coworkers: [],
         newCoworker: '',
       });
@@ -82,8 +84,8 @@ const makeSelectTaskFormData = () => createSelector(
     return {
       _id: task._id,
       subject: task.subject,
-      startTime: task.time.start,
-      endTime: task.time.end,
+      startTime: moment(task.time.start).format('YYYY-MM-DDTHH:mm'),
+      endTime: moment(task.time.end).format('YYYY-MM-DDTHH:mm'),
       content: task.content,
       coworkers: task.resources,
     };
