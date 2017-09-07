@@ -9,39 +9,63 @@ import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { Field, reduxForm } from 'redux-form/immutable';
+
+import { withStyles } from 'material-ui/styles';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
+
 import { signIn } from 'containers/App/actions';
 import makeSelectSignInForm from './selectors';
 import messages from './messages';
 
-const renderField = ({ id, input, label, type, meta: { touched, error, warning } }) => (
-  <div>
-    <label htmlFor={id}>{label}</label>
-    <div>
-      <input id={id} {...input} placeholder={label} type={type} />
-      {touched && ((error && <span>{error}</span>) || (warning && <span>{warning}</span>))}
-    </div>
-  </div>
+const styles = (theme) => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    'flex-direction': 'column',
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    width: 200,
+  },
+});
+
+const renderField = ({classes, id, input, label, type, message, meta: { touched, error, warning } }) => (
+  <TextField
+    className={classes.textField}
+    id={id}
+    label={label}
+    type={type}
+    margin="normal"
+    helperText={touched && ((error && `${error}`) || (warning && `${warning}`))}
+    error={!!error}
+    {...input}
+  />
 );
 
 export class SignInForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {
+    const { classes } = this.props;
+
     return (
-      <form onSubmit={this.props.handleSubmit}>
+      <form onSubmit={this.props.handleSubmit} className={classes.container}>
         <FormattedMessage {...messages.header} />
         <Field
           name="name"
           type="text"
           id="name"
           component={renderField} label="Name"
+          classes
         />
         <Field
           name="password"
-          type="text"
+          type="password"
           id="password"
           component={renderField} label="Password"
+          classes
         />
-        <button type="submit">Sign In</button>
-
+        <Button raised color="primary" type="submit">Sign In</Button>
       </form>
     );
   }
@@ -49,6 +73,7 @@ export class SignInForm extends React.PureComponent { // eslint-disable-line rea
 
 SignInForm.propTypes = {
   handleSubmit: PropTypes.func,
+  classes: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -63,6 +88,6 @@ function mapDispatchToProps(dispatch) {
 
 const SignInReduxForm = reduxForm({
   form: 'signInForm', // a unique identifier for this form
-})(SignInForm);
+})(withStyles(styles)(SignInForm));
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignInReduxForm);

@@ -5,6 +5,7 @@ import { fromJS } from 'immutable';
 import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 import { arrayPush, change } from 'redux-form/immutable';
+import moment from 'moment';
 
 import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER } from './constants';
 import {
@@ -22,6 +23,8 @@ function* createTask(action) {
   // const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
 
   const task = action.task.toJS();
+  task.startTime = moment(task.startTime).format();
+  task.endTime = moment(task.endTime).format();
   const projectId = yield select(makeSelectProjectId());
 
   const TaskUrl = `/api/tasks/${projectId}`;
@@ -47,6 +50,8 @@ function* createTask(action) {
 
 function* updateTask(action) {
   const task = action.task.toJS();
+  task.startTime = moment(task.startTime).format();
+  task.endTime = moment(task.endTime).format();
   const projectId = yield select(makeSelectProjectId());
 
   const TaskUrl = `/api/tasks/${projectId}/${task._id}`;
@@ -71,8 +76,8 @@ function* updateTask(action) {
   }
 }
 
-function* addCoworker() {
-  const newCoworker = yield select(makeSelectFormNewCoworker());
+function* addCoworker(action) {
+  const newCoworker = action.coworker;
   const projectId = yield select(makeSelectProjectId());
 
   const CoworkerUrl = `/api/resources/${projectId}`;

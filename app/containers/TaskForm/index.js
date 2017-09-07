@@ -8,68 +8,122 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
-import { Field, FieldArray, reduxForm, change } from 'redux-form/immutable';
+import { Field, FieldArray, reduxForm } from 'redux-form/immutable';
+
+import { withStyles } from 'material-ui/styles';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
+import Paper from 'material-ui/Paper';
+import Chip from 'material-ui/Chip';
+
+import SuggestionInput from 'components/SuggestionInput';
 
 import {
-  makeSelectSubject,
-  makeSelectStartTime,
-  makeSelectEndTime,
-  makeSelectCoworkers,
-  makeSelectContent,
-  makeSelectNewCoworker,
-  makeSelectTask,
-  makeSelectUpdateMode,
   makeSelectTaskFormData,
 } from './selectors';
 import {
-  changeSubject,
-  changeStartTime,
-  changeEndTime,
-  changeContent,
-  changeNewCoworker,
   createTask,
   updateTask,
   addCoworker,
-  fillTaskInfo,
-  initCreateForm,
 } from './actions';
-
 import messages from './messages';
 
-const TaskFormFiled = ({ input, label, type, meta: { touched, error }, id}) =>
-  <div>
-    <label htmlFor={id}>
-      {label}
-    </label>
-    <div>
-      <input id={id} {...input} type={type} placeholder={label} />
-      {touched &&
-        error &&
-        <span>
-          {error}
-        </span>}
+const styles = (theme) => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    'flex-direction': 'column',
+    'max-width': '800px',
+    margin: '0 auto',
+    paddingTop: theme.spacing.unit,
+    paddingBottom: theme.spacing.unit,
+    paddingLeft: theme.spacing.unit * 2,
+    paddingRight: theme.spacing.unit * 2,
+  },
+  textField: {
+  },
+  coworkersWrapper: {
+    display: 'flex',
+    'flex-direction': 'row',
+  },
+  coworkersContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    'flex-direction': 'row',
+    flexGrow: 1,
+  },
+  coworkerLabel: {
+    lineHeight: '40px',
+  },
+  coworkerChip: {
+    margin: theme.spacing.unit / 1.5,
+  },
+});
+
+const suggestions = [
+  { label: 'Afghanistan' },
+  { label: 'Aland Islands' },
+  { label: 'Albania' },
+  { label: 'Algeria' },
+  { label: 'Aruba' },
+  { label: 'Australia' },
+  { label: 'Austria' },
+  { label: 'Azerbaijan' },
+  { label: 'Bahamas' },
+  { label: 'Bahrain' },
+  { label: 'Bouvet Island' },
+  { label: 'Brazil' },
+  { label: 'British Indian Ocean Territory' },
+  { label: 'Brunei Darussalam' },
+];
+
+const FormTextSingleLine = ({ id, classes, input, label, type, meta: { touched, error } }) =>
+  <TextField
+    className={classes.textField}
+    id={id}
+    label={label}
+    type={type}
+    margin="normal"
+    helperText={touched && error && `${error}`}
+    error={!!error}
+    fullWidth
+    {...input}
+  />
+;
+
+const FormTextMultiLine = ({ id, classes, input, label, type, meta: { touched, error } }) =>
+  <TextField
+    className={classes.textField}
+    id={id}
+    label={label}
+    type={type}
+    margin="normal"
+    multiline
+    fullWidth
+    rows={8}
+    helperText={touched && error && `${error}`}
+    error={!!error}
+    {...input}
+  />
+;
+
+const TaskFormCoworkers = ({ classes, fields, meta: { error, submitFailed } }) =>
+  <div className={classes.coworkersWrapper}>
+    <div className={classes.coworkerLabel}>
+      Coworkers:
+    </div>
+    <div className={classes.coworkersContainer}>
+      {
+        fields.getAll() && fields.getAll().map((coworker, index) =>
+          <Chip
+            label={coworker.get('name')}
+            className={classes.coworkerChip}
+            key={`coworker-${index}`}
+            onRequestDelete={() => fields.remove(index)}
+          />)
+      }
     </div>
   </div>
-  ;
-
-TaskFormFiled.propTypes = {
-  input: PropTypes.object,
-  label: PropTypes.string,
-  type: PropTypes.string,
-  meta: PropTypes.object,
-  id: PropTypes.string,
-};
-
-const ResourceFields = ({ fields, meta: { error, submitFailed } }) =>
-  <ul>
-    <label>
-      Coworkers:
-    </label>
-    {
-      fields.getAll() && fields.getAll().map((coworker, index) => <li key={`coworker-${index}`}>{`${coworker.get('id')}-${coworker.get('name')}`}</li>
-      )
-    }
-  </ul>
 ;
 
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
@@ -84,103 +138,84 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
   // }
 
   render() {
+    const { classes } = this.props;
     return (
-      <form onSubmit={this.props.handleSubmit}>
+      <Paper component="form" onSubmit={this.props.handleSubmit} className={classes.container}>
         <Field
           name="subject"
           type="text"
           id="subject"
-          component={TaskFormFiled}
+          component={FormTextSingleLine}
           label="Subject"
+          classes={classes}
         />
         <Field
           name="startTime"
-          type="text"
+          type="datetime-local"
           id="startTime"
-          component={TaskFormFiled}
+          component={FormTextSingleLine}
           label="Start Time"
+          classes={classes}
         />
         <Field
           name="endTime"
-          type="text"
+          type="datetime-local"
           id="endTime"
-          component={TaskFormFiled}
+          component={FormTextSingleLine}
           label="End Time"
+          classes={classes}
+        />
+        <SuggestionInput
+          id="coworkerInput"
+          label="Add a coworker"
+          suggestions={suggestions}
+          onSelect={this.props.onAddCoworker}
+          onKeyPress={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
+          overrideClasses={classes}
+        />
+        {/* <Field
+          name="newcoworker"
+          type="text"
+          id="newcoworker"
+          component={FormAddWorkerInput}
+          label="New Coworker:"
+          classes={classes}
+          suggestions={suggestions}
+        /> */}
+        {/* <Button type="button" onClick={this.props.onAddCoworker}>Add</Button> */}
+        <FieldArray
+          name="coworkers"
+          component={TaskFormCoworkers}
+          classes={classes}
         />
         <Field
           name="content"
           type="text"
           id="content"
-          component={TaskFormFiled}
+          component={FormTextMultiLine}
           label="Content"
+          classes={classes}
         />
-        <Field
-          name="newcoworker"
-          type="text"
-          id="newcoworker"
-          component={TaskFormFiled}
-          label="New Coworker:"
-        />
-        <button type="button" onClick={this.props.onAddCoworker}>Add</button>
-        <FieldArray name="coworkers" component={ResourceFields} />
-        <button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</button>
-      </form>
+        <Button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</Button>
+      </Paper>
     );
   }
 }
 
 TaskForm.propTypes = {
-  params: PropTypes.object,
-  route: PropTypes.object,
-  subject: PropTypes.string,
-  startTime: PropTypes.string,
-  endTime: PropTypes.string,
-  coworkers: PropTypes.object,
-  content: PropTypes.string,
-  newCoworker: PropTypes.string,
-  selectedTask: PropTypes.object,
   isUpdate: PropTypes.bool.isRequired,
-  onChangeSubject: PropTypes.func.isRequired,
-  onChangeStartTime: PropTypes.func.isRequired,
-  onChangeEndTime: PropTypes.func.isRequired,
-  onChangeContent: PropTypes.func.isRequired,
-  onChangeNewCoworker: PropTypes.func.isRequired,
-  onCreate: PropTypes.func.isRequired,
-  onUpdate: PropTypes.func.isRequired,
+  classes: PropTypes.object.isRequired,
   onAddCoworker: PropTypes.func.isRequired,
-  onFillTaskInfo: PropTypes.func.isRequired,
-  onInitCreateForm: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
-  initialValues: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  subject: makeSelectSubject(),
-  startTime: makeSelectStartTime(),
-  endTime: makeSelectEndTime(),
-  coworkers: makeSelectCoworkers(),
-  content: makeSelectContent(),
-  newCoworker: makeSelectNewCoworker(),
-  selectedTask: makeSelectTask(),
   isUpdate: (state, ownProps) => ownProps.route.path.startsWith('/updatetask'),
   initialValues: makeSelectTaskFormData(),
 });
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    onChangeSubject: (evt) => dispatch(changeSubject(evt.target.value)),
-    onChangeStartTime: (evt) => dispatch(changeStartTime(evt.target.value)),
-    onChangeEndTime: (evt) => dispatch(changeEndTime(evt.target.value)),
-    onChangeContent: (evt) => dispatch(changeContent(evt.target.value)),
-    onChangeNewCoworker: (evt, newValue) => dispatch(changeNewCoworker(newValue)),
-    onCreate: (evt) => {
-      evt.preventDefault();
-      dispatch(createTask());
-    },
-    onUpdate: (evt) => {
-      evt.preventDefault();
-      dispatch(updateTask());
-    },
     onSubmit: (task) => {
       if (ownProps.route.path.startsWith('/updatetask')) {
         dispatch(updateTask(task));
@@ -188,15 +223,12 @@ function mapDispatchToProps(dispatch, ownProps) {
         dispatch(createTask(task));
       }
     },
-    onAddCoworker: () => dispatch(addCoworker()),
-    // onAddCoworker: () => dispatch(change('taskForm', 'newcoworker', '')),
-    onFillTaskInfo: (selectedTask) => dispatch(fillTaskInfo(selectedTask)),
-    onInitCreateForm: () => dispatch(initCreateForm()),
+    onAddCoworker: (coworker) => dispatch(addCoworker(coworker)),
   };
 }
 
 const TaskReduxForm = reduxForm({
   form: 'taskForm',
-})(TaskForm);
+})(withStyles(styles)(TaskForm));
 
 export default connect(mapStateToProps, mapDispatchToProps)(TaskReduxForm);
