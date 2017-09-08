@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { Field, FieldArray, reduxForm } from 'redux-form/immutable';
+import moment from 'moment';
 
 import { withStyles } from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
@@ -20,6 +21,7 @@ import SuggestionInput from 'components/SuggestionInput';
 
 import {
   makeSelectTaskFormData,
+  makeSelectFormDuration,
 } from './selectors';
 import {
   createTask,
@@ -77,7 +79,7 @@ const suggestions = [
   { label: 'Brunei Darussalam' },
 ];
 
-const FormTextSingleLine = ({ id, classes, input, label, type, meta: { touched, error } }) =>
+const FormTextSingleLine = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
   <TextField
     className={classes.textField}
     id={id}
@@ -87,11 +89,27 @@ const FormTextSingleLine = ({ id, classes, input, label, type, meta: { touched, 
     helperText={touched && error && `${error}`}
     error={!!error}
     fullWidth
-    {...input}
+    value={value}
+    onChange={onChange}
   />
 ;
 
-const FormTextMultiLine = ({ id, classes, input, label, type, meta: { touched, error } }) =>
+const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
+  <TextField
+    className={classes.textField}
+    id={id}
+    label={label}
+    type={type}
+    margin="normal"
+    helperText={touched && error && `${error}`}
+    error={!!error}
+    fullWidth
+    value={value}
+    onChange={onChange}
+  />
+;
+
+const FormTextMultiLine = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
   <TextField
     className={classes.textField}
     id={id}
@@ -103,7 +121,8 @@ const FormTextMultiLine = ({ id, classes, input, label, type, meta: { touched, e
     rows={8}
     helperText={touched && error && `${error}`}
     error={!!error}
-    {...input}
+    value={value}
+    onChange={onChange}
   />
 ;
 
@@ -137,6 +156,27 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
   //   }
   // }
 
+  handleStartTimeChange = (event, newValue) => {
+    if (!newValue) {
+      event.preventDefault();
+      return;
+    }
+    const { change, duration } = this.props;
+    const newEndTime = moment(newValue).add(duration, 'minutes').format('YYYY-MM-DDTHH:mm');
+    change('endTime', newEndTime);
+  }
+
+  beforeStartTime = (newValue, previousValue, allValues) => {
+    if (!newValue) {
+      return previousValue;
+    }
+    const newEnd = moment(newValue);
+    const startTime = allValues.get('startTime');
+    const start = moment(startTime);
+    const duration = moment.duration(newEnd.diff(start));
+    return duration.asMinutes() >= 30 ? newValue : previousValue;
+  }
+
   render() {
     const { classes } = this.props;
     return (
@@ -153,7 +193,8 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           name="startTime"
           type="datetime-local"
           id="startTime"
-          component={FormTextSingleLine}
+          component={FormDateTimeInput}
+          onChange={this.handleStartTimeChange}
           label="Start Time"
           classes={classes}
         />
@@ -161,7 +202,8 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           name="endTime"
           type="datetime-local"
           id="endTime"
-          component={FormTextSingleLine}
+          component={FormDateTimeInput}
+          normalize={this.beforeStartTime}
           label="End Time"
           classes={classes}
         />
@@ -173,16 +215,6 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           onKeyPress={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
           overrideClasses={classes}
         />
-        {/* <Field
-          name="newcoworker"
-          type="text"
-          id="newcoworker"
-          component={FormAddWorkerInput}
-          label="New Coworker:"
-          classes={classes}
-          suggestions={suggestions}
-        /> */}
-        {/* <Button type="button" onClick={this.props.onAddCoworker}>Add</Button> */}
         <FieldArray
           name="coworkers"
           component={TaskFormCoworkers}
@@ -207,11 +239,14 @@ TaskForm.propTypes = {
   classes: PropTypes.object.isRequired,
   onAddCoworker: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func,
+  change: PropTypes.func,
+  duration: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   isUpdate: (state, ownProps) => ownProps.route.path.startsWith('/updatetask'),
   initialValues: makeSelectTaskFormData(),
+  duration: makeSelectFormDuration(),
 });
 
 function mapDispatchToProps(dispatch, ownProps) {

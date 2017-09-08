@@ -11,6 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import Autosuggest from 'react-autosuggest';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
+import Button from 'material-ui/Button';
 import { MenuItem } from 'material-ui/Menu';
 import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
@@ -42,6 +43,10 @@ const styles = (theme) => ({
   textField: {
     // marginLeft: theme.spacing.unit,
     // marginRight: theme.spacing.unit,
+  },
+  createButton: {
+    width: '100%',
+    'justify-content': 'left',
   },
 });
 
@@ -156,11 +161,11 @@ class SuggestionInput extends React.PureComponent { // eslint-disable-line react
 
   renderSuggestionsContainerLocal = (options) => {
     const { containerProps, children, query } = options;
-    const { onSelect } = this.props;
+    const { classes, onSelect } = this.props;
 
     return (
       <Paper {...containerProps} square>
-        { !query ? null : <div type="button" onClick={() => { onSelect(query); this.setState({ value: '' }); }} >{`Create "${query}"`}</div> }
+        { !query ? null : <Button className={classes.createButton} onClick={() => { onSelect(query); this.setState({ value: '' }); }} >{`Create "${query}"`}</Button> }
         {children}
       </Paper>
     );
