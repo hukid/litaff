@@ -97,6 +97,21 @@ const makeSelectFormNewCoworker = () => createSelector(
   (state) => formSelector(state, 'newcoworker')
 );
 
+const makeSelectFormDuration = () => createSelector(
+  (state) => state,
+  (state) => {
+    const startTime = formSelector(state, 'startTime');
+    const endTime = formSelector(state, 'endTime');
+    if (startTime && endTime) {
+      const end = moment(endTime);
+      const start = moment(startTime);
+      return moment.duration(end.diff(start)).asMinutes();
+    }
+
+    return 60;
+  }
+);
+
 /**
  * Default selector used by TaskForm
  */
@@ -120,4 +135,5 @@ export {
   makeSelectUpdateMode,
   makeSelectTaskFormData,
   makeSelectFormNewCoworker,
+  makeSelectFormDuration,
 };

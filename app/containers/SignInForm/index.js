@@ -31,7 +31,7 @@ const styles = (theme) => ({
   },
 });
 
-const renderField = ({classes, id, input, label, type, message, meta: { touched, error, warning } }) => (
+const renderField = ({ classes, id, input, label, type, message, meta: { touched, error, warning } }) => (
   <TextField
     className={classes.textField}
     id={id}
