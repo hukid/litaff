@@ -83,20 +83,37 @@ const styles = (theme) => ({
   },
 });
 
-const FormTextSingleLine = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
-  <TextField
+const FormTextSingleLine = ({ id, classes, input: { value, onChange, onBlur }, label, type, meta: { touched, error } }) => {
+  const helperText = touched && error && `${error}`;
+  const blurHandler = () => {
+    onBlur();
+  };
+
+  return (<TextField
     className={classes.textField}
     id={id}
     label={label}
     type={type}
     margin="normal"
-    helperText={touched && error && `${error}`}
-    error={!!error}
+    helperText={helperText}
+    error={touched && !!error}
     fullWidth
     value={value}
-    onChange={onChange}
-  />
-;
+    inputProps={{
+      onChange,
+      onBlur: blurHandler,
+    }}
+  />);
+};
+
+FormTextSingleLine.propTypes = {
+  id: PropTypes.string.isRequired,
+  input: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+  label: PropTypes.string,
+  type: PropTypes.string,
+  meta: PropTypes.object.isRequired,
+};
 
 const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
   <TextField
@@ -106,7 +123,7 @@ const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, typ
     type={type}
     margin="normal"
     helperText={touched && error && `${error}`}
-    error={!!error}
+    error={!!error && touched}
     fullWidth
     value={value}
     onChange={onChange}
@@ -149,6 +166,17 @@ const TaskFormCoworkers = ({ classes, fields, meta: { error, submitFailed } }) =
   </div>
 ;
 
+const validate = (values) => {
+  const errors = {};
+  // Validate subject
+  const subject = values.get('subject');
+  if (!subject) {
+    errors.subject = 'Required';
+  }
+
+  return errors;
+};
+
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
   componentWillMount() {
@@ -173,11 +201,16 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
     const startTime = allValues.get('startTime');
     const start = moment(startTime);
     const duration = moment.duration(newEnd.diff(start));
-    return duration.asMinutes() >= 30 ? newValue : previousValue;
+    if (duration.asMinutes() < 30) {
+      return previousValue;
+    }
+
+    
+    return newValue;
   }
 
   render() {
-    const { classes, availableCoworkers, isLoadingAvailableCoworkers } = this.props;
+    const { classes, availableCoworkers, isLoadingAvailableCoworkers, valid } = this.props;
     return (
       <Paper component="form" onSubmit={this.props.handleSubmit} className={classes.container}>
         <Field
@@ -229,7 +262,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           label="Content"
           classes={classes}
         />
-        <Button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</Button>
+        <Button type="submit" disabled={!valid}>{this.props.isUpdate ? 'Update' : 'Create'}</Button>
       </Paper>
     );
   }
@@ -245,6 +278,7 @@ TaskForm.propTypes = {
   onLoadAvailableCoworkers: PropTypes.func.isRequired,
   isLoadingAvailableCoworkers: PropTypes.bool.isRequired,
   availableCoworkers: PropTypes.array.isRequired,
+  valid: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -271,6 +305,7 @@ function mapDispatchToProps(dispatch, ownProps) {
 
 const TaskReduxForm = reduxForm({
   form: 'taskForm',
+  validate,
 })(withStyles(styles)(TaskForm));
 
 export default connect(mapStateToProps, mapDispatchToProps)(TaskReduxForm);
