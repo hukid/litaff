@@ -31,6 +31,8 @@ const styles = (theme) => ({
     left: 0,
     right: 0,
     zIndex: 1,
+    'max-height': '250px',
+    'overflow-y': 'auto',
   },
   suggestion: {
     display: 'block',
@@ -69,8 +71,11 @@ function renderInput(inputProps) {
 }
 
 function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.label, query);
-  const parts = parse(suggestion.label, matches);
+  const matches = [];
+  const queryIndex = suggestion.name.toLowerCase().indexOf(query.toLowerCase());
+  matches.push([queryIndex, queryIndex + query.length]);
+
+  const parts = parse(suggestion.name, matches);
 
   return (
     <MenuItem selected={isHighlighted} component="div">
@@ -92,35 +97,22 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
   );
 }
 
-function renderSuggestionsContainer(options) {
-  const { containerProps, children, query } = options;
-
-  return (
-    <Paper {...containerProps} square>
-      { !query ? null : <div > create </div> }
-      {children}
-    </Paper>
-  );
-}
-
 function getSuggestionValue(suggestion) {
-  return suggestion.label;
+  return suggestion.name;
 }
 
 function getSuggestions(value, suggestions) {
   const inputValue = value.trim().toLowerCase();
   const inputLength = inputValue.length;
-  let count = 0;
 
   return inputLength === 0
     ? []
     : suggestions.filter((suggestion) => {
-      const keep =
-        count < 5 && suggestion.label.toLowerCase().slice(0, inputLength) === inputValue;
+      // const keep =
+      //   suggestion.name.toLowerCase().slice(0, inputLength) === inputValue;
 
-      if (keep) {
-        count += 1;
-      }
+      const keep =
+        suggestion.name.toLowerCase().indexOf(inputValue) >= 0;
 
       return keep;
     });
@@ -153,7 +145,7 @@ class SuggestionInput extends React.PureComponent { // eslint-disable-line react
 
   handleSuggestionSelected = (event, { suggestion }) => {
     const { onSelect } = this.props;
-    onSelect(suggestion.label);
+    onSelect(suggestion.name);
     this.setState({
       value: '',
     });
@@ -172,7 +164,7 @@ class SuggestionInput extends React.PureComponent { // eslint-disable-line react
   }
 
   render() {
-    const { classes, label, onKeyPress } = this.props;
+    const { classes, label, onKeyPress, disabled, placeholder } = this.props;
 
     return (
       <Autosuggest
@@ -193,11 +185,12 @@ class SuggestionInput extends React.PureComponent { // eslint-disable-line react
         inputProps={{
           autoFocus: false,
           classes,
-          placeholder: 'Search a country (start with a)',
+          placeholder,
           value: this.state.value,
           label,
           onChange: this.handleChange,
           onKeyPress,
+          disabled,
         }}
       />
     );
@@ -210,6 +203,8 @@ SuggestionInput.propTypes = {
   suggestions: React.PropTypes.array.isRequired,
   label: React.PropTypes.string,
   onKeyPress: React.PropTypes.func,
+  placeholder: React.PropTypes.string,
+  disabled: React.PropTypes.bool,
 };
 
 export default withStyles(styles)(SuggestionInput);

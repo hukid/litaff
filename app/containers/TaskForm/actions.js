@@ -5,62 +5,13 @@
  */
 
 import {
-  CHANGE_SUBJECT,
-  CHANGE_STARTTIME,
-  CHANGE_ENDTIME,
-  CHANGE_COWORKERS,
-  CHANGE_CONTENT,
-  CHANGE_NEWCOWORKER,
   CREATE_TASK,
   UPDATE_TASK,
   ADD_COWORKER,
   COWORKER_ADDED,
-  FILL_TASKINFO,
-  INIT_CREATFORM,
+  LOAD_AVAILABLE_COWORKERS,
+  AVAILABLE_COWORKERS_LOADED,
 } from './constants';
-
-export function changeSubject(subject) {
-  return {
-    type: CHANGE_SUBJECT,
-    subject,
-  };
-}
-
-export function changeStartTime(startTime) {
-  return {
-    type: CHANGE_STARTTIME,
-    startTime,
-  };
-}
-
-export function changeEndTime(endTime) {
-  return {
-    type: CHANGE_ENDTIME,
-    endTime,
-  };
-}
-
-export function changeCoworkers(coworkers) {
-  return {
-    type: CHANGE_COWORKERS,
-    coworkers,
-  };
-}
-
-export function changeContent(content) {
-  return {
-    type: CHANGE_CONTENT,
-    content,
-  };
-}
-
-export function changeNewCoworker(newCoworker) {
-  return {
-    type: CHANGE_NEWCOWORKER,
-    newCoworker,
-  };
-}
-
 
 export function createTask(task) {
   return {
@@ -76,7 +27,6 @@ export function updateTask(task) {
   };
 }
 
-
 export function addCoworker(coworker) {
   return {
     type: ADD_COWORKER,
@@ -91,15 +41,15 @@ export function coworkerAdded(coworker) {
   };
 }
 
-export function fillTaskInfo(task) {
+export function loadAvailableCoworkers() {
   return {
-    type: FILL_TASKINFO,
-    task,
+    type: LOAD_AVAILABLE_COWORKERS,
   };
 }
 
-export function initCreateForm() {
+export function availableCoworkersLoaded(availableCoworkers) {
   return {
-    type: INIT_CREATFORM,
+    type: AVAILABLE_COWORKERS_LOADED,
+    availableCoworkers,
   };
 }

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const ResourceSchema = new mongoose.Schema({
   projectId: { type: Schema.Types.ObjectId, required: true },
-  name: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
   resourceType: { type: Number, required: true }, // 1 - person, no definition for other contacts
   contacts: [{
     contactType: { type: Number, required: true },

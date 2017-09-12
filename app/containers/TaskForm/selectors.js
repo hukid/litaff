@@ -33,11 +33,6 @@ const makeSelectEndTime = () => createSelector(
   (substate) => substate.get('endTime')
 );
 
-const makeSelectCoworkers = () => createSelector(
-  selectTaskFormDomain(),
-  (substate) => substate.get('coworkers')
-);
-
 const makeSelectContent = () => createSelector(
   selectTaskFormDomain(),
   (substate) => substate.get('content')
@@ -69,13 +64,13 @@ const makeSelectTaskFormData = () => createSelector(
   makeSelectTask(),
   (task) => {
     if (!task) {
-      console.log(moment().format(('YYYY-MM-DDThh:mm')));
+      const defaultDatetime = moment().add(1, 'hours').set({ minute: 0 });
       return fromJS({
         _id: '',
         subject: '',
         content: '',
-        startTime: moment().format('YYYY-MM-DDTHH:mm'),
-        endTime: moment().add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
+        startTime: defaultDatetime.format('YYYY-MM-DDTHH:mm'),
+        endTime: defaultDatetime.add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
         coworkers: [],
         newCoworker: '',
       });
@@ -112,6 +107,16 @@ const makeSelectFormDuration = () => createSelector(
   }
 );
 
+const makeSelectAllAvailableCoworkers = () => createSelector(
+  selectTaskFormDomain(),
+  (substate) => substate.get('availableCoworkers').toJS()
+);
+
+const makeSelectIsLoadingAvailableCoworkers = () => createSelector(
+  selectTaskFormDomain(),
+  (substate) => substate.get('loadingAvailableCoworkers')
+);
+
 /**
  * Default selector used by TaskForm
  */
@@ -128,7 +133,6 @@ export {
   makeSelectSubject,
   makeSelectStartTime,
   makeSelectEndTime,
-  makeSelectCoworkers,
   makeSelectContent,
   makeSelectNewCoworker,
   makeSelectTask,
@@ -136,4 +140,6 @@ export {
   makeSelectTaskFormData,
   makeSelectFormNewCoworker,
   makeSelectFormDuration,
+  makeSelectAllAvailableCoworkers,
+  makeSelectIsLoadingAvailableCoworkers,
 };

@@ -22,11 +22,14 @@ import SuggestionInput from 'components/SuggestionInput';
 import {
   makeSelectTaskFormData,
   makeSelectFormDuration,
+  makeSelectIsLoadingAvailableCoworkers,
+  makeSelectAllAvailableCoworkers,
 } from './selectors';
 import {
   createTask,
   updateTask,
   addCoworker,
+  loadAvailableCoworkers,
 } from './actions';
 import messages from './messages';
 
@@ -79,23 +82,6 @@ const styles = (theme) => ({
     margin: theme.spacing.unit / 1.5,
   },
 });
-
-const suggestions = [
-  { label: 'Afghanistan' },
-  { label: 'Aland Islands' },
-  { label: 'Albania' },
-  { label: 'Algeria' },
-  { label: 'Aruba' },
-  { label: 'Australia' },
-  { label: 'Austria' },
-  { label: 'Azerbaijan' },
-  { label: 'Bahamas' },
-  { label: 'Bahrain' },
-  { label: 'Bouvet Island' },
-  { label: 'Brazil' },
-  { label: 'British Indian Ocean Territory' },
-  { label: 'Brunei Darussalam' },
-];
 
 const FormTextSingleLine = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
   <TextField
@@ -165,14 +151,9 @@ const TaskFormCoworkers = ({ classes, fields, meta: { error, submitFailed } }) =
 
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
-  // componentWillMount() {
-  //   if (this.props.route.path.startsWith('/updatetask') && this.props.params.taskId) {
-  //     // TODO: when selected Task is null
-  //     this.props.onFillTaskInfo(this.props.selectedTask);
-  //   } else {
-  //     this.props.onInitCreateForm();
-  //   }
-  // }
+  componentWillMount() {
+    this.props.onLoadAvailableCoworkers();
+  }
 
   handleStartTimeChange = (event, newValue) => {
     if (!newValue) {
@@ -196,7 +177,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, availableCoworkers, isLoadingAvailableCoworkers } = this.props;
     return (
       <Paper component="form" onSubmit={this.props.handleSubmit} className={classes.container}>
         <Field
@@ -228,10 +209,12 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
         <SuggestionInput
           id="coworkerInput"
           label="Add a coworker"
-          suggestions={suggestions}
+          suggestions={availableCoworkers}
           onSelect={this.props.onAddCoworker}
           onKeyPress={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
           overrideClasses={classes}
+          disabled={isLoadingAvailableCoworkers}
+          placeholder={'Type a name'}
         />
         <FieldArray
           name="coworkers"
@@ -259,12 +242,17 @@ TaskForm.propTypes = {
   handleSubmit: PropTypes.func,
   change: PropTypes.func,
   duration: PropTypes.number.isRequired,
+  onLoadAvailableCoworkers: PropTypes.func.isRequired,
+  isLoadingAvailableCoworkers: PropTypes.bool.isRequired,
+  availableCoworkers: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   isUpdate: (state, ownProps) => ownProps.route.path.startsWith('/updatetask'),
   initialValues: makeSelectTaskFormData(),
   duration: makeSelectFormDuration(),
+  isLoadingAvailableCoworkers: makeSelectIsLoadingAvailableCoworkers(),
+  availableCoworkers: makeSelectAllAvailableCoworkers(),
 });
 
 function mapDispatchToProps(dispatch, ownProps) {
@@ -277,6 +265,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       }
     },
     onAddCoworker: (coworker) => dispatch(addCoworker(coworker)),
+    onLoadAvailableCoworkers: () => dispatch(loadAvailableCoworkers()),
   };
 }
 
