@@ -49,6 +49,7 @@ const styles = (theme) => ({
   createButton: {
     width: '100%',
     'justify-content': 'left',
+    'text-transform': 'none',
   },
 });
 
@@ -157,7 +158,7 @@ class SuggestionInput extends React.PureComponent { // eslint-disable-line react
 
     return (
       <Paper {...containerProps} square>
-        { !query ? null : <Button className={classes.createButton} onClick={() => { onSelect(query); this.setState({ value: '' }); }} >{`Create "${query}"`}</Button> }
+        { !query ? null : <Button className={classes.createButton} onClick={() => { onSelect(query); this.setState({ value: '' }); }} >{'ADD "'}<strong>{query}</strong>{'"'}</Button> }
         {children}
       </Paper>
     );
