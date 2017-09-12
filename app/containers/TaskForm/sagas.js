@@ -7,7 +7,7 @@ import request from 'utils/request';
 import { arrayPush, change } from 'redux-form/immutable';
 import moment from 'moment';
 
-import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER } from './constants';
+import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER, LOAD_AVAILABLE_COWORKERS } from './constants';
 import {
   makeSelectTaskForm,
   makeSelectFormNewCoworker,
@@ -15,6 +15,7 @@ import {
 
 import {
   coworkerAdded,
+  availableCoworkersLoaded,
 } from './actions';
 
 function* createTask(action) {
@@ -106,12 +107,37 @@ function* addCoworker(action) {
   }
 }
 
+function* loadAvailableCoworkers() {
+  const projectId = yield select(makeSelectProjectId());
+
+  const CoworkerUrl = `/api/resources/${projectId}`;
+  const token = yield select(makeSelectToken());
+  try {
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        cache: 'no-cache',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const allCoworkers = yield call(request, CoworkerUrl, requestOptions);
+    // Set all coworkers as available coworkers
+    yield put(availableCoworkersLoaded(allCoworkers));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 // Individual exports for testing
 export function* taskCRUD() {
   // See example in containers/HomePage/sagas.js
   const watchers = yield [
     takeLatest(CREATE_TASK, createTask),
     takeLatest(UPDATE_TASK, updateTask),
+    takeLatest(LOAD_AVAILABLE_COWORKERS, loadAvailableCoworkers),
     takeEvery(ADD_COWORKER, addCoworker),
   ];
 
@@ -120,6 +146,7 @@ export function* taskCRUD() {
   yield cancel(watchers[0]);
   yield cancel(watchers[1]);
   yield cancel(watchers[2]);
+  yield cancel(watchers[3]);
 }
 
 // All sagas to be loaded

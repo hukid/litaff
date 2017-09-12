@@ -36,7 +36,7 @@ module.exports = (router) => {
       return;
     }
 
-    Resource.findOne({ name: { $regex: new RegExp(`^${resourceInfo.name.toLowerCase()}$`, 'i') } }, (err, resource) => {
+    Resource.findOne({ name: { $regex: new RegExp(`^${resourceInfo.name.toLowerCase()}$`, 'i') }, projectId }, (err, resource) => {
       if (err) {
         handleError(res, err);
         return;
@@ -101,7 +101,7 @@ module.exports = (router) => {
     }
 
     if (updatedResource.name) {
-      Resource.findOne({ name: { $regex: new RegExp(`^${updatedResource.name.toLowerCase()}$`, 'i') } }, (err, resource) => {
+      Resource.findOne({ name: { $regex: new RegExp(`^${updatedResource.name.toLowerCase()}$`, 'i') }, projectId }, (err, resource) => {
         if (err) {
           handleError(res, err);
           return;
@@ -111,9 +111,9 @@ module.exports = (router) => {
           return;
         }
 
-        Resource.findOne({ _id: resourceId, projectId }, (err, result) => {
-          if (err) {
-            handleError(res, err);
+        Resource.findOne({ _id: resourceId, projectId }, (findError, result) => {
+          if (findError) {
+            handleError(res, findError);
             return;
           }
 
