@@ -224,7 +224,7 @@
     "ip": "1.1.4",
     "jsonwebtoken": "^7.4.3",
     "lodash": "4.17.2",
-    "material-ui": "^1.0.0-beta.7",
+    "material-ui": "^1.0.0-beta.9",
     "material-ui-icons": "^1.0.0-beta.5",
     "minimist": "1.2.0",
     "moment": "^2.18.1",
