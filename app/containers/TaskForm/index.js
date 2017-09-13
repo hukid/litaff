@@ -204,8 +204,6 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
     if (duration.asMinutes() < 30) {
       return previousValue;
     }
-
-    
     return newValue;
   }
 
