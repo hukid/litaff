@@ -8,6 +8,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
+import { fromJS } from 'immutable';
 import { Field, FieldArray, reduxForm } from 'redux-form/immutable';
 import { withStyles } from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
@@ -82,7 +83,7 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
     {fields.map((contact, index) =>
       <div key={index} className={classes.contactContainer}>
         <Field
-          name={`${contact}.type`}
+          name={`${contact}.contactType`}
           component="select"
           className={classes.contactTypeSelect}
         >
@@ -102,7 +103,7 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
         </IconButton>
       </div>
     )}
-    <Button raised color="primary" onClick={() => fields.push({})}>
+    <Button raised color="primary" onClick={() => fields.push(fromJS({ contactType: 1 }))}>
       Add new contact
     </Button>
   </div>

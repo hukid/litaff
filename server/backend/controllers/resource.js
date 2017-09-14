@@ -106,7 +106,7 @@ module.exports = (router) => {
           handleError(res, err);
           return;
         }
-        if (resource) {
+        if (resource && resourceId != resource._id) {
           handleError(res, 'new name has been taken');
           return;
         }
@@ -122,7 +122,7 @@ module.exports = (router) => {
           originalResource.contacts = [];
 
           updatedResource.contacts.forEach((contact) => {
-            originalResource.contacts.push({ contactType: 1, value: contact.value });
+            originalResource.contacts.push({ contactType: contact.contactType, value: contact.value });
           });
 
           originalResource.save((saveErr) => {
