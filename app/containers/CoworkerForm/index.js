@@ -14,11 +14,9 @@ import { withStyles } from 'material-ui/styles';
 import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import Paper from 'material-ui/Paper';
-import Input, { InputLabel } from 'material-ui/Input';
-import { MenuItem } from 'material-ui/Menu';
-import Select from 'material-ui/Select';
 import IconButton from 'material-ui/IconButton';
 import DeleteIcon from 'material-ui-icons/Delete';
+import Divider from 'material-ui/Divider';
 import { indigo } from 'material-ui/colors';
 
 import { makeSelectCoworker, selectUpdateStatus } from './selectors';
@@ -37,8 +35,14 @@ const styles = (theme) => ({
     paddingLeft: theme.spacing.unit * 2,
     paddingRight: theme.spacing.unit * 2,
   },
+  updateButton: {
+    margin: theme.spacing.unit,
+  },
   contactContainer: {
     display: 'flex',
+  },
+  contactsWrapper: {
+    marginBottom: 15,
   },
   contactTypeSelect: {
     backgroundColor: indigo[200],
@@ -47,6 +51,9 @@ const styles = (theme) => ({
   contactInput: {
     marginLeft: 10,
     flexGrow: 1,
+  },
+  addButton: {
+    marginLeft: 15,
   },
   nameInput: {
   },
@@ -78,8 +85,15 @@ const FormTextSingleLine = ({ id, className, placeholder, input: { value, onChan
   />);
 };
 
+const required = (value) => (value ? undefined : 'Required');
+
+const emailFormat = (value) =>
+  value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
+    ? 'Invalid email address'
+    : undefined;
+
 const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } }) =>
-  <div>
+  <div className={classes.contactsWrapper}>
     {fields.map((contact, index) =>
       <div key={index} className={classes.contactContainer}>
         <Field
@@ -88,7 +102,7 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
           className={classes.contactTypeSelect}
         >
           <option value="1">Email</option>
-          <option value="2">Mobile</option>
+          {/* <option value="2">Mobile</option> */}
         </Field>
         <Field
           name={`${contact}.value`}
@@ -96,6 +110,7 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
           id={`contact-${index}`}
           placeholder={index === 0 ? 'Default Contact' : `Contact Value #${index + 1}`}
           component={FormTextSingleLine}
+          validate={[required, emailFormat]}
           className={classes.contactInput}
         />
         <IconButton onClick={() => fields.remove(index)} className={classes.deleteButton} aria-label="Delete">
@@ -103,7 +118,7 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
         </IconButton>
       </div>
     )}
-    <Button raised color="primary" onClick={() => fields.push(fromJS({ contactType: 1 }))}>
+    <Button raised className={classes.addButton} onClick={() => fields.push(fromJS({ contactType: 1 }))}>
       Add new contact
     </Button>
   </div>
@@ -112,31 +127,13 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
 CoworkerContactFields.propTypes = {
   fields: PropTypes.object,
   meta: PropTypes.object,
-};
-
-const validate = (values) => {
-  const errors = {};
-  // Validate name
-  const name = values.get('name');
-  if (!name) {
-    errors.name = 'Required';
-  }
-
-  return errors;
+  classes: PropTypes.object,
 };
 
 class CoworkerForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-  state = {
-    type: 1,
-    age: 'hai',
-  };
-
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.value });
-  };
 
   render() {
-    const { classes } = this.props;
+    const { classes, valid } = this.props;
     return (
       <Paper component="form" className={classes.container} onSubmit={this.props.handleSubmit}>
         <Field
@@ -146,9 +143,11 @@ class CoworkerForm extends React.PureComponent { // eslint-disable-line react/pr
           component={FormTextSingleLine}
           label="Name"
           className={classes.nameInput}
+          validate={[required]}
         />
         <FieldArray name="contacts" component={CoworkerContactFields} classes={classes} />
-        <button type="submit">{this.props.isUpdate ? 'Update' : 'Create'}</button>
+        <Divider />
+        <Button raised type="submit" color="primary" className={classes.updateButton} disabled={!valid}>{this.props.isUpdate ? 'Update' : 'Create'}</Button>
       </Paper>
     );
   }
@@ -158,6 +157,7 @@ CoworkerForm.propTypes = {
   isUpdate: PropTypes.bool,
   handleSubmit: PropTypes.func,
   classes: PropTypes.object.isRequired,
+  valid: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -179,7 +179,6 @@ function mapDispatchToProps(dispatch, ownProps) {
 
 const CoworkerReduxForm = reduxForm({
   form: 'coworkerForm', // a unique identifier for this form
-  validate,
 })(withStyles(styles)(CoworkerForm));
 
 export default connect(mapStateToProps, mapDispatchToProps)(CoworkerReduxForm);
