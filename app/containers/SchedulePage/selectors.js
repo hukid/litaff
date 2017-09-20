@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import moment from 'moment';
 
 /**
  * Direct selector to the schedulePage state domain
@@ -9,14 +10,20 @@ const selectSchedulePageDomain = () => (state) => state.get('schedulePage');
  * Other specific selectors
  */
 
-const makeSelectStartTime = () => createSelector(
+const makeSelectFromDate = () => createSelector(
   selectSchedulePageDomain(),
-  (substate) => substate.get('startTime'),
+  (substate) => substate.get('fromDate'),
 );
 
-const makeSelectEndTime = () => createSelector(
+const makeSelectToDate = () => createSelector(
   selectSchedulePageDomain(),
-  (substate) => substate.get('endTime'),
+  (substate) => substate.get('toDate'),
+);
+
+const makeSelectDurationDays = () => createSelector(
+  makeSelectFromDate(),
+  makeSelectToDate(),
+  (fromDate, toDate) => moment.duration(toDate.diff(fromDate)).days(),
 );
 
 const makeSelectTasks = () => createSelector(
@@ -36,7 +43,8 @@ const makeSelectSchedulePage = () => createSelector(
 export default makeSelectSchedulePage;
 export {
   makeSelectTasks,
-  makeSelectStartTime,
-  makeSelectEndTime,
+  makeSelectFromDate,
+  makeSelectToDate,
+  makeSelectDurationDays,
   selectSchedulePageDomain,
 };
