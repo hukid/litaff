@@ -26,7 +26,7 @@ module.exports = (router) => {
       return;
     }
 
-    Task.find({ projectId, 'time.start': { $gt: startTime, $lt: endTime } }, (err, tasks) => {
+    Task.find({ projectId, 'time.start': { $gt: startTime, $lt: endTime } }, null, { sort: 'time.start' }, (err, tasks) => {
       if (err) {
         handleError(res, err);
         return;

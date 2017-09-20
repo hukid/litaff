@@ -25,9 +25,9 @@ function schedulePageReducer(state = initialState, action) {
     case CHANGE_FROM_DATE: {
       const originalFromDate = state.get('fromDate');
       const originalToDate = state.get('toDate');
-      const duration = moment.duration(originalToDate.diff(originalFromDate)).days();
+      const duration = moment.duration(originalToDate.diff(originalFromDate)).asDays();
       const newFromDate = moment(action.newDate);
-      const newEndDate = moment(action.newDate).add(duration, 'days');
+      const newEndDate = moment(action.newDate).add(Math.floor(duration), 'days');
       return state
         .set('fromDate', newFromDate)
         .set('toDate', newEndDate);
