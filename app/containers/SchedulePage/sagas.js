@@ -9,16 +9,16 @@ import request from 'utils/request';
 
 import { LOAD_TASKS } from './constants';
 import { tasksLoaded } from './actions';
-import { makeSelectStartTime, makeSelectEndTime } from './selectors';
+import { makeSelectFromDate, makeSelectToDate } from './selectors';
 
 /*
  * Github repos request/response handler
  */
 export function* loadTasks() {
   const projectId = yield select(makeSelectProjectId());
-  const startTime = yield select(makeSelectStartTime());
-  const endTime = yield select(makeSelectEndTime());
-  const loadTasksURL = `api/tasks/${projectId}/${startTime.toISOString()}/${endTime.toISOString()}`;
+  const startTime = yield select(makeSelectFromDate());
+  const endTime = yield select(makeSelectToDate());
+  const loadTasksURL = `api/tasks/${projectId}/${startTime.format()}/${endTime.format()}`;
 
   const token = yield select(makeSelectToken());
   try {

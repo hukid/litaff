@@ -19,9 +19,9 @@ import DeleteIcon from 'material-ui-icons/Delete';
 import Divider from 'material-ui/Divider';
 import { indigo } from 'material-ui/colors';
 
-import { makeSelectCoworker, selectUpdateStatus } from './selectors';
+import { makeSelectCoworker } from './selectors';
 import messages from './messages';
-import { fillCoworker, initialCreateCoworkerForm, createCoworker, updateCoworker } from './actions';
+import { createCoworker, updateCoworker } from './actions';
 
 const styles = (theme) => ({
   container: {
