@@ -261,6 +261,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           classes={classes}
         />
         <Button type="submit" disabled={!valid}>{this.props.isUpdate ? 'Update' : 'Create'}</Button>
+        <Button onClick={this.props.onCancel(this.props.router)}>{'Cancel'}</Button>
       </Paper>
     );
   }
@@ -277,6 +278,7 @@ TaskForm.propTypes = {
   isLoadingAvailableCoworkers: PropTypes.bool.isRequired,
   availableCoworkers: PropTypes.array.isRequired,
   valid: PropTypes.bool.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -298,6 +300,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     onAddCoworker: (coworker) => dispatch(addCoworker(coworker)),
     onLoadAvailableCoworkers: () => dispatch(loadAvailableCoworkers()),
+    onCancel: (router) => () => router.goBack(),
   };
 }
 

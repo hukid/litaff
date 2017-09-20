@@ -14,8 +14,8 @@ import {
 
 const initialState = fromJS({
   tasks: [],
-  fromDate: moment().day(0),
-  toDate: moment().day(6),
+  fromDate: moment().day(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+  toDate: moment().day(6).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
 });
 
 function schedulePageReducer(state = initialState, action) {

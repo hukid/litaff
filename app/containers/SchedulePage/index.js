@@ -24,8 +24,9 @@ import red from 'material-ui/colors/red';
 import DeleteIcon from 'material-ui-icons/Delete';
 import EditIcon from 'material-ui-icons/Edit';
 import ExpandMoreIcon from 'material-ui-icons/ExpandMore';
+import Chip from 'material-ui/Chip';
 
-import { makeSelectTasks, makeSelectFromDate, makeSelectToDate } from './selectors';
+import { makeSelectTasks, makeSelectFromDate, makeSelectToDate, makeSelectDurationDays } from './selectors';
 import messages from './messages';
 import { loadTasks, changeFromDate, changeToDate } from './actions';
 
@@ -43,12 +44,37 @@ const EditTaskButton = styled(Link)`
 `;
 
 const styles = (theme) => ({
+  pageContainer: {
+    padding: theme.spacing.unit,
+    maxWidth: 800,
+    margin: '0 auto',
+  },
   headerContainer: {
     marginLeft: 5,
+    display: 'flex',
+    alignItems: 'center',
   },
   datePicker: {
     margin: 15,
-    width: '45%',
+    flex: '1 0 0',
+  },
+  dateTimeInput: {
+    font: 'inherit',
+    color: 'currentColor',
+    width: '100%',
+    border: 0,
+    margin: 0,
+    padding: '7px 0',
+    display: 'block',
+    'box-sizing': 'content-box',
+    background: 'none',
+    'vertical-align': 'middle',
+    height: '1em',
+    '-webkit-appearance': 'textfield',
+    '&::-webkit-clear-button': { /* Removes blue cross */
+      '-webkit-appearance': 'none',
+      margin: 0,
+    },
   },
   datePickerLabel: {
   },
@@ -57,6 +83,16 @@ const styles = (theme) => ({
   },
   card: {
     margin: '0px 15px 10px 15px',
+  },
+  coworkersContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    'flex-direction': 'row',
+    flexGrow: 1,
+    marginTop: theme.spacing.unit,
+  },
+  coworkerChip: {
+    marginRight: theme.spacing.unit,
   },
 });
 
@@ -67,12 +103,13 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
   }
 
   render() {
-    const { classes, fromDate, toDate, onChangeFromDate, onChangeToDate } = this.props;
+    const { classes, fromDate, toDate, duration, onChangeFromDate, onChangeToDate } = this.props;
     return (
-      <Paper>
+      <Paper className={classes.pageContainer}>
         <div className={classes.headerContainer}>
           <TextField
             className={classes.datePicker}
+            inputClassName={classes.dateTimeInput}
             id="from-date"
             type="date"
             margin="normal"
@@ -85,10 +122,11 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
           />
           <TextField
             className={classes.datePicker}
+            inputClassName={classes.dateTimeInput}
             id="to-date"
             type="date"
             margin="normal"
-            label="To:"
+            label={`To: (${Math.ceil(duration.asDays())} days)`}
             value={toDate.format('YYYY-MM-DD')}
             onChange={onChangeToDate}
             InputLabelProps={{
@@ -114,6 +152,16 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
                   <Typography type="headline" component="h2">
                     {task.subject}
                   </Typography>
+                  <div className={classes.coworkersContainer}>
+                    {
+                      task.resources.map((coworker, coworkIndex) =>
+                        <Chip
+                          label={coworker.name}
+                          className={classes.coworkerChip}
+                          key={`coworker-${coworkIndex}`}
+                        />)
+                    }
+                  </div>
                 </CardContent>
                 <CardActions>
                   <IconButton component={Link} to={`/updatetask/${task._id}`}>
@@ -140,12 +188,14 @@ SchedulePage.propTypes = {
   toDate: PropTypes.object.isRequired,
   onChangeFromDate: PropTypes.func.isRequired,
   onChangeToDate: PropTypes.func.isRequired,
+  duration: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   tasks: makeSelectTasks(),
   fromDate: makeSelectFromDate(),
   toDate: makeSelectToDate(),
+  duration: makeSelectDurationDays(),
 });
 
 function mapDispatchToProps(dispatch) {

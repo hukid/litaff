@@ -23,7 +23,7 @@ const makeSelectToDate = () => createSelector(
 const makeSelectDurationDays = () => createSelector(
   makeSelectFromDate(),
   makeSelectToDate(),
-  (fromDate, toDate) => moment.duration(toDate.diff(fromDate)).days(),
+  (fromDate, toDate) => moment.duration(toDate.diff(fromDate)),
 );
 
 const makeSelectTasks = () => createSelector(
