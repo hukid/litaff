@@ -167,7 +167,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
                   <IconButton component={Link} to={`/updatetask/${task._id}`}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton aria-label="Share">
+                  <IconButton aria-label="Delete">
                     <DeleteIcon />
                   </IconButton>
                 </CardActions>

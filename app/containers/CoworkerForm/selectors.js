@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 import { fromJS } from 'immutable';
-import { makeSelectCoworkers } from 'containers/CoworkerPage/selectors';
+import { makeSelectAllCoworkers } from 'containers/CoworkerPage/selectors';
 
 /**
  * Direct selector to the coworkerForm state domain
@@ -14,7 +14,7 @@ const selectCoworkerId = () => (state, props) => props.params.resourceId;
  */
 
 const makeSelectCoworker = () => createSelector(
-  makeSelectCoworkers(),
+  makeSelectAllCoworkers(),
   selectCoworkerId(),
   (coworkers, resourceId) => {
     if (!coworkers || !resourceId) {

@@ -118,9 +118,13 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
         </IconButton>
       </div>
     )}
-    <Button raised className={classes.addButton} onClick={() => fields.push(fromJS({ contactType: 1 }))}>
-      Add new contact
-    </Button>
+    {
+      fields.length > 0 ? null : (
+        <Button raised className={classes.addButton} onClick={() => fields.push(fromJS({ contactType: 1 }))}>
+          Add Contact
+        </Button>
+      )
+    }
   </div>
   ;
 
@@ -133,7 +137,7 @@ CoworkerContactFields.propTypes = {
 class CoworkerForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
   render() {
-    const { classes, valid } = this.props;
+    const { classes, valid, router, onCancel } = this.props;
     return (
       <Paper component="form" className={classes.container} onSubmit={this.props.handleSubmit}>
         <Field
@@ -148,6 +152,7 @@ class CoworkerForm extends React.PureComponent { // eslint-disable-line react/pr
         <FieldArray name="contacts" component={CoworkerContactFields} classes={classes} />
         <Divider />
         <Button raised type="submit" color="primary" className={classes.updateButton} disabled={!valid}>{this.props.isUpdate ? 'Update' : 'Create'}</Button>
+        <Button onClick={onCancel(router)}>{'Cancel'}</Button>
       </Paper>
     );
   }
@@ -158,6 +163,8 @@ CoworkerForm.propTypes = {
   handleSubmit: PropTypes.func,
   classes: PropTypes.object.isRequired,
   valid: PropTypes.bool.isRequired,
+  router: PropTypes.object.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -174,6 +181,7 @@ function mapDispatchToProps(dispatch, ownProps) {
         dispatch(createCoworker(coworker));
       }
     },
+    onCancel: (router) => () => router.goBack(),
   };
 }
 
