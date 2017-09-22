@@ -9,9 +9,37 @@ const selectCoworkerPageDomain = () => (state) => state.get('coworkerPage');
  * Other specific selectors
  */
 
-const makeSelectCoworkers = () => createSelector(
+const makeSelectNameFilter = () => createSelector(
+  selectCoworkerPageDomain(),
+  (substate) => substate.get('nameFilter'),
+);
+
+const makeSelectShowEmptyEmailOnly = () => createSelector(
+  selectCoworkerPageDomain(),
+  (substate) => substate.get('showEmptyEmailOnly'),
+);
+
+const makeSelectAllCoworkers = () => createSelector(
   selectCoworkerPageDomain(),
   (substate) => substate.get('coworkers').toJS(),
+);
+
+const makeSelectFilteredCoworkers = () => createSelector(
+  makeSelectAllCoworkers(),
+  makeSelectNameFilter(),
+  makeSelectShowEmptyEmailOnly(),
+  (coworkers, nameFilter, showEmptyEmailOnly) => {
+    let filteredCoworkers = coworkers;
+    if (nameFilter !== '') {
+      filteredCoworkers = coworkers.filter((coworker) => coworker.name.toLowerCase().indexOf(nameFilter) >= 0);
+    }
+
+    if (showEmptyEmailOnly) {
+      filteredCoworkers = filteredCoworkers.filter((coworker) => coworker.contacts == null || coworker.contacts.length === 0);
+    }
+
+    return filteredCoworkers;
+  },
 );
 
 /**
@@ -26,5 +54,8 @@ const makeSelectCoworkerPage = () => createSelector(
 export default makeSelectCoworkerPage;
 export {
   selectCoworkerPageDomain,
-  makeSelectCoworkers,
+  makeSelectAllCoworkers,
+  makeSelectFilteredCoworkers,
+  makeSelectNameFilter,
+  makeSelectShowEmptyEmailOnly,
 };
