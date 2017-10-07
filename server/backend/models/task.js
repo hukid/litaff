@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongooseDelete = require('mongoose-delete');
 
 const Schema = mongoose.Schema;
 
@@ -40,5 +41,7 @@ const TaskSchema = new Schema({
 }, {
   timestamps: true,
 });
+
+TaskSchema.plugin(mongooseDelete);
 
 module.exports = mongoose.model('task', TaskSchema);

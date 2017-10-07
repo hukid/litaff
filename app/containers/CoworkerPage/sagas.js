@@ -7,8 +7,8 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 
-import { LOAD_COWORKERS } from './constants';
-import { coworkersLoaded } from './actions';
+import { LOAD_COWORKERS, DELETE_COWORKER } from './constants';
+import { coworkersLoaded, coworkerDeleted } from './actions';
 
 /*
  * Github repos request/response handler
@@ -36,6 +36,32 @@ export function* loadCoworkers() {
   }
 }
 
+/*
+ * Github repos request/response handler
+ */
+export function* deleteCoworker(action) {
+  const coworkerId = action.coworkerId;
+  const projectId = yield select(makeSelectProjectId());
+  const resourceUrl = `/api/resources/${projectId}/${coworkerId}`;
+
+  const token = yield select(makeSelectToken());
+  try {
+    const requestOptions = {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    yield call(request, resourceUrl, requestOptions);
+    yield put(coworkerDeleted(coworkerId));
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 /**
  * Root saga manages watcher lifecycle
  */
@@ -47,11 +73,13 @@ export function* coworkerData() {
 
   const watchers = yield [
     takeLatest(LOAD_COWORKERS, loadCoworkers),
+    takeLatest(DELETE_COWORKER, deleteCoworker),
   ];
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
   yield cancel(watchers[0]);
+  yield cancel(watchers[1]);
 }
 
 // Bootstrap sagas

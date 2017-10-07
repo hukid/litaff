@@ -30,7 +30,7 @@ import Switch from 'material-ui/Switch';
 import blue from 'material-ui/colors/blue';
 
 import { makeSelectFilteredCoworkers, makeSelectNameFilter, makeSelectShowEmptyEmailOnly } from './selectors';
-import { loadCoworkers, changeFilterText, toggleEmptyEmailOnly } from './actions';
+import { loadCoworkers, changeFilterText, toggleEmptyEmailOnly, deleteCoworker } from './actions';
 import messages from './messages';
 
 const styles = (theme) => ({
@@ -68,7 +68,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
   }
 
   render() {
-    const { classes, showEmptyEmailOnly, nameFilter, onChangeNameFilter, onToggleShowEmptyEmailOnly } = this.props;
+    const { classes, showEmptyEmailOnly, nameFilter, onChangeNameFilter, onToggleShowEmptyEmailOnly, onDeleteCoworker } = this.props;
     return (
       <Paper className={classes.container}>
         <div className={classes.toolbarContainer}>
@@ -125,7 +125,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
                       <IconButton component={Link} to={`/updatecoworker/${coworker._id}`}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton aria-label="Delete">
+                      <IconButton aria-label="Delete" onClick={() => onDeleteCoworker(coworker._id)}>
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>
@@ -160,7 +160,8 @@ function mapDispatchToProps(dispatch) {
   return {
     onLoadCoworkers: () => dispatch(loadCoworkers()),
     onChangeNameFilter: (event) => dispatch(changeFilterText(event.target.value)),
-    onToggleShowEmptyEmailOnly: (event, checked) => dispatch(toggleEmptyEmailOnly(checked))
+    onToggleShowEmptyEmailOnly: (event, checked) => dispatch(toggleEmptyEmailOnly(checked)),
+    onDeleteCoworker: (coworker) => dispatch(deleteCoworker(coworker)),
   };
 }
 

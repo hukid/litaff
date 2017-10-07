@@ -10,6 +10,8 @@ import {
   COWORKERS_LOADED,
   CHANGE_FILTERTEXT,
   TOGGLE_EMPTYEMAILONLY,
+  DELETE_COWORKER,
+  COWORKER_DELETED,
 } from './constants';
 
 export function defaultAction() {
@@ -42,5 +44,19 @@ export function toggleEmptyEmailOnly(swichValue) {
   return {
     type: TOGGLE_EMPTYEMAILONLY,
     swichValue,
+  };
+}
+
+export function deleteCoworker(coworkerId) {
+  return {
+    type: DELETE_COWORKER,
+    coworkerId,
+  };
+}
+
+export function coworkerDeleted(coworkerId) {
+  return {
+    type: COWORKER_DELETED,
+    coworkerId,
   };
 }

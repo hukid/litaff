@@ -3,6 +3,7 @@ const Resource = require('../models/resource');
 const handleError = require('../utils/handleError');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
 const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
+const logger = require('../../logger');
 
 module.exports = (router) => {
   // define resources rest API
@@ -126,7 +127,7 @@ module.exports = (router) => {
           });
 
           originalResource.save((saveErr) => {
-            console.log('saving' + originalResource.toString());
+            logger.info(`saving ${originalResource.toString()}`);
             if (saveErr) {
               handleError(res, saveErr);
               return;
@@ -140,6 +141,20 @@ module.exports = (router) => {
   });
 
   router.delete('/resources/:projectId/:resourceId', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.send('delete resource is called');
+    const projectId = req.params.projectId;
+    const resourceId = req.params.resourceId;
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleAuthorizationError(res, 'you do not have permission');
+      return;
+    }
+
+    const promise = Resource.findByIdAndRemove(resourceId).exec();
+    promise.then((resource) => {
+      logger.info(`Resource ${resource.id} is deleted`);
+      res.json({ message: 'OK' });
+    })
+    .catch((error) => {
+      handleError(res, error);
+    });
   });
 };

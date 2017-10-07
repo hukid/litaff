@@ -28,7 +28,7 @@ import Chip from 'material-ui/Chip';
 
 import { makeSelectTasks, makeSelectFromDate, makeSelectToDate, makeSelectDurationDays } from './selectors';
 import messages from './messages';
-import { loadTasks, changeFromDate, changeToDate } from './actions';
+import { loadTasks, changeFromDate, changeToDate, deleteTask } from './actions';
 
 const TaskCard = styled.div`
   border-bottom: 1px solid grey;
@@ -103,7 +103,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
   }
 
   render() {
-    const { classes, fromDate, toDate, duration, onChangeFromDate, onChangeToDate } = this.props;
+    const { classes, fromDate, toDate, duration, onChangeFromDate, onChangeToDate, onDeleteTask } = this.props;
     return (
       <Paper className={classes.pageContainer}>
         <div className={classes.headerContainer}>
@@ -167,7 +167,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
                   <IconButton component={Link} to={`/updatetask/${task._id}`}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton aria-label="Delete">
+                  <IconButton aria-label="Delete" onClick={() => onDeleteTask(task._id)}>
                     <DeleteIcon />
                   </IconButton>
                 </CardActions>
@@ -188,6 +188,7 @@ SchedulePage.propTypes = {
   toDate: PropTypes.object.isRequired,
   onChangeFromDate: PropTypes.func.isRequired,
   onChangeToDate: PropTypes.func.isRequired,
+  onDeleteTask: PropTypes.func.isRequired,
   duration: PropTypes.object.isRequired,
 };
 
@@ -203,6 +204,7 @@ function mapDispatchToProps(dispatch) {
     onLoadTasks: () => dispatch(loadTasks()),
     onChangeFromDate: (event) => { dispatch(changeFromDate(event.target.value)); dispatch(loadTasks()); },
     onChangeToDate: (event) => { dispatch(changeToDate(event.target.value)); dispatch(loadTasks()); },
+    onDeleteTask: (taskId) => dispatch(deleteTask(taskId)),
   };
 }
 

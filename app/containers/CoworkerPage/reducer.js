@@ -9,6 +9,7 @@ import {
   COWORKERS_LOADED,
   CHANGE_FILTERTEXT,
   TOGGLE_EMPTYEMAILONLY,
+  COWORKER_DELETED,
 } from './constants';
 
 const initialState = fromJS({
@@ -25,6 +26,11 @@ function coworkerPageReducer(state = initialState, action) {
       return state.set('nameFilter', action.newFilterText);
     case TOGGLE_EMPTYEMAILONLY:
       return state.set('showEmptyEmailOnly', action.swichValue);
+    case COWORKER_DELETED: {
+      const coworkers = state.get('coworkers');
+      const newCoworkers = coworkers.filterNot((coworker) => coworker.get('_id') === action.coworkerId);
+      return state.set('coworkers', newCoworkers);
+    }
     default:
       return state;
   }
