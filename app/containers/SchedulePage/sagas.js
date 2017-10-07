@@ -7,8 +7,8 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 
-import { LOAD_TASKS } from './constants';
-import { tasksLoaded } from './actions';
+import { LOAD_TASKS, DELETE_TASK } from './constants';
+import { tasksLoaded, taskDeleted } from './actions';
 import { makeSelectFromDate, makeSelectToDate } from './selectors';
 
 /*
@@ -39,6 +39,31 @@ export function* loadTasks() {
   }
 }
 
+export function* deleteTask(action) {
+  const projectId = yield select(makeSelectProjectId());
+  const taskId = action.taskId;
+  const TaskUrl = `/api/tasks/${projectId}/${taskId}`;
+
+  const token = yield select(makeSelectToken());
+  try {
+    const requestOptions = {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    // Call our request helper (see 'utils/request')
+    yield call(request, TaskUrl, requestOptions);
+    yield put(taskDeleted(taskId));
+  } catch (err) {
+    // yield put(repoLoadingError(err));
+    console.error(err);
+  }
+}
+
 /**
  * Root saga manages watcher lifecycle
  */
@@ -50,6 +75,7 @@ export function* taskData() {
 
   const watchers = yield [
     takeLatest(LOAD_TASKS, loadTasks),
+    takeLatest(DELETE_TASK, deleteTask),
   ];
 
   // Suspend execution until location changes

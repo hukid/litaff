@@ -10,12 +10,13 @@ import {
   TASKS_LOADED,
   CHANGE_FROM_DATE,
   CHANGE_TO_DATE,
+  TASK_DELETED,
 } from './constants';
 
 const initialState = fromJS({
   tasks: [],
-  fromDate: moment().day(0).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
-  toDate: moment().day(6).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+  fromDate: moment().startOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+  toDate: moment().endOf('month').set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
 });
 
 function schedulePageReducer(state = initialState, action) {
@@ -39,6 +40,11 @@ function schedulePageReducer(state = initialState, action) {
         newToDate = originalFromDate;
       }
       return state.set('toDate', newToDate);
+    }
+    case TASK_DELETED: {
+      const tasks = state.get('tasks');
+      const newTasks = tasks.filterNot((task) => task.get('_id') === action.taskId);
+      return state.set('tasks', newTasks);
     }
     default:
       return state;

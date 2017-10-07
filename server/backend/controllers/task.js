@@ -3,6 +3,7 @@ const Task = require('../models/task');
 const handleError = require('../utils/handleError');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
 const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
+const logger = require('../../logger');
 
 function isValidDate(date) {
   return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());
@@ -66,8 +67,11 @@ module.exports = (router) => {
         newTask.content = task.content;
         newTask.category = task.category;
         newTask.asFree = false;
+        newTask.reminder = {
+          time: startTime,
+          sendStatus: 0,
+        };
         newTask.resources = [];
-        newTask.reminderSent = false;
 
         task.coworkers.forEach((coworker) => {
           newTask.resources.push({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name });
@@ -127,6 +131,10 @@ module.exports = (router) => {
           originalTask.content = updatedTask.content;
           originalTask.category = updatedTask.category;
           originalTask.asFree = false;
+          originalTask.reminder = {
+            time: startTime,
+            sendStatus: 0,
+          };
           originalTask.resources = [];
 
           updatedTask.coworkers.forEach((coworker) => {
@@ -152,6 +160,21 @@ module.exports = (router) => {
   });
 
   router.delete('/tasks/:projectId/:taskId', passport.authenticate('jwt', { session: false }), (req, res) => {
-    res.send('delete tasks is called');
+    const projectId = req.params.projectId;
+    const taskId = req.params.taskId;
+
+    if (!authorizeWithProjectId(req.user, projectId)) {
+      handleAuthorizationError(res, 'you do not have permission');
+      return;
+    }
+
+    const promise = Task.findByIdAndRemove(taskId).exec();
+    promise.then((task) => {
+      logger.info(`Task ${task.id} is deleted`);
+      res.json({ message: 'OK' });
+    })
+    .catch((error) => {
+      handleError(res, error);
+    });
   });
 };
