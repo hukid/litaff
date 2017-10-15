@@ -4,6 +4,7 @@ const handleError = require('../utils/handleError');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
 const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
 const logger = require('../../logger');
+const syncResourceName = require('../utils/syncResourceName');
 
 module.exports = (router) => {
   // define resources rest API
@@ -107,36 +108,29 @@ module.exports = (router) => {
           handleError(res, err);
           return;
         }
-        if (resource && resourceId != resource._id) {
+        if (resource && resourceId !== resource.id.toString()) {
           handleError(res, 'new name has been taken');
           return;
         }
 
-        Resource.findOne({ _id: resourceId, projectId }, (findError, result) => {
-          if (findError) {
-            handleError(res, findError);
-            return;
+        const promise = Resource.findOneAndUpdate({ _id: resourceId, projectId }, { name: updatedResource.name, contacts: updatedResource.contacts }).exec();
+
+        promise
+        .then((origResource) => {
+          logger.info(`${origResource.id} is updated`);
+          res.json({ message: 'OK' });
+
+          if (updatedResource.name !== origResource.name) {
+            // sync updated resource when the name is chnaged
+            syncResourceName(origResource, updatedResource.name);
           }
-
-          const originalResource = result;
-          originalResource.name = updatedResource.name;
-          originalResource.contacts = [];
-
-          updatedResource.contacts.forEach((contact) => {
-            originalResource.contacts.push({ contactType: contact.contactType, value: contact.value });
-          });
-
-          originalResource.save((saveErr) => {
-            logger.info(`saving ${originalResource.toString()}`);
-            if (saveErr) {
-              handleError(res, saveErr);
-              return;
-            }
-
-            res.json({ message: 'OK' });
-          });
+        })
+        .catch((updateError) => {
+          handleError(res, updateError);
         });
       });
+    } else {
+      handleError(res, 'Cannot update with empty name');
     }
   });
 

@@ -1,6 +1,7 @@
 const passport = require('passport');
 const Task = require('../models/task');
 const handleError = require('../utils/handleError');
+const sendScheduleNotification = require('../utils/sendScheduleNotification');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
 const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
 const logger = require('../../logger');
@@ -84,6 +85,12 @@ module.exports = (router) => {
           }
 
           res.json({ message: 'OK' });
+
+          // post process to send notification if neccessary
+          if (newTask.taskType === 1) {
+            // send a schedule email for schedule task
+            sendScheduleNotification(newTask);
+          }
         });
       }
     } else {
