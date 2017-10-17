@@ -38,6 +38,7 @@ const TaskSchema = new Schema({
   time: { type: TaskTimeSchema },
   reminder: { type: ReminderSchema },
   resources: [TaskResourceSchema],
+  updateSequence: { type: Number, required: true },
 }, {
   timestamps: true,
 });
