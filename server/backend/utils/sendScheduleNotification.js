@@ -1,67 +1,67 @@
 const Resource = require('../models/resource');
 const logger = require('../../logger');
-const nodemailer = require('nodemailer');
+const getEmailTransporter = require('./getEmailTransporter');
 const ical = require('ical-generator');
 
 // TODO: add a cache for resources
 // let resourcesCache = null;
 // let lastCacheTime = new Date(0);
 
-const transporter = nodemailer.createTransport({
-  service: 'hotmail',
-  auth: {
-    user: 'seattletruelight@outlook.com',
-    pass: 'YR>Ff1]f2Lwa',
-  },
-});
-
+const transporter = getEmailTransporter();
 const calendar = ical({
-  domain: 'gmail.com',
+  domain: 'litaff.com',
   name: 'litaff calendar',
 });
 
-module.exports = (task) => {
+// notificationType: 1 - create; 2 - update; 3 - delete
+module.exports = (task, notificationType, toList) => {
   const resourceIds = task.resources.map((resource) => resource.id);
   const resourcePromise = Resource.find({ _id: { $in: resourceIds } }).exec();
   resourcePromise
     .then((resources) => {
-      const emailContacts = resources
-      .filter((resource) => resource.contacts && resource.contacts.length > 0 && resource.contacts[0].contactType === 1)
-      .map((resource) => resource.contacts[0].value);
-      sendEmailNotification(task, emailContacts);
+      const attendees = resources
+        .filter((resource) => resource.contacts && resource.contacts.length > 0 && resource.contacts[0].contactType === 1)
+        .map((resource) => `${resource.name} <${resource.contacts[0].value}>`);
+      if (toList) {
+        sendEmailNotification(task, attendees, notificationType, toList);
+      } else {
+        sendEmailNotification(task, attendees, notificationType, attendees);
+      }
     })
     .catch((err) => {
       logger.error(err);
     });
 };
 
-function sendEmailNotification(task, emailContacts) {
-  if (!emailContacts || emailContacts.length === 0) {
+function sendEmailNotification(task, attendees, notificationType, toList) {
+  if (!toList || toList.length === 0) {
     logger.info(`no email resources for task: ${task.id}`);
     return;
   }
 
-  const attendees = emailContacts.map((email) => ({ email }));
+  const method = notificationType === 3 ? 'cancel' : 'request';
 
   // conduct ical event
   calendar.createEvent({
     start: task.time.start,
     end: task.time.end,
-    summary: 'Example Event',
-    description: 'It works ;)',
-    method: 'request',
+    summary: task.subject,
+    description: task.content,
+    method,
     attendees,
-    organizer: { email: 'seattletruelight@outlook.com', name: 'litaff' },
+    organizer: { email: transporter.sender, name: 'litaff' },
+    uid: task.id.toString(),
+    sequence: task.updateSequence,
   });
 
   const content = calendar.toString();
   calendar.clear();
-  const toList = emailContacts.join(',');
+  const toString = toList.join(',');
   const mailOptions = {
-    from: 'seattletruelight@outlook.com', // sender address
-    to: toList, // list of receivers
-    subject: 'A Test email from litaff', // Subject line
-    html: `<h1>${task.subject}</j1>`, // plain text body
+    from: transporter.sender, // sender address
+    to: toString, // list of receivers
+    subject: `${task.subject}`, // Subject line
+    text: `${task.content}`,
     // icalEvent: {
     //   // filename: 'schedule.ics',
     //   method: 'request',

@@ -72,6 +72,7 @@ module.exports = (router) => {
           time: startTime,
           sendStatus: 0,
         };
+        newTask.updateSequence = 0;
         newTask.resources = [];
 
         task.coworkers.forEach((coworker) => {
@@ -89,7 +90,7 @@ module.exports = (router) => {
           // post process to send notification if neccessary
           if (newTask.taskType === 1) {
             // send a schedule email for schedule task
-            sendScheduleNotification(newTask);
+            sendScheduleNotification(newTask, 1);
           }
         });
       }
@@ -143,19 +144,25 @@ module.exports = (router) => {
             sendStatus: 0,
           };
           originalTask.resources = [];
+          originalTask.updateSequence += 1;
 
           updatedTask.coworkers.forEach((coworker) => {
             originalTask.resources.push({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name });
           });
 
           originalTask.save((saveErr) => {
-            console.log('saving' + originalTask.toString());
+            logger.info(`saving ${originalTask.toString()}`);
             if (saveErr) {
               handleError(res, saveErr);
               return;
             }
 
             res.json({ message: 'OK' });
+            // post process to send notification if neccessary
+            if (originalTask.taskType === 1) {
+              // send a schedule email for schedule task
+              sendScheduleNotification(originalTask, 2);
+            }
           });
         });
       } else {
