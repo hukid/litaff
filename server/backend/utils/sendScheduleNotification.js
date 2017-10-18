@@ -41,7 +41,7 @@ function sendEmailNotification(task, attendees, notificationType, toList) {
 
   const method = notificationType === 3 ? 'cancel' : 'request';
   const adjustedSequence = notificationType === 3 ? task.updateSequence + 1 : task.updateSequence;
-  const formattedSubject = `${notificationType === 3 ? '[Canceled] ' : ''}${task.subject}`;
+  const formattedSubject = `${notificationType === 3 ? 'Canceled: ' : ''}${task.subject}`;
 
   // conduct ical event
   calendar.createEvent({

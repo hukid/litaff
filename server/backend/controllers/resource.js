@@ -1,8 +1,10 @@
 const passport = require('passport');
 const Resource = require('../models/resource');
+const Task = require('../models/task');
 const handleError = require('../utils/handleError');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
 const handleAuthorizationError = require('../utils/authorization').handleAuthorizationError;
+const sendScheduleNotification = require('../utils/sendScheduleNotification');
 const logger = require('../../logger');
 const syncResourceName = require('../utils/syncResourceName');
 
@@ -124,6 +126,24 @@ module.exports = (router) => {
             // sync updated resource when the name is chnaged
             syncResourceName(origResource, updatedResource.name);
           }
+
+          if (checkContactUpdatedOrAdded(updatedResource.contacts, origResource.contacts)) {
+            Task.find({ resources: { $elemMatch: { id: origResource.id } } }, (taskFindErr, tasks) => {
+              if (taskFindErr) {
+                logger.error(taskFindErr);
+                return;
+              }
+
+              if (updatedResource.contacts[0].contactType === 1) {
+                // const toList = [`${updatedResource.name} <${updatedResource.contacts[0].value}>`];
+                tasks.forEach((task, index) => {
+                  setTimeout(() => {
+                    sendScheduleNotification(task, 2);
+                  }, 200 * index);
+                });
+              }
+            });
+          }
         })
         .catch((updateError) => {
           handleError(res, updateError);
@@ -152,3 +172,13 @@ module.exports = (router) => {
     });
   });
 };
+
+// Check if new contact added as primary contact method
+function checkContactUpdatedOrAdded(newContacts, oldContacts) {
+  if (newContacts && newContacts.length > 0
+      && (!oldContacts || oldContacts.length === 0 || oldContacts[0].contactType !== newContacts[0].contactType || oldContacts[0].value !== newContacts[0].value)) {
+    return true;
+  }
+
+  return false;
+}
