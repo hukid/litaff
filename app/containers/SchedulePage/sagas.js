@@ -81,6 +81,7 @@ export function* taskData() {
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
   yield cancel(watchers[0]);
+  yield cancel(watchers[1]);
 }
 
 // Bootstrap sagas

@@ -1,5 +1,6 @@
 const passport = require('passport');
 const Task = require('../models/task');
+const Resource = require('../models/resource');
 const handleError = require('../utils/handleError');
 const sendScheduleNotification = require('../utils/sendScheduleNotification');
 const authorizeWithProjectId = require('../utils/authorization').authorizeWithProjectId;
@@ -143,12 +144,12 @@ module.exports = (router) => {
             time: startTime,
             sendStatus: 0,
           };
-          originalTask.resources = [];
           originalTask.updateSequence += 1;
 
-          updatedTask.coworkers.forEach((coworker) => {
-            originalTask.resources.push({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name });
-          });
+          const newResources = updatedTask.coworkers.map((coworker) => ({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name }));
+
+          const removedResources = getRemovedResources(originalTask.resources, newResources);
+          originalTask.resources = newResources;
 
           originalTask.save((saveErr) => {
             logger.info(`saving ${originalTask.toString()}`);
@@ -160,8 +161,25 @@ module.exports = (router) => {
             res.json({ message: 'OK' });
             // post process to send notification if neccessary
             if (originalTask.taskType === 1) {
+              // TODO: optimize this process to reduce db queries, we should refactor to combine two calls
               // send a schedule email for schedule task
               sendScheduleNotification(originalTask, 2);
+
+              // send cancel event to the resources that are removed
+              if (removedResources.length > 0) {
+                const resourceIds = removedResources.map((resource) => resource.id);
+                const resourcePromise = Resource.find({ _id: { $in: resourceIds } }).exec();
+                resourcePromise
+                .then((resources) => {
+                  const toList = resources
+                    .filter((resource) => resource.contacts && resource.contacts.length > 0 && resource.contacts[0].contactType === 1)
+                    .map((resource) => `${resource.name} <${resource.contacts[0].value}>`);
+                  setTimeout(() => sendScheduleNotification(originalTask, 3, toList), 2000);
+                })
+                .catch((findResourceErr) => {
+                  logger.error(findResourceErr);
+                });
+              }
             }
           });
         });
@@ -183,12 +201,33 @@ module.exports = (router) => {
     }
 
     const promise = Task.findByIdAndRemove(taskId).exec();
-    promise.then((task) => {
-      logger.info(`Task ${task.id} is deleted`);
+    promise.then((deletedTask) => {
+      logger.info(`Task ${deletedTask.id} is deleted`);
       res.json({ message: 'OK' });
+      if (deletedTask.taskType === 1) {
+        // TODO: optimize this process to reduce db queries, we should refactor to combine two calls
+        // send a schedule email for schedule task
+        sendScheduleNotification(deletedTask, 3);
+      }
     })
     .catch((error) => {
       handleError(res, error);
     });
   });
 };
+
+function getRemovedResources(originalResources, newResources) {
+  const newResourceDict = {};
+  newResources.forEach((resource) => {
+    newResourceDict[resource.id] = true;
+  });
+
+  const removedResources = [];
+  originalResources.forEach((origResource) => {
+    if (!newResourceDict[origResource.id]) {
+      removedResources.push(origResource);
+    }
+  });
+
+  return removedResources;
+}
