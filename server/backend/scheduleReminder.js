@@ -1,19 +1,12 @@
 const schedule = require('node-schedule');
+const moment = require('moment');
 
 const Task = require('./models/task');
 const Resource = require('./models/resource');
 const logger = require('../logger');
-const nodemailer = require('nodemailer');
+const getEmailTransporter = require('./utils/getEmailTransporter');
 
 module.exports = () => {
-  const transporter = nodemailer.createTransport({
-    service: 'hotmail',
-    auth: {
-      user: 'seattletruelight@outlook.com',
-      pass: 'YR>Ff1]f2Lwa',
-    },
-  });
-
   // every 10 minutes
   schedule.scheduleJob('*/10 * * * *', () => {
   // schedule.scheduleJob('*/30 * * * * *', () => {
@@ -65,7 +58,7 @@ module.exports = () => {
         tasks.forEach((task, index) => {
           const projectIdKey = task.projectId.toString();
           if (contactDict[projectIdKey]) {
-            sendReminderEmail(task, index, contactDict[projectIdKey], transporter);
+            sendReminderEmail(task, index, contactDict[projectIdKey]);
           }
         });
       });
@@ -76,7 +69,8 @@ module.exports = () => {
   });
 };
 
-function sendReminderEmail(task, index, contactMapping, transporter) {
+function sendReminderEmail(task, index, contactMapping) {
+  const transporter = getEmailTransporter();
   const contacts = task.resources.map((resource) => contactMapping[resource.id]);
   const filteredContacts = contacts.filter((contact) => !!contact);
 
@@ -86,16 +80,18 @@ function sendReminderEmail(task, index, contactMapping, transporter) {
   }
 
   const toList = filteredContacts.join(',');
+  const startMoment = moment(task.time.start);
+  const formattedSubject = `Upcoming - (${startMoment.fromNow()}): ${task.subject}`;
 
   const mailOptions = {
-    from: 'seattletruelight@outlook.com', // sender address
+    from: transporter.sender, // sender address
     to: toList, // list of receivers
-    subject: 'A Test email from litaff', // Subject line
-    html: `<h1>${task.subject}</j1>`, // plain text body
+    subject: formattedSubject, // Subject line
+    text: task.content, // plain text body
   };
 
   setTimeout(() => {
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error) => {
       if (error) {
         handleError(error);
         return;
