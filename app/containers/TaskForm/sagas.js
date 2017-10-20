@@ -19,13 +19,10 @@ import {
 } from './actions';
 
 function* createTask(action) {
-  // // Select username from store
-  // const username = yield select(makeSelectUsername());
-  // const requestURL = `https://api.github.com/users/${username}/repos?type=all&sort=updated`;
-
   const task = action.task.toJS();
   task.startTime = moment(task.startTime).format();
   task.endTime = moment(task.endTime).format();
+  task.reminderTime = moment(task.reminderTime).format();
   const projectId = yield select(makeSelectProjectId());
 
   const TaskUrl = `/api/tasks/${projectId}`;
@@ -53,6 +50,7 @@ function* updateTask(action) {
   const task = action.task.toJS();
   task.startTime = moment(task.startTime).format();
   task.endTime = moment(task.endTime).format();
+  task.reminderTime = moment(task.reminderTime).format();
   const projectId = yield select(makeSelectProjectId());
 
   const TaskUrl = `/api/tasks/${projectId}/${task._id}`;

@@ -70,7 +70,8 @@ const makeSelectTaskFormData = () => createSelector(
         subject: '',
         content: '',
         startTime: defaultDatetime.format('YYYY-MM-DDTHH:mm'),
-        endTime: defaultDatetime.add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
+        endTime: moment(defaultDatetime).add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
+        reminderTime: moment(defaultDatetime).subtract(1, 'days').format('YYYY-MM-DDTHH:mm'),
         coworkers: [],
         newCoworker: '',
       });
@@ -81,6 +82,7 @@ const makeSelectTaskFormData = () => createSelector(
       subject: task.subject,
       startTime: moment(task.time.start).format('YYYY-MM-DDTHH:mm'),
       endTime: moment(task.time.end).format('YYYY-MM-DDTHH:mm'),
+      reminderTime: moment(task.reminder.time).format('YYYY-MM-DDTHH:mm'),
       content: task.content,
       coworkers: task.resources,
     };
@@ -104,6 +106,21 @@ const makeSelectFormDuration = () => createSelector(
     }
 
     return 60;
+  }
+);
+
+const makeSelectFormReminderDuration = () => createSelector(
+  (state) => state,
+  (state) => {
+    const startTime = formSelector(state, 'startTime');
+    const reminderTime = formSelector(state, 'reminderTime');
+    if (startTime && reminderTime) {
+      const reminder = moment(reminderTime);
+      const start = moment(startTime);
+      return moment.duration(reminder.diff(start)).asMinutes();
+    }
+
+    return -60;
   }
 );
 
@@ -140,6 +157,7 @@ export {
   makeSelectTaskFormData,
   makeSelectFormNewCoworker,
   makeSelectFormDuration,
+  makeSelectFormReminderDuration,
   makeSelectAllAvailableCoworkers,
   makeSelectIsLoadingAvailableCoworkers,
 };

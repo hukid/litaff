@@ -22,6 +22,7 @@ import SuggestionInput from 'components/SuggestionInput';
 import {
   makeSelectTaskFormData,
   makeSelectFormDuration,
+  makeSelectFormReminderDuration,
   makeSelectIsLoadingAvailableCoworkers,
   makeSelectAllAvailableCoworkers,
 } from './selectors';
@@ -122,8 +123,8 @@ const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, typ
     label={label}
     type={type}
     margin="normal"
-    helperText={touched && error && `${error}`}
-    error={!!error && touched}
+    helperText={error && `${error}`}
+    error={!!error}
     fullWidth
     value={value}
     onChange={onChange}
@@ -174,7 +175,47 @@ const validate = (values) => {
     errors.subject = 'Required';
   }
 
+  const startTimeString = values.get('startTime');
+  const endTimeString = values.get('endTime');
+  const reminderTimeString = values.get('reminderTime');
+
+  if (startTimeString === '') {
+    errors.startTime = 'Invalid date time';
+  }
+  if (endTimeString === '') {
+    errors.endTime = 'Invalid date time';
+  }
+  if (reminderTimeString === '') {
+    errors.reminderTime = 'Invalid date time';
+  }
+
+  if (startTimeString && endTimeString) {
+    const startTime = moment(startTimeString);
+    // TODO: Below validation should be added to warning
+    // if (startTime.diff(moment(), 'hours') < 2) {
+    //   errors.startTime = 'Do not set start time sooner than 2 hours or in the past';
+    // }
+    if (endTimeString) {
+      const endTime = moment(endTimeString);
+      const duration = moment.duration(endTime.diff(startTime));
+      if (duration.asMinutes() < 30) {
+        errors.endTime = `End time should not be before ${startTime.add(30, 'minutes').format('YYYY-MM-DD h:mm a')}`;
+      }
+    }
+    if (reminderTimeString) {
+      const reminderTime = moment(reminderTimeString);
+      const duration = moment.duration(reminderTime.diff(startTime));
+      if (duration.asHours() > -1) {
+        errors.reminderTime = `Reminder time should not be after ${startTime.add(1, 'hours').format('YYYY-MM-DD h:mm a')}`;
+      }
+    }
+  }
+
   return errors;
+};
+
+const notEmpty = (newValue, previousValue) => {
+  return newValue || previousValue;
 };
 
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
@@ -188,9 +229,11 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
       event.preventDefault();
       return;
     }
-    const { change, duration } = this.props;
+    const { change, duration, reminderDuration } = this.props;
     const newEndTime = moment(newValue).add(duration, 'minutes').format('YYYY-MM-DDTHH:mm');
+    const newReminderTime = moment(newValue).add(reminderDuration, 'minutes').format('YYYY-MM-DDTHH:mm');
     change('endTime', newEndTime);
+    change('reminderTime', newReminderTime);
   }
 
   beforeStartTime = (newValue, previousValue, allValues) => {
@@ -233,7 +276,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           type="datetime-local"
           id="endTime"
           component={FormDateTimeInput}
-          normalize={this.beforeStartTime}
+          normalize={notEmpty}
           label="End Time"
           classes={classes}
         />
@@ -250,6 +293,15 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
         <FieldArray
           name="coworkers"
           component={TaskFormCoworkers}
+          classes={classes}
+        />
+        <Field
+          name="reminderTime"
+          type="datetime-local"
+          id="reminderTime"
+          component={FormDateTimeInput}
+          normalize={notEmpty}
+          label="Send Reminder At:"
           classes={classes}
         />
         <Field
@@ -274,6 +326,7 @@ TaskForm.propTypes = {
   handleSubmit: PropTypes.func,
   change: PropTypes.func,
   duration: PropTypes.number.isRequired,
+  reminderDuration: PropTypes.number.isRequired,
   onLoadAvailableCoworkers: PropTypes.func.isRequired,
   isLoadingAvailableCoworkers: PropTypes.bool.isRequired,
   availableCoworkers: PropTypes.array.isRequired,
@@ -286,6 +339,7 @@ const mapStateToProps = createStructuredSelector({
   isUpdate: (state, ownProps) => ownProps.route.path.startsWith('/updatetask'),
   initialValues: makeSelectTaskFormData(),
   duration: makeSelectFormDuration(),
+  reminderDuration: makeSelectFormReminderDuration(),
   isLoadingAvailableCoworkers: makeSelectIsLoadingAvailableCoworkers(),
   availableCoworkers: makeSelectAllAvailableCoworkers(),
 });
