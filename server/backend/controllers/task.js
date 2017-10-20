@@ -51,11 +51,14 @@ module.exports = (router) => {
     if (task.subject
       && task.startTime
       && task.endTime
+      && task.reminderTime
       && task.coworkers) {
       const startTime = new Date(task.startTime);
       const endTime = new Date(task.endTime);
+      const reminderTime = new Date(task.reminderTime);
 
-      if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()) {
+      if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()
+          && isValidDate(reminderTime) && reminderTime.getTime() < startTime.getTime()) {
         const newTask = new Task();
         newTask.subject = task.subject;
         newTask.projectId = projectId;
@@ -70,7 +73,7 @@ module.exports = (router) => {
         newTask.category = task.category;
         newTask.asFree = false;
         newTask.reminder = {
-          time: startTime,
+          time: reminderTime,
           sendStatus: 0,
         };
         newTask.updateSequence = 0;
@@ -113,11 +116,14 @@ module.exports = (router) => {
     if (updatedTask.subject
       && updatedTask.startTime
       && updatedTask.endTime
+      && updatedTask.reminderTime
       && updatedTask.coworkers) {
       const startTime = new Date(updatedTask.startTime);
       const endTime = new Date(updatedTask.endTime);
+      const reminderTime = new Date(updatedTask.reminderTime);
 
-      if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()) {
+      if (isValidDate(startTime) && isValidDate(endTime) && startTime.getTime() < endTime.getTime()
+          && isValidDate(reminderTime) && reminderTime.getTime() < startTime.getTime()) {
         Task.findOne({ _id: taskId }, (err, result) => {
           if (err) {
             handleError(res, err);
@@ -140,10 +146,12 @@ module.exports = (router) => {
           originalTask.content = updatedTask.content;
           originalTask.category = updatedTask.category;
           originalTask.asFree = false;
-          originalTask.reminder = {
-            time: startTime,
-            sendStatus: 0,
-          };
+          if (originalTask.reminder.time.getTime() !== reminderTime.getTime()) {
+            originalTask.reminder = {
+              time: reminderTime,
+              sendStatus: 0,
+            };
+          }
           originalTask.updateSequence += 1;
 
           const newResources = updatedTask.coworkers.map((coworker) => ({ id: coworker.id, resourceType: coworker.resourceType, name: coworker.name }));
@@ -160,6 +168,7 @@ module.exports = (router) => {
 
             res.json({ message: 'OK' });
             // post process to send notification if neccessary
+            // TODO: Only send schedule update when needed, for example reminder update shouldn't trigger new notification
             if (originalTask.taskType === 1) {
               // TODO: optimize this process to reduce db queries, we should refactor to combine two calls
               // send a schedule email for schedule task

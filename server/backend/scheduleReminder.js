@@ -10,11 +10,12 @@ module.exports = () => {
   // every 10 minutes
   schedule.scheduleJob('*/10 * * * *', () => {
   // schedule.scheduleJob('*/30 * * * * *', () => {
-    const startTime = new Date();
-    const endTime = new Date(Date.now() + (24 * 60 * 60 * 1000));
+    // The time is set to 10 minutes before or after
+    const startTime = new Date(Date.now() - (10 * 60 * 1000));
+    const endTime = new Date(Date.now() + (10 * 60 * 1000));
     const contactDict = {};
 
-    const promise = Task.find({ 'reminder.sendStatus': 0, 'time.start': { $gt: startTime, $lt: endTime } }).exec();
+    const promise = Task.find({ 'reminder.sendStatus': 0, 'reminder.time': { $gt: startTime, $lt: endTime } }).exec();
     promise
     .then((tasks) => {
       if (tasks == null || tasks.length === 0) {
@@ -81,7 +82,7 @@ function sendReminderEmail(task, index, contactMapping) {
 
   const toList = filteredContacts.join(',');
   const startMoment = moment(task.time.start);
-  const formattedSubject = `Upcoming - (${startMoment.fromNow()}): ${task.subject}`;
+  const formattedSubject = `Upcoming(${startMoment.fromNow()}): ${task.subject}`;
 
   const mailOptions = {
     from: transporter.sender, // sender address
