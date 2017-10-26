@@ -4,20 +4,26 @@
 
 import { take, call, put, select, cancel, takeLatest } from 'redux-saga/effects';
 import { LOCATION_CHANGE } from 'react-router-redux';
+import moment from 'moment';
 import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 
 import { LOAD_TASKS, DELETE_TASK } from './constants';
 import { tasksLoaded, taskDeleted } from './actions';
-import { makeSelectFromDate, makeSelectToDate } from './selectors';
+import { makeSelectFromDate, makeSelectToDate, makeSelectViewDate, makeSelectView } from './selectors';
 
 /*
  * Github repos request/response handler
  */
 export function* loadTasks() {
   const projectId = yield select(makeSelectProjectId());
-  const startTime = yield select(makeSelectFromDate());
-  const endTime = yield select(makeSelectToDate());
+  const view = yield select(makeSelectView());
+  const viewDate = yield select(makeSelectViewDate());
+
+  // get time range that fit to view:
+  const daysWindow = view === 'week' ? 7 : 30;
+  const startTime = moment(viewDate).subtract(daysWindow, 'days');
+  const endTime = moment(viewDate).add(daysWindow, 'days');
   const loadTasksURL = `api/tasks/${projectId}/${startTime.format()}/${endTime.format()}`;
 
   const token = yield select(makeSelectToken());

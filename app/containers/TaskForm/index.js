@@ -206,7 +206,7 @@ const validate = (values) => {
       const reminderTime = moment(reminderTimeString);
       const duration = moment.duration(reminderTime.diff(startTime));
       if (duration.asHours() > -1) {
-        errors.reminderTime = `Reminder time should not be after ${startTime.add(1, 'hours').format('YYYY-MM-DD h:mm a')}`;
+        errors.reminderTime = `Reminder time should not be after ${startTime.subtract(1, 'hours').format('YYYY-MM-DD h:mm a')}`;
       }
     }
   }
