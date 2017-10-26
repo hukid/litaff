@@ -1,0 +1,192 @@
+import PropTypes from 'prop-types';
+import React from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+import cn from 'classnames';
+import { Link } from 'react-router';
+import Calendar from 'rc-calendar';
+import DatePicker from 'rc-calendar/lib/Picker';
+import { withStyles } from 'material-ui/styles';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import BottomNavigation, { BottomNavigationButton } from 'material-ui/BottomNavigation';
+import GridOn from 'material-ui-icons/GridOn';
+import ViewWeek from 'material-ui-icons/ViewWeek';
+import ViewDay from 'material-ui-icons/ViewDay';
+import ViewList from 'material-ui-icons/ViewList';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
+import Dialog, {
+  DialogActions,
+  DialogTitle,
+} from 'material-ui/Dialog';
+
+import { makeSelectSelectedEvent, makeSelectDeleteConfirmDialogOpen } from './selectors';
+import { deleteTask, eventSelected, openDeleteConfirmDialog, closeDeleteConfirmDialog } from './actions';
+
+const navigate = {
+  PREVIOUS: 'PREV',
+  NEXT: 'NEXT',
+  TODAY: 'TODAY',
+  DATE: 'DATE',
+};
+
+const styles = {
+  toolbarContainer: {
+    display: 'flex',
+    'justify-content': 'space-between',
+    'flex-direction': 'row',
+    'align-items': 'center',
+    'margin-bottom': '10px',
+    'font-size': '16px',
+  },
+  editGroup: {
+  },
+  editButton: {
+    'font-size': 15,
+  },
+  navigationGroup: {
+    display: 'flex',
+    'align-items': 'center',
+    'text-align': 'center',
+  },
+  dateLabel: {
+    'min-width': '150px',
+    'font-size': '15px',
+  },
+  viewGroup: {
+  },
+};
+
+class Toolbar extends React.Component {
+  static propTypes = {
+    view: PropTypes.string.isRequired,
+    views: PropTypes.arrayOf(
+      PropTypes.string,
+    ).isRequired,
+    label: PropTypes.node.isRequired,
+    messages: PropTypes.object,
+    onNavigate: PropTypes.func.isRequired,
+    onViewChange: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
+    onClearSelected: PropTypes.func.isRequired,
+  }
+
+  navigate = (action) => {
+    this.props.onNavigate(action);
+    this.props.onClearSelected();
+  }
+
+  view = (view) => {
+    this.props.onViewChange(view);
+    this.props.onClearSelected();
+  }
+
+  editingGroup() {
+    const { classes, selectedEvent, onDeleteTask, onClearSelected } = this.props;
+    const taskId = selectedEvent && selectedEvent.task._id;
+    return (
+      <div className={classes.editGroup}>
+        <Button color="primary" className={classes.editButton} component={Link} to="/createtask">New</Button>
+        <Button color="primary" className={classes.editButton} disabled={!selectedEvent} component={Link} to={`/updatetask/${taskId}`}>Edit</Button>
+        <Button color="accent" className={classes.editButton} disabled={!selectedEvent} aria-label="Delete" onClick={() => { onDeleteTask(taskId); }}>Delete</Button>
+        {/* <Button raised disabled={!selectedEvent} component={Link} to="/createtask">Copy</Button> */}
+      </div>
+    );
+  }
+
+  navigationGroup() {
+    const { messages, label, classes } = this.props;
+
+    return (
+      <div className={classes.navigationGroup}>
+        <Button
+          dense
+          onClick={() => this.navigate(navigate.TODAY)}
+        >
+          {messages.today}
+        </Button>
+        <IconButton onClick={() => this.navigate(navigate.PREVIOUS)}>
+          <KeyboardArrowLeft />
+        </IconButton>
+        <div className={classes.dateLabel}>
+          <strong>{ label }</strong>
+        </div>
+        <IconButton onClick={() => this.navigate(navigate.NEXT)}>
+          <KeyboardArrowRight />
+        </IconButton>
+      </div>
+    );
+  }
+
+  viewNamesGroup() {
+    const { classes } = this.props;
+    const viewNames = this.props.views;
+    const view = this.props.view;
+
+    if (viewNames.length > 1) {
+      return (
+        <BottomNavigation className={classes.viewGroup} onChange={(event, value) => this.view(value)} showLabels value={view}>
+          <BottomNavigationButton label="Month" value="month" icon={<GridOn />} />
+          <BottomNavigationButton label="Week" value="week" icon={<ViewWeek />} />
+          {/* <BottomNavigationButton label="Day" value="day" icon={<ViewDay />} /> */}
+          <BottomNavigationButton label="Agenda" value="agenda" icon={<ViewList />} />
+        </BottomNavigation>
+      );
+    }
+
+    return null;
+  }
+
+
+  render() {
+    const { classes, selectedEvent, deleteConfirmDialogOpen, onDeleteConfirmDialogClose } = this.props;
+    const taskId = selectedEvent && selectedEvent.task._id;
+    return (
+      <div className={classes.toolbarContainer}>
+        {this.editingGroup()}
+        {this.navigationGroup()}
+        {this.viewNamesGroup()}
+        <Dialog open={deleteConfirmDialogOpen} onRequestClose={onDeleteConfirmDialogClose}>
+          <DialogTitle>Do you want to delete the taks?</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => onDeleteConfirmDialogClose(false)} color="primary">
+              No
+            </Button>
+            <Button onClick={() => onDeleteConfirmDialogClose(true, taskId)} color="primary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = createStructuredSelector({
+  selectedEvent: makeSelectSelectedEvent(),
+  deleteConfirmDialogOpen: makeSelectDeleteConfirmDialogOpen(),
+});
+
+function mapDispatchToProps(dispatch) {
+  return {
+    // onChangeFromDate: (event) => { dispatch(changeFromDate(event.target.value)); dispatch(loadTasks()); },
+    // onChangeToDate: (event) => { dispatch(changeToDate(event.target.value)); dispatch(loadTasks()); },
+    onDeleteTask: (taskId) => {
+      // dispatch(deleteTask(taskId));
+      // dispatch(eventSelected(null));
+      dispatch(openDeleteConfirmDialog());
+    },
+    onClearSelected: () => { dispatch(eventSelected(null)); },
+    onDeleteConfirmDialogClose: (deleteConfirmed, taskId) => {
+      dispatch(closeDeleteConfirmDialog());
+      if (deleteConfirmed) {
+        dispatch(deleteTask(taskId));
+        dispatch(eventSelected(null));
+      }
+    },
+    // onSelectTask: (event) => { },
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Toolbar));

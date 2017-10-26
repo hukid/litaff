@@ -13,6 +13,10 @@ const selectTaskFormDomain = () => (state) => {
 
 const selectTaskId = () => (state, props) => props.params.taskId;
 
+const selectTaskStartTime = () => (state, props) => props.params.startTime;
+
+const selectTaskEndTime = () => (state, props) => props.params.endTime;
+
 const formSelector = formValueSelector('taskForm');
 
 /**
@@ -62,16 +66,20 @@ const makeSelectTask = () => createSelector(
 
 const makeSelectTaskFormData = () => createSelector(
   makeSelectTask(),
-  (task) => {
+  selectTaskStartTime(),
+  selectTaskEndTime(),
+  (task, requestStartTime, requestEndTime) => {
     if (!task) {
-      const defaultDatetime = moment().add(1, 'hours').set({ minute: 0 });
+      const startDateTime = requestStartTime ? moment(requestStartTime) : moment().add(1, 'hours').set({ minute: 0 });
+      const endDateTime = requestEndTime ? moment(requestEndTime) : moment(startDateTime).add(1, 'hours');
+      const reminderDateTime = moment(startDateTime).subtract(1, 'days');
       return fromJS({
         _id: '',
         subject: '',
         content: '',
-        startTime: defaultDatetime.format('YYYY-MM-DDTHH:mm'),
-        endTime: moment(defaultDatetime).add(1, 'hours').format('YYYY-MM-DDTHH:mm'),
-        reminderTime: moment(defaultDatetime).subtract(1, 'days').format('YYYY-MM-DDTHH:mm'),
+        startTime: startDateTime.format('YYYY-MM-DDTHH:mm'),
+        endTime: endDateTime.format('YYYY-MM-DDTHH:mm'),
+        reminderTime: reminderDateTime.format('YYYY-MM-DDTHH:mm'),
         coworkers: [],
         newCoworker: '',
       });

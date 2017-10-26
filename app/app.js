@@ -16,7 +16,10 @@ import { Provider } from 'react-redux';
 import { applyRouterMiddleware, Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { useScroll } from 'react-router-scroll';
+import BigCalendar from 'react-big-calendar';
+import moment from 'moment';
 import 'sanitize.css/sanitize.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // Import root app
 import App from 'containers/App';
@@ -44,6 +47,10 @@ import './global-styles';
 
 // Import root routes
 import createRoutes from './routes';
+
+BigCalendar.setLocalizer(
+  BigCalendar.momentLocalizer(moment)
+);
 
 // Create redux store with history
 // this uses the singleton browserHistory provided by react-router

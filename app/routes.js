@@ -81,7 +81,7 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
-      path: '/createtask',
+      path: '/createtask(/:startTime)(/:endTime)',
       name: 'taskForm',
       onEnter: redirectToHome,
       getComponent(nextState, cb) {
