@@ -17,7 +17,7 @@ import {
   CHANGE_VIEW,
   CHANGE_DATE,
   OPEN_DELETECONFIRMDIALOG,
-  CLOSE_DELETECONFIRMDIALOG
+  CLOSE_DELETECONFIRMDIALOG,
 } from './constants';
 
 export function loadTasks() {

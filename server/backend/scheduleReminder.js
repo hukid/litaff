@@ -98,14 +98,15 @@ function sendReminderEmail(task, index, contactMapping) {
         return;
       }
       logger.info(`sending message ${task.id}`);
-       // mark the task as reminded
-      task.reminder.sendStatus = 1;
-      task.save((saveErr) => {
+      // mark the task as reminded
+      const updatingTask = task;
+      updatingTask.reminder.sendStatus = 1;
+      updatingTask.save((saveErr) => {
         if (saveErr) {
           handleError(saveErr);
           return;
         }
-        logger.info(`sent a reminder for task - ${JSON.stringify(task)}`);
+        logger.info(`sent a reminder for task - ${JSON.stringify(updatingTask)}`);
       });
     });
   }, 1000 * index);

@@ -7,7 +7,7 @@
 
 // Needed for redux-saga es6 generator support
 import 'babel-polyfill';
-import 'typeface-roboto';
+import 'typeface-roboto'; // eslint-disable-line
 
 // Import all the third party stuff
 import React from 'react';

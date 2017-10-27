@@ -2,17 +2,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import cn from 'classnames';
 import { Link } from 'react-router';
-import Calendar from 'rc-calendar';
-import DatePicker from 'rc-calendar/lib/Picker';
+// import Calendar from 'rc-calendar';
+// import DatePicker from 'rc-calendar/lib/Picker';
 import { withStyles } from 'material-ui/styles';
+import 'material-ui-icons/Delete';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import BottomNavigation, { BottomNavigationButton } from 'material-ui/BottomNavigation';
 import GridOn from 'material-ui-icons/GridOn';
 import ViewWeek from 'material-ui-icons/ViewWeek';
-import ViewDay from 'material-ui-icons/ViewDay';
 import ViewList from 'material-ui-icons/ViewList';
 import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
 import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
@@ -70,6 +69,10 @@ class Toolbar extends React.Component {
     onViewChange: PropTypes.func.isRequired,
     classes: PropTypes.object.isRequired,
     onClearSelected: PropTypes.func.isRequired,
+    selectedEvent: PropTypes.object,
+    onDeleteTask: PropTypes.func.isRequired,
+    deleteConfirmDialogOpen: PropTypes.bool.isRequired,
+    onDeleteConfirmDialogClose: PropTypes.func.isRequired,
   }
 
   navigate = (action) => {
@@ -83,7 +86,7 @@ class Toolbar extends React.Component {
   }
 
   editingGroup() {
-    const { classes, selectedEvent, onDeleteTask, onClearSelected } = this.props;
+    const { classes, selectedEvent, onDeleteTask } = this.props;
     const taskId = selectedEvent && selectedEvent.task._id;
     return (
       <div className={classes.editGroup}>
@@ -170,11 +173,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    // onChangeFromDate: (event) => { dispatch(changeFromDate(event.target.value)); dispatch(loadTasks()); },
-    // onChangeToDate: (event) => { dispatch(changeToDate(event.target.value)); dispatch(loadTasks()); },
-    onDeleteTask: (taskId) => {
-      // dispatch(deleteTask(taskId));
-      // dispatch(eventSelected(null));
+    onDeleteTask: () => {
       dispatch(openDeleteConfirmDialog());
     },
     onClearSelected: () => { dispatch(eventSelected(null)); },

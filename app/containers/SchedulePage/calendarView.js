@@ -1,14 +1,15 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import BigCalendar from 'react-big-calendar';
-import { withStyles } from 'material-ui/styles';
-import { Link } from 'react-router';
-import IconButton from 'material-ui/IconButton';
-import DeleteIcon from 'material-ui-icons/Delete';
-import EditIcon from 'material-ui-icons/Edit';
+// import { withStyles } from 'material-ui/styles';
+// import { Link } from 'react-router';
+// import IconButton from 'material-ui/IconButton';
+// import DeleteIcon from 'material-ui-icons/Delete';
+// import EditIcon from 'material-ui-icons/Edit';
 
 import ToolBar from './toolbar';
 
-const allViews = Object.keys(BigCalendar.Views).map((k) => BigCalendar.Views[k]);
+// const allViews = Object.keys(BigCalendar.Views).map((k) => BigCalendar.Views[k]);
 
 // const styles = (theme) => ({
 //   eventContainer: {
@@ -28,24 +29,24 @@ const allViews = Object.keys(BigCalendar.Views).map((k) => BigCalendar.Views[k])
 //   },
 // });
 
-function CustomEventView(props) {
-  const { event, classes } = props;
-  return (
-    <div className={classes.eventContainer} x>
-      <div>
-        {event.title}
-      </div>
-      {/* <div className={classes.iconContainer}>
-        <IconButton className={classes.iconButton} component={Link} >
-          <EditIcon />
-        </IconButton>
-        <IconButton className={classes.iconButton} aria-label="Delete" >
-          <DeleteIcon />
-        </IconButton>
-      </div> */}
-    </div>
-  );
-}
+// function CustomEventView(props) {
+//   const { event, classes } = props;
+//   return (
+//     <div className={classes.eventContainer} x>
+//       <div>
+//         {event.title}
+//       </div>
+//       {/* <div className={classes.iconContainer}>
+//         <IconButton className={classes.iconButton} component={Link} >
+//           <EditIcon />
+//         </IconButton>
+//         <IconButton className={classes.iconButton} aria-label="Delete" >
+//           <DeleteIcon />
+//         </IconButton>
+//       </div> */}
+//     </div>
+//   );
+// }
 
 // const StyledEventView = withStyles(styles)(CustomEventView);
 
@@ -102,8 +103,14 @@ function CalendarView(props) {
 }
 
 CalendarView.propTypes = {
-  events: PropTypes.array,
+  events: PropTypes.array.isRequired,
+  view: PropTypes.string.isRequired,
+  date: PropTypes.object.isRequired,
+  selected: PropTypes.object,
   onSelectEvent: PropTypes.func.isRequired,
+  onSelectSlot: PropTypes.func.isRequired,
+  onView: PropTypes.func.isRequired,
+  onNavigate: PropTypes.func.isRequired,
 };
 
 export default CalendarView;

@@ -31,7 +31,7 @@ const styles = (theme) => ({
   },
 });
 
-const renderField = ({ classes, id, input, label, type, message, meta: { touched, error, warning } }) => (
+const renderField = ({ classes, id, input, label, type, meta: { touched, error, warning } }) => (
   <TextField
     className={classes.textField}
     id={id}
@@ -43,6 +43,15 @@ const renderField = ({ classes, id, input, label, type, message, meta: { touched
     {...input}
   />
 );
+
+renderField.propTypes = {
+  classes: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  input: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  meta: PropTypes.object.isRequired,
+};
 
 export class SignInForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {

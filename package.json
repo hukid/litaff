@@ -154,7 +154,8 @@
       "redux-saga/no-yield-in-race": 2,
       "redux-saga/yield-effects": 2,
       "require-yield": 0,
-      "import/no-webpack-loader-syntax": 0
+      "import/no-webpack-loader-syntax": 0,
+      "no-underscore-dangle": 0
     },
     "settings": {
       "import/resolver": {

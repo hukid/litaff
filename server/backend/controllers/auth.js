@@ -8,13 +8,11 @@ const handleError = require('../utils/handleError');
 const config = require('../config/app');
 
 module.exports = (router) => {
-  const defaultTenantName = 'devTenant';
-  const defaultProjectName = 'devProject';
-
   router.post('/users/signin', (req, res) => {
     let name = req.body.name.trim();
     if (!name) {
-      return res.status(422).send({ error: 'You must enter a name.' });
+      res.status(422).send({ error: 'You must enter a name.' });
+      return;
     }
     name = name.toLowerCase();
     User.findOne({ name })
@@ -92,12 +90,14 @@ module.exports = (router) => {
 
     // Return error if no email provided
     if (!name) {
-      return res.status(422).send({ error: 'You must enter a name.' });
+      res.status(422).send({ error: 'You must enter a name.' });
+      return;
     }
 
     // Return error if no password provided
     if (!password) {
-      return res.status(422).send({ error: 'You must enter a password.' });
+      res.status(422).send({ error: 'You must enter a password.' });
+      return;
     }
 
     name = name.toLowerCase();

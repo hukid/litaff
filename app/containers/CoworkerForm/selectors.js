@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { fromJS } from 'immutable';
+// import { fromJS } from 'immutable';
 import { makeSelectAllCoworkers } from 'containers/CoworkerPage/selectors';
 
 /**
@@ -20,7 +20,7 @@ const makeSelectCoworker = () => createSelector(
     if (!coworkers || !resourceId) {
       return null;
     }
-    const foundCoworkers = coworkers.filter((coworker) => coworker._id == resourceId);
+    const foundCoworkers = coworkers.filter((coworker) => coworker._id === resourceId);
     return foundCoworkers ? foundCoworkers[0] : null;
   }
 );

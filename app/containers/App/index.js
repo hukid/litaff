@@ -90,7 +90,6 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   static propTypes = {
     children: React.PropTypes.node,
     classes: React.PropTypes.object,
-    appLoaded: React.PropTypes.bool,
     loadAppData: React.PropTypes.func,
     loggedIn: React.PropTypes.bool,
     onSignOut: React.PropTypes.func,
@@ -101,7 +100,7 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   }
 
   render() {
-    const { appLoaded, loggedIn, classes } = this.props;
+    const { loggedIn, classes } = this.props;
     const navButtons = loggedIn ? (
       <div>
         <Button color="contrast" onClick={this.props.onSignOut} >Sign Out</Button>

@@ -7,9 +7,7 @@ import moment from 'moment';
 /**
  * Direct selector to the taskForm state domain
  */
-const selectTaskFormDomain = () => (state) => {
-  return state.get('taskForm');
-};
+const selectTaskFormDomain = () => (state) => state.get('taskForm');
 
 const selectTaskId = () => (state, props) => props.params.taskId;
 
@@ -59,7 +57,7 @@ const makeSelectTask = () => createSelector(
     if (!tasks) {
       return null;
     }
-    const foundTasks = tasks.filter((task) => task._id == taskId);
+    const foundTasks = tasks.filter((task) => task._id === taskId);
     return foundTasks ? foundTasks[0] : null;
   }
 );

@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+// import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { Field, FieldArray, reduxForm } from 'redux-form/immutable';
 import moment from 'moment';
@@ -32,7 +32,7 @@ import {
   addCoworker,
   loadAvailableCoworkers,
 } from './actions';
-import messages from './messages';
+// import messages from './messages';
 
 const styles = (theme) => ({
   container: {
@@ -116,7 +116,7 @@ FormTextSingleLine.propTypes = {
   meta: PropTypes.object.isRequired,
 };
 
-const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
+const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { error } }) =>
   <TextField
     inputClassName={classes.dateTimeInput}
     id={id}
@@ -130,6 +130,15 @@ const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, typ
     onChange={onChange}
   />
 ;
+
+FormDateTimeInput.propTypes = {
+  classes: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  input: PropTypes.object.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  meta: PropTypes.object.isRequired,
+};
 
 const FormTextMultiLine = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
   <TextField
@@ -148,7 +157,16 @@ const FormTextMultiLine = ({ id, classes, input: { value, onChange }, label, typ
   />
 ;
 
-const TaskFormCoworkers = ({ classes, fields, meta: { error, submitFailed } }) =>
+FormTextMultiLine.propTypes = {
+  classes: PropTypes.object.isRequired,
+  id: PropTypes.string.isRequired,
+  input: PropTypes.object.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  meta: PropTypes.object.isRequired,
+};
+
+const TaskFormCoworkers = ({ classes, fields }) =>
   <div className={classes.coworkersWrapper}>
     <div className={classes.coworkerLabel}>
       Coworkers:
@@ -166,6 +184,11 @@ const TaskFormCoworkers = ({ classes, fields, meta: { error, submitFailed } }) =
     </div>
   </div>
 ;
+
+TaskFormCoworkers.propTypes = {
+  classes: PropTypes.object.isRequired,
+  fields: PropTypes.object.isRequired,
+};
 
 const validate = (values) => {
   const errors = {};
@@ -214,9 +237,7 @@ const validate = (values) => {
   return errors;
 };
 
-const notEmpty = (newValue, previousValue) => {
-  return newValue || previousValue;
-};
+const notEmpty = (newValue, previousValue) => newValue || previousValue;
 
 export class TaskForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 

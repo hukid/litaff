@@ -8,13 +8,8 @@ import { arrayPush, change } from 'redux-form/immutable';
 import moment from 'moment';
 
 import { CREATE_TASK, UPDATE_TASK, ADD_COWORKER, LOAD_AVAILABLE_COWORKERS } from './constants';
-import {
-  makeSelectTaskForm,
-  makeSelectFormNewCoworker,
-} from './selectors';
 
 import {
-  coworkerAdded,
   availableCoworkersLoaded,
 } from './actions';
 

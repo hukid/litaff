@@ -4,9 +4,10 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
+// import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { fromJS } from 'immutable';
 import { Field, FieldArray, reduxForm } from 'redux-form/immutable';
@@ -20,7 +21,7 @@ import Divider from 'material-ui/Divider';
 import { indigo } from 'material-ui/colors';
 
 import { makeSelectCoworker } from './selectors';
-import messages from './messages';
+// import messages from './messages';
 import { createCoworker, updateCoworker } from './actions';
 
 const styles = (theme) => ({
@@ -85,6 +86,16 @@ const FormTextSingleLine = ({ id, className, placeholder, input: { value, onChan
   />);
 };
 
+FormTextSingleLine.propTypes = {
+  id: PropTypes.string.isRequired,
+  className: PropTypes.string.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  input: PropTypes.object.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  meta: PropTypes.object.isRequired,
+};
+
 const required = (value) => (value ? undefined : 'Required');
 
 const emailFormat = (value) =>
@@ -92,7 +103,7 @@ const emailFormat = (value) =>
     ? 'Invalid email address'
     : undefined;
 
-const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } }) =>
+const CoworkerContactFields = ({ classes, fields }) =>
   <div className={classes.contactsWrapper}>
     {fields.map((contact, index) =>
       <div key={index} className={classes.contactContainer}>
@@ -130,7 +141,6 @@ const CoworkerContactFields = ({ classes, fields, meta: { error, submitFailed } 
 
 CoworkerContactFields.propTypes = {
   fields: PropTypes.object,
-  meta: PropTypes.object,
   classes: PropTypes.object,
 };
 
