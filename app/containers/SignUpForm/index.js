@@ -24,6 +24,14 @@ const renderField = ({ id, input, label, type, meta: { touched, error, warning }
   </div>
 );
 
+renderField.propTypes = {
+  id: PropTypes.string.isRequired,
+  input: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  meta: PropTypes.object.isRequired,
+};
+
 
 export class SignUpForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   render() {

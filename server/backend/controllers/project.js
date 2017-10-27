@@ -3,7 +3,6 @@ const Tenant = require('../models/tenant');
 const handleError = require('../utils/handleError');
 
 module.exports = (router) => {
-  const defaultTenantName = 'devTenant';
   const defaultProjectName = 'devProject';
 
   router.get('/createDefaultProject', (req, res) => {

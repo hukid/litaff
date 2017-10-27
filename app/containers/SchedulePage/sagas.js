@@ -10,7 +10,7 @@ import request from 'utils/request';
 
 import { LOAD_TASKS, DELETE_TASK } from './constants';
 import { tasksLoaded, taskDeleted } from './actions';
-import { makeSelectFromDate, makeSelectToDate, makeSelectViewDate, makeSelectView } from './selectors';
+import { makeSelectViewDate, makeSelectView } from './selectors';
 
 /*
  * Github repos request/response handler

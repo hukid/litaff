@@ -6,20 +6,17 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
-import styled from 'styled-components';
+// import { FormattedMessage } from 'react-intl';
 import { createStructuredSelector } from 'reselect';
 import { Link } from 'react-router';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
-import Input, { InputLabel } from 'material-ui/Input';
 import TextField from 'material-ui/TextField';
 import Table, {
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  TableSortLabel,
 } from 'material-ui/Table';
 import Typography from 'material-ui/Typography';
 import IconButton from 'material-ui/IconButton';
@@ -31,9 +28,9 @@ import blue from 'material-ui/colors/blue';
 
 import { makeSelectFilteredCoworkers, makeSelectNameFilter, makeSelectShowEmptyEmailOnly } from './selectors';
 import { loadCoworkers, changeFilterText, toggleEmptyEmailOnly, deleteCoworker } from './actions';
-import messages from './messages';
+// import messages from './messages';
 
-const styles = (theme) => ({
+const styles = () => ({
   container: {
     width: '800px',
     margin: '0 auto',
@@ -148,6 +145,7 @@ CoworkerPage.propTypes = {
   nameFilter: PropTypes.string.isRequired,
   onChangeNameFilter: PropTypes.func.isRequired,
   onToggleShowEmptyEmailOnly: PropTypes.func.isRequired,
+  onDeleteCoworker: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({

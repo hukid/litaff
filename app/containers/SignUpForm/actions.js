@@ -6,7 +6,6 @@
 
 import {
   DEFAULT_ACTION,
-  SUBMITSIGNUPUSER,
 } from './constants';
 
 export function defaultAction() {
