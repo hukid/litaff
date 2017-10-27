@@ -53,6 +53,8 @@ module.exports = (router) => {
         newResource.name = resourceInfo.name;
         newResource.resourceType = 1;
         newResource.contacts = [];
+        newResource.groups = [];
+        newResource.tags = [];
 
         if (resourceInfo.contacts) {
           resourceInfo.contacts.forEach((contact) => {

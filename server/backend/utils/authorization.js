@@ -1,3 +1,4 @@
+// TODO: ownProjects can be more
 exports.authorizeWithProjectId = (user, projectId) => user.ownProjects[0].id == projectId; // eslint-disable-line eqeqeq
 
 exports.handleAuthorizationError = (res, err) => {

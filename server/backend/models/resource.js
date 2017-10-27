@@ -3,6 +3,7 @@ const mongooseDelete = require('mongoose-delete');
 
 const Schema = mongoose.Schema;
 
+// TOOD: add other property for different resource types
 const ResourceSchema = new mongoose.Schema({
   projectId: { type: Schema.Types.ObjectId, required: true },
   name: { type: String, required: true },
@@ -12,6 +13,8 @@ const ResourceSchema = new mongoose.Schema({
     value: { type: String, required: true },
   }, // 1 - email, no definition for other contacts
   ],
+  groups: [], // TODO: remove default and have it set when create
+  tags: [],
 }, {
   timestamps: true,
 });
