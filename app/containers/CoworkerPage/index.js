@@ -11,6 +11,7 @@ import { createStructuredSelector } from 'reselect';
 import { Link } from 'react-router';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
+import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import Table, {
   TableBody,
@@ -38,14 +39,20 @@ const styles = () => ({
   toolbarContainer: {
     margin: '0 24px 16px 24px',
     display: 'flex',
-    'justify-content': 'space-between',
+    'justify-content': 'flex-start',
     'align-items': 'flex-end',
   },
+  newButton: {
+    marginBottom: '8px',
+    marginRight: '8px',
+  },
   filterInput: {
-    width: 300,
+    flex: '1 0 auto',
   },
   swtich: {
     marginTop: 16,
+    marginLeft: 8,
+    marginRight: 0,
   },
   tableHeader: {
     backgroundColor: blue[300],
@@ -69,6 +76,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
     return (
       <Paper className={classes.container}>
         <div className={classes.toolbarContainer}>
+          <Button className={classes.newButton} color="primary" raised component={Link} to="/createcoworker">New</Button>
           <TextField
             className={classes.filterInput}
             id="name-filter"

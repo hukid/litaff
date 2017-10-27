@@ -31,7 +31,7 @@ const makeSelectFilteredCoworkers = () => createSelector(
   (coworkers, nameFilter, showEmptyEmailOnly) => {
     let filteredCoworkers = coworkers;
     if (nameFilter !== '') {
-      filteredCoworkers = coworkers.filter((coworker) => coworker.name.toLowerCase().indexOf(nameFilter) >= 0);
+      filteredCoworkers = coworkers.filter((coworker) => coworker.name.toLowerCase().indexOf(nameFilter.toLowerCase()) >= 0);
     }
 
     if (showEmptyEmailOnly) {
