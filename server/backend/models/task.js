@@ -34,6 +34,7 @@ const TaskSchema = new Schema({
   content: String,
   taskType: { type: Number, reuired: true }, // 1: schedule, TODO: no other type so far
   category: String,
+  tags: [],
   asFree: { type: Boolean, required: true },
   time: { type: TaskTimeSchema },
   reminder: { type: ReminderSchema },
