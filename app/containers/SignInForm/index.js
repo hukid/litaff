@@ -47,7 +47,7 @@ const renderField = ({ classes, id, input, label, type, meta: { touched, error, 
 renderField.propTypes = {
   classes: PropTypes.object.isRequired,
   id: PropTypes.string.isRequired,
-  input: PropTypes.string.isRequired,
+  input: PropTypes.object.isRequired,
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
@@ -59,20 +59,19 @@ export class SignInForm extends React.PureComponent { // eslint-disable-line rea
 
     return (
       <form onSubmit={this.props.handleSubmit} className={classes.container}>
-        <FormattedMessage {...messages.header} />
         <Field
           name="name"
           type="text"
           id="name"
           component={renderField} label="Name"
-          classes
+          classes={classes}
         />
         <Field
           name="password"
           type="password"
           id="password"
           component={renderField} label="Password"
-          classes
+          classes={classes}
         />
         <Button raised color="primary" type="submit">Sign In</Button>
       </form>

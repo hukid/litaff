@@ -103,10 +103,13 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
     loadAppData: React.PropTypes.func,
     loggedIn: React.PropTypes.bool,
     onSignOut: React.PropTypes.func,
+    router: React.PropTypes.object,
   };
 
   componentDidMount() {
-    this.props.loadAppData();
+    if (this.props.router.location.pathname !== '/signup') {
+      this.props.loadAppData();
+    }
   }
 
   render() {
