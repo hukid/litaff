@@ -36,7 +36,7 @@ const TaskSchema = new Schema({
   category: String,
   tags: [],
   asFree: { type: Boolean, required: true },
-  time: { type: TaskTimeSchema },
+  time: { type: TaskTimeSchema, required: true },
   reminder: { type: ReminderSchema },
   resources: [TaskResourceSchema],
   updateSequence: { type: Number, required: true },
