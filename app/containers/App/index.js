@@ -61,6 +61,16 @@ const styles = (theme) => ({
       height: 64,
     },
   },
+  drawerList: {
+    paddingTop: 0,
+  },
+  drawerButton: {
+    'text-transform': 'uppercase',
+    'padding-left': '30px',
+  },
+  drawerButtonText: {
+    'font-weight': 'bold',
+  },
   content: {
     backgroundColor: theme.palette.background.default,
     width: `calc(100vw - ${drawerWidth}px)`,
@@ -108,7 +118,7 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
     ) : (
       <div>
         <Button component={Link} to="/signin" color="contrast">Sign in</Button>
-        <Button component={Link} to="/signup" color="contrast">Sign up</Button>
+        {/* <Button component={Link} to="/signup" color="contrast">Sign up</Button> */}
       </div>
     );
 
@@ -131,13 +141,13 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
             >
               <div className={classes.drawerHeader} />
               <Divider />
-              <List>
-                <ListItem button component={Link} to="/schedule">
-                  <ListItemText primary="Schedule" />
+              <List className={classes.drawerList}>
+                <ListItem button className={classes.drawerButton} component={Link} to="/schedule">
+                  <ListItemText classes={{ text: classes.drawerButtonText }} primary="Schedule" />
                 </ListItem>
                 <Divider />
-                <ListItem button component={Link} to="/coworker">
-                  <ListItemText primary="Coworker" />
+                <ListItem button className={classes.drawerButton} component={Link} to="/coworker">
+                  <ListItemText classes={{ text: classes.drawerButtonText }} primary="Coworker" />
                 </ListItem>
                 <Divider />
               </List>

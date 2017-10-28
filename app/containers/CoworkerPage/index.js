@@ -33,7 +33,7 @@ import { loadCoworkers, changeFilterText, toggleEmptyEmailOnly, deleteCoworker }
 
 const styles = () => ({
   container: {
-    width: '800px',
+    minWidth: '600px',
     margin: '0 auto',
   },
   toolbarContainer: {
