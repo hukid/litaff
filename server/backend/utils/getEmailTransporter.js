@@ -3,13 +3,13 @@ const nodemailer = require('nodemailer');
 module.exports = () => {
   const sender = 'seattletruelight@outlook.com';
   const transporter = nodemailer.createTransport({
-    host: 'smtp.office365.com',
+    host: 'smtp-mail.outlook.com',
     port: '587',
     auth: {
       user: sender,
       pass: 'YR>Ff1]f2Lwa',
     },
-    secureConnection: false,
+    secureConnection: true,
     tls: { ciphers: 'SSLv3' },
   });
 
