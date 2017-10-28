@@ -25,6 +25,7 @@ const styles = (theme) => ({
     padding: theme.spacing.unit,
     margin: '0 auto',
     height: '100%',
+    minWidth: '680px',
   },
   headerContainer: {
     marginLeft: 5,

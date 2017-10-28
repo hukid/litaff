@@ -89,9 +89,9 @@ const FormTextSingleLine = ({ id, className, placeholder, input: { value, onChan
 FormTextSingleLine.propTypes = {
   id: PropTypes.string.isRequired,
   className: PropTypes.string.isRequired,
-  placeholder: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   input: PropTypes.object.isRequired,
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string,
   type: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
 };
