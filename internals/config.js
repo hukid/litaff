@@ -35,6 +35,8 @@ const ReactBoilerplate = {
         'jsonwebtoken',
         'passport',
         'passport-jwt',
+        'ical-generator',
+        'autosuggest-highlight',
       ],
 
       /**
