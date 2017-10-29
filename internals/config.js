@@ -24,7 +24,6 @@ const ReactBoilerplate = {
         'chalk',
         'compression',
         'cross-env',
-        'dotenv',
         'express',
         'ip',
         'minimist',
@@ -38,6 +37,7 @@ const ReactBoilerplate = {
         'passport-jwt',
         'ical-generator',
         'autosuggest-highlight',
+        'dotenv',
       ],
 
       /**
