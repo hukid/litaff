@@ -11,13 +11,13 @@ module.exports = () => {
   //   },
   // });
 
-  const sender = 'seattletruelight@outlook.com';
+  const sender = 'truelight_seattle@outlook.com';
   const transporter = nodemailer.createTransport({
     host: 'smtp.sendgrid.net',
     port: '587',
     auth: {
       user: 'apikey',
-      pass: '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',
+      pass: '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',
     },
     secure: false,
   });
