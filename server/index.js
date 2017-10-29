@@ -2,6 +2,7 @@
 
 const express = require('express');
 const logger = require('./logger');
+require('dotenv').config();
 
 const argv = require('minimist')(process.argv.slice(2));
 const setup = require('./middlewares/frontendMiddleware');
