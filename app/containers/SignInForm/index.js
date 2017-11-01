@@ -31,12 +31,13 @@ const styles = (theme) => ({
   },
 });
 
-const renderField = ({ classes, id, input, label, type, meta: { touched, error, warning } }) => (
+const renderField = ({ classes, id, input, label, type, autoFocus, meta: { touched, error, warning } }) => (
   <TextField
     className={classes.textField}
     id={id}
     label={label}
     type={type}
+    autoFocus={autoFocus}
     margin="normal"
     helperText={touched && ((error && `${error}`) || (warning && `${warning}`))}
     error={!!error}
@@ -51,6 +52,7 @@ renderField.propTypes = {
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
+  autoFocus: PropTypes.bool,
 };
 
 export class SignInForm extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
@@ -63,6 +65,7 @@ export class SignInForm extends React.PureComponent { // eslint-disable-line rea
           name="name"
           type="text"
           id="name"
+          autoFocus
           component={renderField} label="Name"
           classes={classes}
         />

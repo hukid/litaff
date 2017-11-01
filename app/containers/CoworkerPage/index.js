@@ -86,6 +86,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
             value={nameFilter}
             onChange={onChangeNameFilter}
             placeholder="Add Name Filter"
+            autoFocus
           />
           <div className={classes.swtich}>
             <FormControlLabel

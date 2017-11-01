@@ -63,7 +63,7 @@ const styles = (theme) => ({
   },
 });
 
-const FormTextSingleLine = ({ id, className, placeholder, input: { value, onChange, onBlur }, label, type, meta: { touched, error } }) => {
+const FormTextSingleLine = ({ id, className, placeholder, input: { value, onChange, onBlur }, label, type, autoFocus, meta: { touched, error } }) => {
   const helperText = touched && error && `${error}`;
   const blurHandler = () => {
     onBlur();
@@ -74,6 +74,7 @@ const FormTextSingleLine = ({ id, className, placeholder, input: { value, onChan
     id={id}
     label={label}
     type={type}
+    autoFocus={autoFocus}
     margin="normal"
     helperText={helperText}
     error={touched && !!error}
@@ -94,6 +95,7 @@ FormTextSingleLine.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
+  autoFocus: PropTypes.bool,
 };
 
 const required = (value) => (value ? undefined : 'Required');
@@ -123,6 +125,7 @@ const CoworkerContactFields = ({ classes, fields }) =>
           component={FormTextSingleLine}
           validate={[required, emailFormat]}
           className={classes.contactInput}
+          autoFocus
         />
         <IconButton onClick={() => fields.remove(index)} className={classes.deleteButton} aria-label="Delete">
           <DeleteIcon />
@@ -154,6 +157,7 @@ class CoworkerForm extends React.PureComponent { // eslint-disable-line react/pr
           name="name"
           type="text"
           id="name"
+          autoFocus
           component={FormTextSingleLine}
           label="Name"
           className={classes.nameInput}

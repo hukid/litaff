@@ -84,7 +84,7 @@ const styles = (theme) => ({
   },
 });
 
-const FormTextSingleLine = ({ id, classes, input: { value, onChange, onBlur }, label, type, meta: { touched, error } }) => {
+const FormTextSingleLine = ({ id, classes, input: { value, onChange, onBlur }, label, type, autoFocus, meta: { touched, error } }) => {
   const helperText = touched && error && `${error}`;
   const blurHandler = () => {
     onBlur();
@@ -95,6 +95,7 @@ const FormTextSingleLine = ({ id, classes, input: { value, onChange, onBlur }, l
     id={id}
     label={label}
     type={type}
+    autoFocus={autoFocus}
     margin="normal"
     helperText={helperText}
     error={touched && !!error}
@@ -114,6 +115,7 @@ FormTextSingleLine.propTypes = {
   label: PropTypes.string,
   type: PropTypes.string,
   meta: PropTypes.object.isRequired,
+  autoFocus: PropTypes.bool,
 };
 
 const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { error } }) =>
@@ -282,6 +284,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           component={FormTextSingleLine}
           label="Subject"
           classes={classes}
+          autoFocus
         />
         <Field
           name="startTime"
