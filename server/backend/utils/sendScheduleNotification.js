@@ -2,6 +2,7 @@ const Resource = require('../models/resource');
 const logger = require('../../logger');
 const getEmailTransporter = require('./getEmailTransporter');
 const ical = require('ical-generator');
+const moment = require('moment');
 
 // TODO: add a cache for resources
 // let resourcesCache = null;
@@ -41,13 +42,15 @@ function sendEmailNotification(task, attendees, notificationType, toList) {
 
   const method = notificationType === 3 ? 'cancel' : 'request';
   const adjustedSequence = notificationType === 3 ? task.updateSequence + 1 : task.updateSequence;
-  const formattedSubject = `${notificationType === 3 ? 'Canceled: ' : ''}${task.subject}`;
+  const formattedSubject = formatEmailSubject(notificationType, task);
+  const htmlContent = formatEmailContent(task);
 
   // conduct ical event
   calendar.createEvent({
     start: task.time.start,
     end: task.time.end,
     summary: formattedSubject,
+    htmlDescription: htmlContent,
     description: task.content,
     method,
     attendees: toList,
@@ -64,10 +67,15 @@ function sendEmailNotification(task, attendees, notificationType, toList) {
     from: transporter.sender, // sender address
     to: toString, // list of receivers
     subject: formattedSubject, // Subject line
-    text: `${task.content}`,
+    html: htmlContent,
+    text: task.content,
     // icalEvent: {
-    //   // filename: 'schedule.ics',
-    //   method: 'request',
+    //   filename: 'schedule.ics',
+    //   method,
+    //   content,
+    // },
+    // attachments: {
+    //   filename: 'schedule.ics',
     //   content,
     // },
     alternatives: [{
@@ -83,4 +91,17 @@ function sendEmailNotification(task, attendees, notificationType, toList) {
     }
     logger.info(`sent schedule for task: ${task.id}`);
   });
+}
+
+function formatEmailSubject(notificationType, task) {
+  // TODO: now all force to one single timezone, this should be changed by project settings
+  const eventStartMoment = moment(task.time.start).tz('America/Los_Angeles');
+  return `${notificationType === 3 ? 'Canceled: ' : ''}(${eventStartMoment.minute() === 0 ? eventStartMoment.format('M/D hA, ddd') : eventStartMoment.format('M/D h:mA, ddd')}) ${task.subject}`;
+}
+
+function formatEmailContent(task) {
+  // TODO: now all force to one single timezone, this should be changed by project settings
+  const eventStartMoment = moment(task.time.start).tz('America/Los_Angeles');
+  const eventEndMoment = moment(task.time.end).tz('America/Los_Angeles');
+  return `<span><strong>StartTime: </strong>${eventStartMoment.format('llll')}</span><br/><span><strong>EndTime: </strong>${eventEndMoment.format('llll')}</span><br/><br/><div>${task.content}</div>`;
 }

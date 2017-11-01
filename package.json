@@ -231,6 +231,7 @@
     "material-ui-icons": "^1.0.0-beta.5",
     "minimist": "1.2.0",
     "moment": "^2.18.1",
+    "moment-timezone": "^0.5.14",
     "mongoose": "^4.11.4",
     "mongoose-delete": "^0.4.0",
     "node-schedule": "^1.2.4",
