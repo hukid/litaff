@@ -81,7 +81,7 @@ const components = {
 };
 
 function CalendarView(props) {
-  const { events, onSelectEvent, onSelectSlot, onView, onNavigate, view, date, selected } = props;
+  const { events, onSelectEvent, onDoubleClickEvent, onSelectSlot, onView, onNavigate, view, date, selected } = props;
   return (
     <BigCalendar
       selectable
@@ -90,6 +90,7 @@ function CalendarView(props) {
       date={date}
       components={components}
       onSelectEvent={onSelectEvent}
+      onDoubleClickEvent={onDoubleClickEvent}
       onSelectSlot={onSelectSlot}
       onView={onView}
       onNavigate={onNavigate}
@@ -109,6 +110,7 @@ CalendarView.propTypes = {
   selected: PropTypes.object,
   onSelectEvent: PropTypes.func.isRequired,
   onSelectSlot: PropTypes.func.isRequired,
+  onDoubleClickEvent: PropTypes.func.isRequired,
   onView: PropTypes.func.isRequired,
   onNavigate: PropTypes.func.isRequired,
 };

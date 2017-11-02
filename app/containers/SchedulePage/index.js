@@ -82,7 +82,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
 
   render() {
     const { classes, events, selectedEvent, view, date,
-      onSelectEvent, onSelectSlot, onView, onNavigate,
+      onSelectEvent, onDoubleClickEvent, onSelectSlot, onView, onNavigate,
       createDialogOpen, onCreateDialogClose, selectedSlotTime } = this.props;
 
     return (
@@ -93,6 +93,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
           selected={selectedEvent}
           onSelectEvent={onSelectEvent}
           onSelectSlot={onSelectSlot}
+          onDoubleClickEvent={onDoubleClickEvent}
           onNavigate={onNavigate}
           onView={onView}
           events={events}
@@ -122,6 +123,7 @@ SchedulePage.propTypes = {
   onLoadTasks: PropTypes.func,
   onSelectEvent: PropTypes.func,
   onSelectSlot: PropTypes.func,
+  onDoubleClickEvent: PropTypes.func,
   onView: PropTypes.func,
   onNavigate: PropTypes.func.isRequired,
   createDialogOpen: PropTypes.bool.isRequired,
@@ -144,6 +146,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     onLoadTasks: () => dispatch(loadTasks()),
     onDeleteTask: (taskId) => dispatch(deleteTask(taskId)),
     onSelectEvent: (event) => { dispatch(eventSelected(event)); },
+    onDoubleClickEvent: () => { alert('double clicked'); }, // (event) => { alert("double clicked"); },
     onSelectSlot: (slotInfo) => { dispatch(slotSelected(slotInfo)); },
     onView: (view) => {
       dispatch(changeView(view));
