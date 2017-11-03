@@ -26,9 +26,13 @@ import EditIcon from 'material-ui-icons/Edit';
 import { FormControlLabel } from 'material-ui/Form';
 import Switch from 'material-ui/Switch';
 import blue from 'material-ui/colors/blue';
+import Dialog, {
+  DialogActions,
+  DialogTitle,
+} from 'material-ui/Dialog';
 
-import { makeSelectFilteredCoworkers, makeSelectNameFilter, makeSelectShowEmptyEmailOnly } from './selectors';
-import { loadCoworkers, changeFilterText, toggleEmptyEmailOnly, deleteCoworker } from './actions';
+import { makeSelectFilteredCoworkers, makeSelectNameFilter, makeSelectShowEmptyEmailOnly, makeSelectShowDeleteConfirmDialog, makeSelectCoworkerToDelete } from './selectors';
+import { loadCoworkers, changeFilterText, toggleEmptyEmailOnly, deleteCoworker, showDeleteDialog } from './actions';
 // import messages from './messages';
 
 const styles = () => ({
@@ -72,7 +76,8 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
   }
 
   render() {
-    const { classes, showEmptyEmailOnly, nameFilter, onChangeNameFilter, onToggleShowEmptyEmailOnly, onDeleteCoworker } = this.props;
+    const { classes, showEmptyEmailOnly, nameFilter, showDeleteConfirmDialog, coworkerToDelete,
+      onChangeNameFilter, onToggleShowEmptyEmailOnly, onDeleteCoworker, onDeleteConfirmDialogClose } = this.props;
     return (
       <Paper className={classes.container}>
         <div className={classes.toolbarContainer}>
@@ -131,7 +136,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
                       <IconButton component={Link} to={`/updatecoworker/${coworker._id}`}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton aria-label="Delete" onClick={() => onDeleteCoworker(coworker._id)}>
+                      <IconButton aria-label="Delete" onClick={() => onDeleteCoworker(coworker)}>
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>
@@ -141,6 +146,17 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
             }
           </TableBody>
         </Table>
+        <Dialog open={showDeleteConfirmDialog} onRequestClose={onDeleteConfirmDialogClose}>
+          <DialogTitle>{`Do you want to delete "${coworkerToDelete && coworkerToDelete.name}"?`}</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => onDeleteConfirmDialogClose(false)} color="primary">
+              No
+            </Button>
+            <Button onClick={() => onDeleteConfirmDialogClose(true, coworkerToDelete && coworkerToDelete._id)} raised color="primary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Paper>
     );
   }
@@ -155,12 +171,17 @@ CoworkerPage.propTypes = {
   onChangeNameFilter: PropTypes.func.isRequired,
   onToggleShowEmptyEmailOnly: PropTypes.func.isRequired,
   onDeleteCoworker: PropTypes.func.isRequired,
+  showDeleteConfirmDialog: PropTypes.bool.isRequired,
+  onDeleteConfirmDialogClose: PropTypes.func.isRequired,
+  coworkerToDelete: PropTypes.object,
 };
 
 const mapStateToProps = createStructuredSelector({
   coworkers: makeSelectFilteredCoworkers(),
   nameFilter: makeSelectNameFilter(),
   showEmptyEmailOnly: makeSelectShowEmptyEmailOnly(),
+  showDeleteConfirmDialog: makeSelectShowDeleteConfirmDialog(),
+  coworkerToDelete: makeSelectCoworkerToDelete(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -168,7 +189,13 @@ function mapDispatchToProps(dispatch) {
     onLoadCoworkers: () => dispatch(loadCoworkers()),
     onChangeNameFilter: (event) => dispatch(changeFilterText(event.target.value)),
     onToggleShowEmptyEmailOnly: (event, checked) => dispatch(toggleEmptyEmailOnly(checked)),
-    onDeleteCoworker: (coworker) => dispatch(deleteCoworker(coworker)),
+    onDeleteCoworker: (coworkerToDelete) => dispatch(showDeleteDialog(true, coworkerToDelete)),
+    onDeleteConfirmDialogClose: (deleteConfirmed, coworkerId) => {
+      dispatch(showDeleteDialog(false));
+      if (deleteConfirmed) {
+        dispatch(deleteCoworker(coworkerId));
+      }
+    },
   };
 }
 

@@ -12,6 +12,7 @@ import {
   TOGGLE_EMPTYEMAILONLY,
   DELETE_COWORKER,
   COWORKER_DELETED,
+  SHOW_DELETEDIALOG,
 } from './constants';
 
 export function defaultAction() {
@@ -58,5 +59,13 @@ export function coworkerDeleted(coworkerId) {
   return {
     type: COWORKER_DELETED,
     coworkerId,
+  };
+}
+
+export function showDeleteDialog(open, coworkerToDelete) {
+  return {
+    type: SHOW_DELETEDIALOG,
+    open,
+    coworkerToDelete,
   };
 }

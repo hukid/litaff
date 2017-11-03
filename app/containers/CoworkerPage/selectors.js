@@ -24,6 +24,16 @@ const makeSelectAllCoworkers = () => createSelector(
   (substate) => substate.get('coworkers').toJS(),
 );
 
+const makeSelectShowDeleteConfirmDialog = () => createSelector(
+  selectCoworkerPageDomain(),
+  (substate) => substate.get('showDeleteDialog'),
+);
+
+const makeSelectCoworkerToDelete = () => createSelector(
+  selectCoworkerPageDomain(),
+  (substate) => substate.get('coworkerToDelete'),
+);
+
 const makeSelectFilteredCoworkers = () => createSelector(
   makeSelectAllCoworkers(),
   makeSelectNameFilter(),
@@ -58,4 +68,6 @@ export {
   makeSelectFilteredCoworkers,
   makeSelectNameFilter,
   makeSelectShowEmptyEmailOnly,
+  makeSelectShowDeleteConfirmDialog,
+  makeSelectCoworkerToDelete,
 };

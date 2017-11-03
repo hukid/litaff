@@ -10,12 +10,15 @@ import {
   CHANGE_FILTERTEXT,
   TOGGLE_EMPTYEMAILONLY,
   COWORKER_DELETED,
+  SHOW_DELETEDIALOG,
 } from './constants';
 
 const initialState = fromJS({
   coworkers: [],
   nameFilter: '',
   showEmptyEmailOnly: false,
+  showDeleteDialog: false,
+  coworkerToDelete: null,
 });
 
 function coworkerPageReducer(state = initialState, action) {
@@ -30,6 +33,10 @@ function coworkerPageReducer(state = initialState, action) {
       const coworkers = state.get('coworkers');
       const newCoworkers = coworkers.filterNot((coworker) => coworker.get('_id') === action.coworkerId);
       return state.set('coworkers', newCoworkers);
+    }
+    case SHOW_DELETEDIALOG: {
+      const newState = state.set('showDeleteDialog', action.open);
+      return action.open ? newState.set('coworkerToDelete', action.coworkerToDelete) : newState;
     }
     default:
       return state;

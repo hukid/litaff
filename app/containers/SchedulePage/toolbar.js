@@ -151,12 +151,12 @@ class Toolbar extends React.Component {
         {this.navigationGroup()}
         {this.viewNamesGroup()}
         <Dialog open={deleteConfirmDialogOpen} onRequestClose={onDeleteConfirmDialogClose}>
-          <DialogTitle>Do you want to delete the taks?</DialogTitle>
+          <DialogTitle>Do you want to delete the task - {selectedEvent && selectedEvent.title}?</DialogTitle>
           <DialogActions>
             <Button onClick={() => onDeleteConfirmDialogClose(false)} color="primary">
               No
             </Button>
-            <Button onClick={() => onDeleteConfirmDialogClose(true, taskId)} color="primary" autoFocus>
+            <Button onClick={() => onDeleteConfirmDialogClose(true, taskId)} raised color="primary" autoFocus>
               Yes
             </Button>
           </DialogActions>
@@ -184,7 +184,6 @@ function mapDispatchToProps(dispatch) {
         dispatch(eventSelected(null));
       }
     },
-    // onSelectTask: (event) => { },
   };
 }
 
