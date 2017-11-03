@@ -42,7 +42,7 @@ const styles = {
   editGroup: {
   },
   editButton: {
-    'font-size': 15,
+    'font-size': 13,
   },
   navigationGroup: {
     display: 'flex',
@@ -90,10 +90,11 @@ class Toolbar extends React.Component {
     const taskId = selectedEvent && selectedEvent.task._id;
     return (
       <div className={classes.editGroup}>
-        <Button color="primary" className={classes.editButton} component={Link} to="/createtask">New</Button>
-        <Button color="primary" className={classes.editButton} disabled={!selectedEvent} component={Link} to={`/updatetask/${taskId}`}>Edit</Button>
-        <Button color="accent" className={classes.editButton} disabled={!selectedEvent} aria-label="Delete" onClick={() => { onDeleteTask(taskId); }}>Delete</Button>
-        {/* <Button raised disabled={!selectedEvent} component={Link} to="/createtask">Copy</Button> */}
+        <Button color="primary" dense className={classes.editButton} component={Link} to="/createtask">New</Button>
+        <Button color="primary" dense className={classes.editButton} disabled={!selectedEvent} component={Link} to={`/updatetask/${taskId}`}>Edit</Button>
+        <Button color="primary" dense className={classes.editButton} disabled={!selectedEvent} component={Link} to={`/copytask/${taskId}`}>Copy</Button>
+        <Button color="accent" dense className={classes.editButton} disabled={!selectedEvent} aria-label="Delete" onClick={() => { onDeleteTask(taskId); }}>Delete</Button>
+
       </div>
     );
   }

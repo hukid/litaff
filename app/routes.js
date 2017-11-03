@@ -123,6 +123,27 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
+      path: '/copytask/:taskId',
+      name: 'taskForm',
+      onEnter: redirectToHome,
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/TaskForm/reducer'),
+          import('containers/TaskForm/sagas'),
+          import('containers/TaskForm'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('taskForm', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
       path: '/updatecoworker/:resourceId',
       name: 'coworkerForm',
       onEnter: redirectToHome,

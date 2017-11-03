@@ -118,14 +118,14 @@ FormTextSingleLine.propTypes = {
   autoFocus: PropTypes.bool,
 };
 
-const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { error } }) =>
+const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { error, warning } }) =>
   <TextField
     inputClassName={classes.dateTimeInput}
     id={id}
     label={label}
     type={type}
     margin="normal"
-    helperText={error && `${error}`}
+    helperText={(error && `${error}`) || ((warning && `* ${warning}`))}
     error={!!error}
     fullWidth
     value={value}
@@ -273,6 +273,20 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
     return newValue;
   }
 
+  inFuture = (value) => {
+    if (this.props.isUpdate) return null;
+    const startTimeString = value;
+    let warn;
+    if (startTimeString) {
+      const startTime = moment(startTimeString);
+      if (startTime.diff(moment(), 'hours') < 2) {
+        warn = 'Do not set start time sooner than 2 hours or in the past';
+      }
+    }
+
+    return warn;
+  };
+
   render() {
     const { classes, availableCoworkers, isLoadingAvailableCoworkers, valid } = this.props;
     return (
@@ -291,9 +305,11 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           type="datetime-local"
           id="startTime"
           component={FormDateTimeInput}
+          normalize={notEmpty}
           onChange={this.handleStartTimeChange}
           label="Start Time"
           classes={classes}
+          warn={this.inFuture}
         />
         <Field
           name="endTime"

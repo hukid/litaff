@@ -11,6 +11,16 @@ const selectTaskFormDomain = () => (state) => state.get('taskForm');
 
 const selectTaskId = () => (state, props) => props.params.taskId;
 
+const selectFormType = () => (state, props) => {
+  if (props.route.path.startsWith('/copytask')) {
+    return 'copy';
+  } else if (props.route.path.startsWith('/updatetask')) {
+    return 'update';
+  }
+
+  return 'create';
+};
+
 const selectTaskStartTime = () => (state, props) => props.params.startTime;
 
 const selectTaskEndTime = () => (state, props) => props.params.endTime;
@@ -63,35 +73,57 @@ const makeSelectTask = () => createSelector(
 );
 
 const makeSelectTaskFormData = () => createSelector(
+  selectFormType(),
   makeSelectTask(),
   selectTaskStartTime(),
   selectTaskEndTime(),
-  (task, requestStartTime, requestEndTime) => {
-    if (!task) {
-      const startDateTime = requestStartTime ? moment(requestStartTime) : moment().add(1, 'hours').set({ minute: 0 });
-      const endDateTime = requestEndTime ? moment(requestEndTime) : moment(startDateTime).add(1, 'hours');
-      const reminderDateTime = moment(startDateTime).subtract(1, 'days');
-      return fromJS({
-        _id: '',
-        subject: '',
-        content: '',
-        startTime: startDateTime.format('YYYY-MM-DDTHH:mm'),
-        endTime: endDateTime.format('YYYY-MM-DDTHH:mm'),
-        reminderTime: reminderDateTime.format('YYYY-MM-DDTHH:mm'),
-        coworkers: [],
-        newCoworker: '',
-      });
+  (formType, task, requestStartTime, requestEndTime) => {
+    let initialData;
+    switch (formType) {
+      case 'update': {
+        initialData = {
+          _id: task._id,
+          subject: task.subject,
+          startTime: moment(task.time.start).format('YYYY-MM-DDTHH:mm'),
+          endTime: moment(task.time.end).format('YYYY-MM-DDTHH:mm'),
+          reminderTime: moment(task.reminder.time).format('YYYY-MM-DDTHH:mm'),
+          content: task.content,
+          coworkers: task.resources,
+        };
+        break;
+      }
+      case 'copy': {
+        initialData = {
+          _id: '',
+          subject: task.subject,
+          startTime: moment(task.time.start).format('YYYY-MM-DDTHH:mm'),
+          endTime: moment(task.time.end).format('YYYY-MM-DDTHH:mm'),
+          reminderTime: moment(task.reminder.time).format('YYYY-MM-DDTHH:mm'),
+          content: task.content,
+          coworkers: task.resources,
+        };
+        break;
+      }
+      default: {
+        const startDateTime = requestStartTime ? moment(requestStartTime) : moment().add(1, 'hours').set({ minute: 0 });
+        const endDateTime = requestEndTime ? moment(requestEndTime) : moment(startDateTime).add(1, 'hours');
+        if (endDateTime.diff(startDateTime) === 0) {
+          endDateTime.add(1, 'hours');
+        }
+        const reminderDateTime = moment(startDateTime).subtract(1, 'days');
+        initialData = {
+          _id: '',
+          subject: '',
+          startTime: startDateTime.format('YYYY-MM-DDTHH:mm'),
+          endTime: endDateTime.format('YYYY-MM-DDTHH:mm'),
+          reminderTime: reminderDateTime.format('YYYY-MM-DDTHH:mm'),
+          content: '',
+          coworkers: [],
+        };
+      }
     }
 
-    return {
-      _id: task._id,
-      subject: task.subject,
-      startTime: moment(task.time.start).format('YYYY-MM-DDTHH:mm'),
-      endTime: moment(task.time.end).format('YYYY-MM-DDTHH:mm'),
-      reminderTime: moment(task.reminder.time).format('YYYY-MM-DDTHH:mm'),
-      content: task.content,
-      coworkers: task.resources,
-    };
+    return initialData;
   }
 );
 
