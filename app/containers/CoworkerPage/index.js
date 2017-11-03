@@ -146,7 +146,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
             }
           </TableBody>
         </Table>
-        <Dialog open={showDeleteConfirmDialog} onRequestClose={onDeleteConfirmDialogClose}>
+        <Dialog open={showDeleteConfirmDialog} onRequestClose={() => onDeleteConfirmDialogClose(false)}>
           <DialogTitle>{`Do you want to delete "${coworkerToDelete && coworkerToDelete.name}"?`}</DialogTitle>
           <DialogActions>
             <Button onClick={() => onDeleteConfirmDialogClose(false)} color="primary">

@@ -150,7 +150,7 @@ class Toolbar extends React.Component {
         {this.editingGroup()}
         {this.navigationGroup()}
         {this.viewNamesGroup()}
-        <Dialog open={deleteConfirmDialogOpen} onRequestClose={onDeleteConfirmDialogClose}>
+        <Dialog open={deleteConfirmDialogOpen} onRequestClose={() => onDeleteConfirmDialogClose(false)}>
           <DialogTitle>Do you want to delete the task - {selectedEvent && selectedEvent.title}?</DialogTitle>
           <DialogActions>
             <Button onClick={() => onDeleteConfirmDialogClose(false)} color="primary">

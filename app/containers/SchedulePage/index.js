@@ -85,6 +85,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
       onSelectEvent, onDoubleClickEvent, onSelectSlot, onView, onNavigate,
       createDialogOpen, onCreateDialogClose, selectedSlotTime } = this.props;
 
+
     return (
       <Paper className={classes.pageContainer}>
         <CalendarView
@@ -98,7 +99,7 @@ export class SchedulePage extends React.PureComponent { // eslint-disable-line r
           onView={onView}
           events={events}
         />
-        <Dialog open={createDialogOpen} onRequestClose={onCreateDialogClose}>
+        <Dialog open={createDialogOpen} onRequestClose={() => onCreateDialogClose(false)}>
           <DialogTitle>Do you want to create a task at this time?</DialogTitle>
           <DialogActions>
             <Button onClick={() => onCreateDialogClose(false)} color="primary">
