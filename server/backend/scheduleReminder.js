@@ -5,6 +5,7 @@ const Task = require('./models/task');
 const Resource = require('./models/resource');
 const logger = require('../logger');
 const getEmailTransporter = require('./utils/getEmailTransporter');
+const formatEmailContent = require('./utils/formatEmailContent');
 
 module.exports = () => {
   // every 10 minutes
@@ -89,6 +90,7 @@ function sendReminderEmail(task, index, contactMapping) {
     to: toList, // list of receivers
     subject: formattedSubject, // Subject line
     text: task.content, // plain text body
+    html: formatEmailContent(task),
   };
 
   setTimeout(() => {

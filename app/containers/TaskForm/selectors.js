@@ -105,6 +105,7 @@ const makeSelectTaskFormData = () => createSelector(
         break;
       }
       default: {
+        // default is create form
         const startDateTime = requestStartTime ? moment(requestStartTime) : moment().add(1, 'hours').set({ minute: 0 });
         const endDateTime = requestEndTime ? moment(requestEndTime) : moment(startDateTime).add(1, 'hours');
         if (endDateTime.diff(startDateTime) === 0) {

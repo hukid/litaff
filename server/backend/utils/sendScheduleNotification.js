@@ -3,6 +3,7 @@ const logger = require('../../logger');
 const getEmailTransporter = require('./getEmailTransporter');
 const ical = require('ical-generator');
 const moment = require('moment');
+const formatEmailContent = require('./formatEmailContent');
 
 // TODO: add a cache for resources
 // let resourcesCache = null;
@@ -97,11 +98,4 @@ function formatEmailSubject(notificationType, task) {
   // TODO: now all force to one single timezone, this should be changed by project settings
   const eventStartMoment = moment(task.time.start).tz('America/Los_Angeles');
   return `${notificationType === 3 ? 'Canceled: ' : ''}(${eventStartMoment.minute() === 0 ? eventStartMoment.format('M/D hA, ddd') : eventStartMoment.format('M/D h:mA, ddd')}) ${task.subject}`;
-}
-
-function formatEmailContent(task) {
-  // TODO: now all force to one single timezone, this should be changed by project settings
-  const eventStartMoment = moment(task.time.start).tz('America/Los_Angeles');
-  const eventEndMoment = moment(task.time.end).tz('America/Los_Angeles');
-  return `<span><strong>StartTime: </strong>${eventStartMoment.format('llll')}</span><br/><span><strong>EndTime: </strong>${eventEndMoment.format('llll')}</span><br/><br/><div>${task.content}</div>`;
 }
