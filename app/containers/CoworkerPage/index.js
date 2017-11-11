@@ -67,6 +67,7 @@ const styles = () => ({
   },
   actionColumn: {
     width: '10%',
+    'white-space': 'nowrap',
   },
 });
 
@@ -132,7 +133,7 @@ export class CoworkerPage extends React.PureComponent { // eslint-disable-line r
                     <TableCell key={`contact-${index}`}>
                       {coworker.contacts.length > 0 ? coworker.contacts[0].value : ''}
                     </TableCell>
-                    <TableCell key={`operation-${index}`} numeric>
+                    <TableCell key={`operation-${index}`} className={classes.actionColumn}>
                       <IconButton component={Link} to={`/updatecoworker/${coworker._id}`}>
                         <EditIcon />
                       </IconButton>
