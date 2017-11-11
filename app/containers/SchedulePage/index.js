@@ -147,7 +147,9 @@ function mapDispatchToProps(dispatch, ownProps) {
     onLoadTasks: () => dispatch(loadTasks()),
     onDeleteTask: (taskId) => dispatch(deleteTask(taskId)),
     onSelectEvent: (event) => { dispatch(eventSelected(event)); },
-    onDoubleClickEvent: () => { alert('double clicked'); }, // (event) => { alert("double clicked"); },
+    onDoubleClickEvent: (event) => {
+      ownProps.router.push(`/updatetask/${event.task._id}`);
+    },
     onSelectSlot: (slotInfo) => { dispatch(slotSelected(slotInfo)); },
     onView: (view) => {
       dispatch(changeView(view));
