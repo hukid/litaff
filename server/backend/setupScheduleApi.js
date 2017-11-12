@@ -17,7 +17,7 @@ const setupResourceApi = require('./controllers/resource');
 
 module.exports = (router) => {
   mongoose.Promise = global.Promise;
-  mongoose.connect(config.database);
+  mongoose.connect(config.database, config.dbOptions);
 
   configPassport(passport);
   router.use(passport.initialize());

@@ -3,4 +3,7 @@ module.exports = {
   secret: 'litaffsecretstring',
   // Database connection information
   database: 'mongodb://localhost:27017/litaff',
+  dbOptions: {
+    useMongoClient: true,
+  },
 };
