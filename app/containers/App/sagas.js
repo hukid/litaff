@@ -3,7 +3,6 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
 import { push } from 'react-router-redux';
 
 import request from 'utils/request';
@@ -23,7 +22,6 @@ function* loadAppInitalData() {
       call(request, getTenantRequestUrl),
       call(request, getProjectRequestUrl),
     ];
-    yield delay(200);
     yield put(appLoaded(loadData[0]._id, loadData[1]._id));
   } catch (err) {
     // yield put(repoLoadingError(err));

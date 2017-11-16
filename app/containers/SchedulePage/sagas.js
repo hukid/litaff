@@ -12,9 +12,6 @@ import { LOAD_TASKS, DELETE_TASK } from './constants';
 import { tasksLoaded, taskDeleted } from './actions';
 import { makeSelectViewDate, makeSelectView } from './selectors';
 
-/*
- * Github repos request/response handler
- */
 export function* loadTasks() {
   const projectId = yield select(makeSelectProjectId());
   const view = yield select(makeSelectView());
@@ -24,7 +21,7 @@ export function* loadTasks() {
   const daysWindow = view === 'week' ? 7 : 30;
   const startTime = moment(viewDate).subtract(daysWindow, 'days');
   const endTime = moment(viewDate).add(daysWindow, 'days');
-  const loadTasksURL = `api/tasks/${projectId}/${startTime.format()}/${endTime.format()}`;
+  const loadTasksURL = `/api/tasks/${projectId}/${startTime.format()}/${endTime.format()}`;
 
   const token = yield select(makeSelectToken());
   try {

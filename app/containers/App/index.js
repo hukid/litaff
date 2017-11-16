@@ -44,6 +44,9 @@ const styles = (theme) => ({
   },
   headerTitle: {
     flex: '1 0 auto',
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '15px',
+    },
   },
   drawerPaper: {
     position: 'fixed',
@@ -85,11 +88,10 @@ const styles = (theme) => ({
   },
   contentNoDrawer: {
     backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3,
-    height: 'calc(100% - 56px)',
+    height: 'calc(100vh - 56px)',
     marginTop: 56,
     [theme.breakpoints.up('sm')]: {
-      height: 'calc(100% - 64px)',
+      height: 'calc(100vh - 64px)',
       marginTop: 64,
     },
   },
@@ -100,15 +102,16 @@ class App extends React.PureComponent { // eslint-disable-line react/prefer-stat
   static propTypes = {
     children: React.PropTypes.node,
     classes: React.PropTypes.object,
-    loadAppData: React.PropTypes.func,
+    trySignIn: React.PropTypes.func,
     loggedIn: React.PropTypes.bool,
     onSignOut: React.PropTypes.func,
     router: React.PropTypes.object,
   };
 
   componentDidMount() {
-    if (this.props.router.location.pathname !== '/signup') {
-      this.props.loadAppData();
+    if (!this.props.router.location.pathname.startsWith('/signup')
+        && !this.props.router.location.pathname.startsWith('/sa/')) {
+      this.props.trySignIn();
     }
   }
 
@@ -172,7 +175,7 @@ const mapStateToProps = createStructuredSelector({
 
 function mapDispatchToProps(dispatch) {
   return {
-    loadAppData: () => dispatch(signInFromToken()),
+    trySignIn: () => dispatch(signInFromToken()),
     onSignOut: () => dispatch(signOut()),
   };
 }

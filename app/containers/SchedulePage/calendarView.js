@@ -96,7 +96,7 @@ function CalendarView(props) {
       onNavigate={onNavigate}
       events={events}
       views={['month', 'week', 'agenda']}
-      scrollToTime={new Date(1970, 1, 1, 6)}
+      scrollToTime={new Date(1970, 1, 1, 8)}
       defaultDate={new Date()}
     >
     </BigCalendar>

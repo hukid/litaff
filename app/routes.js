@@ -222,6 +222,26 @@ export default function createRoutes(store) {
         importModules.catch(errorLoading);
       },
     }, {
+      path: '/sa/:sharingId',
+      name: 'sharingAgenda',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          import('containers/SharingAgenda/reducer'),
+          import('containers/SharingAgenda/sagas'),
+          import('containers/SharingAgenda'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('sharingAgenda', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    }, {
       path: '*',
       name: 'notfound',
       getComponent(nextState, cb) {
