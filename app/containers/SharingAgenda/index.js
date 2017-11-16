@@ -21,7 +21,6 @@ const styles = (theme) => ({
     padding: theme.spacing.unit,
     margin: '0 auto',
     height: '100%',
-    width: '100vw',
     fontSize: '12px',
     display: 'flex',
     'flex-direction': 'column',
