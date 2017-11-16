@@ -18,6 +18,7 @@ import {
   CHANGE_DATE,
   OPEN_DELETECONFIRMDIALOG,
   CLOSE_DELETECONFIRMDIALOG,
+  AGENDA_SHARED,
 } from './constants';
 
 const initialState = fromJS({
@@ -100,6 +101,10 @@ function schedulePageReducer(state = initialState, action) {
     }
     case CLOSE_DELETECONFIRMDIALOG: {
       return state.set('deleteConfirmDialogOpen', false);
+    }
+    case AGENDA_SHARED: {
+      alert(`new shareid created: ${action.shareId}`);
+      return state;
     }
     default:
       return state;

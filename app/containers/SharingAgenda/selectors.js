@@ -13,6 +13,18 @@ const makeSelectEvents = () => createSelector(
   (substate) => substate.get('events') || [] // events is javascript object, not immutable object
 );
 
+const makeSelectStartTime = () => createSelector(
+  selectSharingAgendaDomain(),
+  (substate) => substate.get('startTime') // events is javascript object, not immutable object
+);
+
+const makeSelectEndTime = () => createSelector(
+  selectSharingAgendaDomain(),
+  (substate) => substate.get('endTime') // events is javascript object, not immutable object
+);
+
 export {
   makeSelectEvents,
+  makeSelectStartTime,
+  makeSelectEndTime,
 };

@@ -16,8 +16,8 @@ export function* loadSharingTasks(action) {
     };
     const loadSharingTaksUrl = `/api/sharingtasks/${sharingId}`;
 
-    const tasks = yield call(request, loadSharingTaksUrl, requestOptions);
-    yield put(sharingTasksLoaded(tasks));
+    const sharingResult = yield call(request, loadSharingTaksUrl, requestOptions);
+    yield put(sharingTasksLoaded(sharingResult));
   } catch (err) {
     console.error(err);
   }

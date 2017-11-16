@@ -8,8 +8,8 @@ import moment from 'moment';
 import { makeSelectProjectId, makeSelectToken } from 'containers/App/selectors';
 import request from 'utils/request';
 
-import { LOAD_TASKS, DELETE_TASK } from './constants';
-import { tasksLoaded, taskDeleted } from './actions';
+import { LOAD_TASKS, DELETE_TASK, SHARE_AGENDA } from './constants';
+import { tasksLoaded, taskDeleted, agendaShared } from './actions';
 import { makeSelectViewDate, makeSelectView } from './selectors';
 
 export function* loadTasks() {
@@ -67,6 +67,35 @@ export function* deleteTask(action) {
   }
 }
 
+export function* shareAgenda(action) {
+  const projectId = yield select(makeSelectProjectId());
+  const sharingProfile = {
+    startTime: moment(action.startTime).format(),
+    endTime: moment(action.endTime).format(),
+  };
+  const TaskUrl = `/api/taskshareprofile/${projectId}`;
+
+  const token = yield select(makeSelectToken());
+  try {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(sharingProfile),
+    };
+
+    // Call our request helper (see 'utils/request')
+    const result = yield call(request, TaskUrl, requestOptions);
+    yield put(agendaShared(result.sharingId));
+  } catch (err) {
+    // yield put(repoLoadingError(err));
+    console.error(err);
+  }
+}
+
 /**
  * Root saga manages watcher lifecycle
  */
@@ -79,12 +108,14 @@ export function* taskData() {
   const watchers = yield [
     takeLatest(LOAD_TASKS, loadTasks),
     takeLatest(DELETE_TASK, deleteTask),
+    takeLatest(SHARE_AGENDA, shareAgenda),
   ];
 
   // Suspend execution until location changes
   yield take(LOCATION_CHANGE);
   yield cancel(watchers[0]);
   yield cancel(watchers[1]);
+  yield cancel(watchers[2]);
 }
 
 // Bootstrap sagas

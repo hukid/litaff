@@ -23,9 +23,9 @@ export function loadSharingTasks(sharingId) {
   };
 }
 
-export function sharingTasksLoaded(tasks) {
+export function sharingTasksLoaded(sharingResult) {
   return {
     type: SHARINGTASKS_LOADED,
-    tasks,
+    sharingResult,
   };
 }

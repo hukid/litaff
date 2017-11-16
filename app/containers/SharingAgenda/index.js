@@ -11,7 +11,8 @@ import { createStructuredSelector } from 'reselect';
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import BigCalendar from 'react-big-calendar';
-import { makeSelectEvents } from './selectors';
+import moment from 'moment';
+import { makeSelectEvents, makeSelectStartTime, makeSelectEndTime } from './selectors';
 import { loadSharingTasks } from './actions';
 import messages from './messages';
 
@@ -20,6 +21,7 @@ const styles = (theme) => ({
     padding: theme.spacing.unit,
     margin: '0 auto',
     height: '100%',
+    width: '100vw',
     fontSize: '12px',
     display: 'flex',
     'flex-direction': 'column',
@@ -56,8 +58,8 @@ export class SharingAgenda extends React.PureComponent { // eslint-disable-line 
   }
 
   render() {
-    const { events, classes } = this.props;
-    const label = 'toolbar';
+    const { events, classes, startTime, endTime } = this.props;
+    const label = `${moment(startTime).format('ll')} - ${moment(endTime).format('ll')}`;
 
     return (
       <Paper className={classes.pageContainer}>
@@ -82,10 +84,14 @@ SharingAgenda.propTypes = {
   events: PropTypes.array.isRequired,
   params: PropTypes.object,
   classes: PropTypes.object.isRequired,
+  startTime: PropTypes.string,
+  endTime: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
   events: makeSelectEvents(),
+  startTime: makeSelectStartTime(),
+  endTime: makeSelectEndTime(),
 });
 
 function mapDispatchToProps(dispatch) {

@@ -44,7 +44,7 @@ module.exports = (router) => {
     const task = req.body;
 
     if (!authorizeWithProjectId(req.user, projectId)) {
-      handleError(res, 'you do not have permission');
+      handleAuthorizationError(res, 'you do not have permission');
       return;
     }
 
