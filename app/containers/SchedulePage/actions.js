@@ -18,6 +18,8 @@ import {
   CHANGE_DATE,
   OPEN_DELETECONFIRMDIALOG,
   CLOSE_DELETECONFIRMDIALOG,
+  SHARE_AGENDA,
+  AGENDA_SHARED,
 } from './constants';
 
 export function loadTasks() {
@@ -104,5 +106,20 @@ export function openDeleteConfirmDialog() {
 export function closeDeleteConfirmDialog() {
   return {
     type: CLOSE_DELETECONFIRMDIALOG,
+  };
+}
+
+export function shareAgenda(startTime, endTime) {
+  return {
+    type: SHARE_AGENDA,
+    startTime,
+    endTime,
+  };
+}
+
+export function agendaShared(shareId) {
+  return {
+    type: AGENDA_SHARED,
+    shareId,
   };
 }

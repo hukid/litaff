@@ -20,8 +20,8 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog';
 
-import { makeSelectSelectedEvent, makeSelectDeleteConfirmDialogOpen } from './selectors';
-import { deleteTask, eventSelected, openDeleteConfirmDialog, closeDeleteConfirmDialog } from './actions';
+import { makeSelectSelectedEvent, makeSelectDeleteConfirmDialogOpen, makeSelectViewDate } from './selectors';
+import { deleteTask, eventSelected, openDeleteConfirmDialog, closeDeleteConfirmDialog, shareAgenda } from './actions';
 
 const navigate = {
   PREVIOUS: 'PREV',
@@ -71,8 +71,10 @@ class Toolbar extends React.Component {
     onClearSelected: PropTypes.func.isRequired,
     selectedEvent: PropTypes.object,
     onDeleteTask: PropTypes.func.isRequired,
+    onShareAgenda: PropTypes.func.isRequired,
     deleteConfirmDialogOpen: PropTypes.bool.isRequired,
     onDeleteConfirmDialogClose: PropTypes.func.isRequired,
+    date: PropTypes.object.isRequired,
   }
 
   navigate = (action) => {
@@ -86,7 +88,7 @@ class Toolbar extends React.Component {
   }
 
   editingGroup() {
-    const { classes, selectedEvent, onDeleteTask } = this.props;
+    const { classes, selectedEvent, onDeleteTask, onShareAgenda, date } = this.props;
     const taskId = selectedEvent && selectedEvent.task._id;
     return (
       <div className={classes.editGroup}>
@@ -94,7 +96,7 @@ class Toolbar extends React.Component {
         <Button color="primary" dense className={classes.editButton} disabled={!selectedEvent} component={Link} to={`/updatetask/${taskId}`}>Edit</Button>
         <Button color="primary" dense className={classes.editButton} disabled={!selectedEvent} component={Link} to={`/copytask/${taskId}`}>Copy</Button>
         <Button color="accent" dense className={classes.editButton} disabled={!selectedEvent} aria-label="Delete" onClick={() => { onDeleteTask(taskId); }}>Delete</Button>
-
+        <Button color="primary" dense className={classes.editButton} aria-label="Share" onClick={() => { onShareAgenda(date); }}>Share</Button>
       </div>
     );
   }
@@ -170,6 +172,7 @@ class Toolbar extends React.Component {
 const mapStateToProps = createStructuredSelector({
   selectedEvent: makeSelectSelectedEvent(),
   deleteConfirmDialogOpen: makeSelectDeleteConfirmDialogOpen(),
+  date: makeSelectViewDate(),
 });
 
 function mapDispatchToProps(dispatch) {
@@ -184,6 +187,11 @@ function mapDispatchToProps(dispatch) {
         dispatch(deleteTask(taskId));
         dispatch(eventSelected(null));
       }
+    },
+    onShareAgenda: (date) => {
+      const startTime = new Date(date.getFullYear(), date.getMonth(), 1);
+      const endTime = new Date(date.getFullYear(), date.getMonth() + 4, 0);
+      dispatch(shareAgenda(startTime, endTime));
     },
   };
 }

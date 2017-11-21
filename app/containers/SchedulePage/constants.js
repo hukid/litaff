@@ -18,3 +18,5 @@ export const CHANGE_VIEW = 'app/SchedulePage/CHANGE_VIEW';
 export const CHANGE_DATE = 'app/SchedulePage/CHANGE_DATE';
 export const OPEN_DELETECONFIRMDIALOG = 'app/SchedulePage/OPEN_DELETECONFIRMDIALOG';
 export const CLOSE_DELETECONFIRMDIALOG = 'app/SchedulePage/CLOSE_DELETECONFIRMDIALOG';
+export const SHARE_AGENDA = 'app/SchedulePage/SHARE_AGENDA';
+export const AGENDA_SHARED = 'app/SchedulePage/AGENDA_SHARED';

@@ -18,4 +18,9 @@ router.get('/', (req, res) => {
 
 setupScheduleApi(router);
 
+// Default not found api
+router.get('*', (req, res) => {
+  res.status(404).send('Not found');
+});
+
 module.exports = router;

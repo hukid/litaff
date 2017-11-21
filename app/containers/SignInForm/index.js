@@ -29,6 +29,10 @@ const styles = (theme) => ({
     marginRight: theme.spacing.unit,
     width: 200,
   },
+  signInButton: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
 });
 
 const renderField = ({ classes, id, input, label, type, autoFocus, meta: { touched, error, warning } }) => (
@@ -76,7 +80,7 @@ export class SignInForm extends React.PureComponent { // eslint-disable-line rea
           component={renderField} label="Password"
           classes={classes}
         />
-        <Button raised color="primary" type="submit">Sign In</Button>
+        <Button raised color="primary" className={classes.signInButton} type="submit">Sign In</Button>
       </form>
     );
   }
