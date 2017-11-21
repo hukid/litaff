@@ -12,6 +12,7 @@ import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
+import AgendaEvent from 'components/AgendaEvent';
 import { makeSelectEvents, makeSelectStartTime, makeSelectEndTime } from './selectors';
 import { loadSharingTasks } from './actions';
 import messages from './messages';
@@ -50,6 +51,12 @@ SharingToolBar.propTypes = {
   className: PropTypes.string,
 };
 
+const components = {
+  agenda: {
+    event: AgendaEvent,
+  },
+};
+
 export class SharingAgenda extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   componentDidMount() {
     const sharingId = this.props.params.sharingId;
@@ -59,20 +66,24 @@ export class SharingAgenda extends React.PureComponent { // eslint-disable-line 
   render() {
     const { events, classes, startTime, endTime } = this.props;
     const label = `${moment(startTime).format('ll')} - ${moment(endTime).format('ll')}`;
-
+    const defaultDate = moment(startTime);
+    defaultDate.startOf('date');
     return (
       <Paper className={classes.pageContainer}>
         <SharingToolBar label={label} className={classes.toolbar} />
-        <div className={classes.calendarWrapper}>
-          <BigCalendar
-            defaultView={'agenda'}
-            views={['agenda']}
-            toolbar={false}
-            events={events}
-            length={60}
-            defaultDate={new Date(2017, 9, 1)}
-          />
-        </div>
+        {startTime && (
+          <div className={classes.calendarWrapper}>
+            <BigCalendar
+              defaultView={'agenda'}
+              views={['agenda']}
+              toolbar={false}
+              events={events}
+              length={123}
+              components={components}
+              defaultDate={defaultDate.toDate()}
+            />
+          </div>
+        )}
       </Paper>
     );
   }

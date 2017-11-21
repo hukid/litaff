@@ -6,7 +6,7 @@ import BigCalendar from 'react-big-calendar';
 // import IconButton from 'material-ui/IconButton';
 // import DeleteIcon from 'material-ui-icons/Delete';
 // import EditIcon from 'material-ui-icons/Edit';
-
+import AgendaEvent from 'components/AgendaEvent';
 import ToolBar from './toolbar';
 
 // const allViews = Object.keys(BigCalendar.Views).map((k) => BigCalendar.Views[k]);
@@ -78,6 +78,9 @@ const components = {
   // week: {
   //   event: StyledEventView,
   // },
+  agenda: {
+    event: AgendaEvent,
+  },
 };
 
 function CalendarView(props) {
