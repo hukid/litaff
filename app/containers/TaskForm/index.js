@@ -16,6 +16,11 @@ import TextField from 'material-ui/TextField';
 import Button from 'material-ui/Button';
 import Paper from 'material-ui/Paper';
 import Chip from 'material-ui/Chip';
+import { DateTimePicker } from 'material-ui-pickers';
+import KeyboardArrowLeft from 'material-ui-icons/KeyboardArrowLeft';
+import KeyboardArrowRight from 'material-ui-icons/KeyboardArrowRight';
+import DateRange from 'material-ui-icons/DateRange';
+import AccessTime from 'material-ui-icons/AccessTime';
 
 import SuggestionInput from 'components/SuggestionInput';
 
@@ -48,8 +53,17 @@ const styles = (theme) => ({
   },
   textField: {
   },
+  timeGroup: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  dateTimePicker: {
+    flex: '1 0 auto',
+    width: '160px',
+  },
   dateTimeInput: {
     font: 'inherit',
+    // fontWeight: 'bold',
     color: 'currentColor',
     width: '100%',
     border: 0,
@@ -118,19 +132,27 @@ FormTextSingleLine.propTypes = {
   autoFocus: PropTypes.bool,
 };
 
-const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, type, meta: { error, warning } }) =>
-  <TextField
-    inputClassName={classes.dateTimeInput}
-    id={id}
-    label={label}
-    type={type}
-    margin="normal"
-    helperText={(error && `${error}`) || ((warning && `* ${warning}`))}
-    error={!!error}
-    fullWidth
-    value={value}
-    onChange={onChange}
-  />
+const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, futureOnly, meta: { error, warning } }) =>
+  <div className={classes.dateTimePicker}>
+    <DateTimePicker
+      format={'YYYY/MM/DD hh:mm a'}
+      id={id}
+      label={label}
+      margin="normal"
+      helperText={(error && `${error}`) || ((warning && `* ${warning}`))}
+      error={!!error}
+      fullWidth
+      // inputClassName={classes.dateTimeInput}
+      value={value}
+      onChange={(newDate) => onChange(newDate.toDate())}
+      minDate={futureOnly ? moment() : moment().subtract(5, 'years')}
+      maxDate={moment().add(5, 'years')}
+      leftArrowIcon={(<KeyboardArrowLeft />)}
+      rightArrowIcon={(<KeyboardArrowRight />)}
+      dateRangeIcon={(<DateRange />)}
+      timeIcon={(<AccessTime />)}
+    />
+  </div>
 ;
 
 FormDateTimeInput.propTypes = {
@@ -138,8 +160,8 @@ FormDateTimeInput.propTypes = {
   id: PropTypes.string.isRequired,
   input: PropTypes.object.isRequired,
   label: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
   meta: PropTypes.object.isRequired,
+  futureOnly: PropTypes.bool.isRequired,
 };
 
 const FormTextMultiLine = ({ id, classes, input: { value, onChange }, label, type, meta: { touched, error } }) =>
@@ -279,8 +301,8 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
     let warn;
     if (startTimeString) {
       const startTime = moment(startTimeString);
-      if (startTime.diff(moment(), 'hours') < 2) {
-        warn = 'Do not set start time sooner than 2 hours or in the past';
+      if (startTime.diff(moment(), 'hours') < 1) {
+        warn = 'Do not set start time sooner than 1 hour or in the past';
       }
     }
 
@@ -288,7 +310,7 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
   };
 
   render() {
-    const { classes, availableCoworkers, isLoadingAvailableCoworkers, valid } = this.props;
+    const { classes, availableCoworkers, isLoadingAvailableCoworkers, valid, isUpdate } = this.props;
     return (
       <Paper component="form" onSubmit={this.props.handleSubmit} className={classes.container}>
         <Field
@@ -300,26 +322,30 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           classes={classes}
           autoFocus
         />
-        <Field
-          name="startTime"
-          type="datetime-local"
-          id="startTime"
-          component={FormDateTimeInput}
-          normalize={notEmpty}
-          onChange={this.handleStartTimeChange}
-          label="Start Time"
-          classes={classes}
-          warn={this.inFuture}
-        />
-        <Field
-          name="endTime"
-          type="datetime-local"
-          id="endTime"
-          component={FormDateTimeInput}
-          normalize={notEmpty}
-          label="End Time"
-          classes={classes}
-        />
+        <div className={classes.timeGroup}>
+          <Field
+            name="startTime"
+            type="datetime-local"
+            id="startTime"
+            component={FormDateTimeInput}
+            normalize={notEmpty}
+            onChange={this.handleStartTimeChange}
+            label="Start Time"
+            futureOnly={!isUpdate}
+            classes={classes}
+            warn={this.inFuture}
+          />
+          <Field
+            name="endTime"
+            type="datetime-local"
+            id="endTime"
+            component={FormDateTimeInput}
+            normalize={notEmpty}
+            label="End Time"
+            futureOnly={!isUpdate}
+            classes={classes}
+          />
+        </div>
         <SuggestionInput
           id="coworkerInput"
           label="Add a coworker"
@@ -335,15 +361,18 @@ export class TaskForm extends React.PureComponent { // eslint-disable-line react
           component={TaskFormCoworkers}
           classes={classes}
         />
-        <Field
-          name="reminderTime"
-          type="datetime-local"
-          id="reminderTime"
-          component={FormDateTimeInput}
-          normalize={notEmpty}
-          label="Send Reminder At:"
-          classes={classes}
-        />
+        <div className={classes.timeGroup}>
+          <Field
+            name="reminderTime"
+            type="datetime-local"
+            id="reminderTime"
+            component={FormDateTimeInput}
+            normalize={notEmpty}
+            label="Send Reminder At:"
+            classes={classes}
+            futureOnly={!isUpdate}
+          />
+        </div>
         <Field
           name="content"
           type="text"
