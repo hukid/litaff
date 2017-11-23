@@ -3,8 +3,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { Link } from 'react-router';
-// import Calendar from 'rc-calendar';
-// import DatePicker from 'rc-calendar/lib/Picker';
 import { withStyles } from 'material-ui/styles';
 import 'material-ui-icons/Delete';
 import Button from 'material-ui/Button';
@@ -55,6 +53,7 @@ const styles = {
     'font-weight': 'bold',
     'text-align': 'center',
     cursor: 'pointer',
+    'min-width': '120px',
   },
   viewGroup: {
   },
