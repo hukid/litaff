@@ -61,25 +61,6 @@ const styles = (theme) => ({
     flex: '1 0 auto',
     width: '160px',
   },
-  dateTimeInput: {
-    font: 'inherit',
-    // fontWeight: 'bold',
-    color: 'currentColor',
-    width: '100%',
-    border: 0,
-    margin: 0,
-    padding: '7px 0',
-    display: 'block',
-    'box-sizing': 'content-box',
-    background: 'none',
-    'vertical-align': 'middle',
-    height: '1em',
-    '-webkit-appearance': 'textfield',
-    '&::-webkit-clear-button': { /* Removes blue cross */
-      '-webkit-appearance': 'none',
-      margin: 0,
-    },
-  },
   coworkersWrapper: {
     display: 'flex',
     'flex-direction': 'row',
@@ -142,7 +123,6 @@ const FormDateTimeInput = ({ id, classes, input: { value, onChange }, label, fut
       helperText={(error && `${error}`) || ((warning && `* ${warning}`))}
       error={!!error}
       fullWidth
-      // inputClassName={classes.dateTimeInput}
       value={value}
       onChange={(newDate) => onChange(newDate.toDate())}
       minDate={futureOnly ? moment() : moment().subtract(5, 'years')}
