@@ -19,6 +19,7 @@ import Dialog, {
   DialogActions,
   DialogTitle,
 } from 'material-ui/Dialog';
+import { DatePicker } from 'material-ui-pickers';
 
 import { makeSelectSelectedEvent, makeSelectDeleteConfirmDialogOpen, makeSelectViewDate } from './selectors';
 import { deleteTask, eventSelected, openDeleteConfirmDialog, closeDeleteConfirmDialog, shareAgenda } from './actions';
@@ -50,8 +51,10 @@ const styles = {
     'text-align': 'center',
   },
   dateLabel: {
-    'min-width': '150px',
     'font-size': '15px',
+    'font-weight': 'bold',
+    'text-align': 'center',
+    cursor: 'pointer',
   },
   viewGroup: {
   },
@@ -77,8 +80,8 @@ class Toolbar extends React.Component {
     date: PropTypes.object.isRequired,
   }
 
-  navigate = (action) => {
-    this.props.onNavigate(action);
+  navigate = (action, newDate) => {
+    this.props.onNavigate(action, newDate);
     this.props.onClearSelected();
   }
 
@@ -101,8 +104,13 @@ class Toolbar extends React.Component {
     );
   }
 
+  formatPickerLabel() {
+    const { label } = this.props;
+    return label;
+  }
+
   navigationGroup() {
-    const { messages, label, classes } = this.props;
+    const { messages, classes, label, date } = this.props;
 
     return (
       <div className={classes.navigationGroup}>
@@ -115,9 +123,19 @@ class Toolbar extends React.Component {
         <IconButton onClick={() => this.navigate(navigate.PREVIOUS)}>
           <KeyboardArrowLeft />
         </IconButton>
-        <div className={classes.dateLabel}>
-          <strong>{ label }</strong>
-        </div>
+        <DatePicker
+          inputClassName={classes.dateLabel}
+          value={date}
+          onChange={(newDate) => this.navigate(navigate.DATE, newDate.toDate())}
+          animateYearScrolling={false}
+          autoOk
+          leftArrowIcon={(<KeyboardArrowLeft />)}
+          rightArrowIcon={(<KeyboardArrowRight />)}
+          labelFunc={(selectedDate, invalidLabel) => this.formatPickerLabel(selectedDate, invalidLabel)}
+          inputProps={{
+            size: label.length,
+          }}
+        />
         <IconButton onClick={() => this.navigate(navigate.NEXT)}>
           <KeyboardArrowRight />
         </IconButton>
