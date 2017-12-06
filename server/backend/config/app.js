@@ -1,8 +1,8 @@
 module.exports = {
   // Secret key for JWT signing and encryption
-  secret: 'litaffsecretstring',
+  secret: process.env.JWT_KEY,
   // Database connection information
-  database: 'mongodb://localhost:27017/litaff',
+  database: process.env.DB_CONNECT,
   dbOptions: {
     useMongoClient: true,
   },
