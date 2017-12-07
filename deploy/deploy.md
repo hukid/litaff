@@ -2,7 +2,7 @@
 
 
 ## Setup a virtual machine
-  1. Create a Ubuntu 16.04 VM
+  1. Create a Ubuntu 16.04 VM [with SSH key](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/quick-create-portal?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json)
   2. Allow 80, 8080 inbound port for web request
   3. Allow 443, 587 inbound port for email service
 
